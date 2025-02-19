@@ -10,7 +10,7 @@ function App() {
         <h1 style={{marginTop: -9}}>Last Minute</h1>
       </div>
       <div className="card">
-        <p>Initialized main page for the Last Minute project.</p>
+        <p>Your courses. At your demand.</p>
       </div>
     </>
   );
