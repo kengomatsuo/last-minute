@@ -16,7 +16,7 @@ import PropTypes from "prop-types";
 const CustomButton = ({ filled = false, onClick = () => {}, text = "" }) => {
   return (
     <div
-      className={`px-2.5 py-1 ${
+      className={`px-2.5 w-full py-1 truncate ${
         filled
           ? "bg-primary text-secondary-text"
           : "bg-transparent text-primary"

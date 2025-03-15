@@ -6,7 +6,7 @@ import Error404 from "./screens/Error404"
 
 function App() {
   return (
-    <div className="w-screen min-h-screen flex-col flex bg-background text-primary-text">
+    <div className="w-screen min-h-screen flex-col flex text-primary-text">
       <CustomNavBar />
       <Routes>
         <Route path="/" element={<Landing />} />

@@ -3,9 +3,11 @@ import CustomButton from "../components/CustomButton";
 
 const Landing = () => {
   return (
-    <div className="flex flex-col items-center justify-center text-primary-text">
+    // Clear everything between these comments to start fresh
+
+    <div className="flex flex-col items-center justify-center text-primary-text h-screen">
       <div className="flex flex-col items-center justify-center">
-        <img src={ket} width={100} alt="Ket" style={{ filter: "invert(1)" }} />
+        <img src={ket} width={100} alt="Ket" />
         <h1>Last Minute</h1>
       </div>
       <div className="flex flex-col items-center justify-center">
@@ -13,6 +15,8 @@ const Landing = () => {
         <CustomButton text="click me" onClick={null} />
       </div>
     </div>
+    
+    // Clear everything between these comments to start fresh
   )
 }
 
