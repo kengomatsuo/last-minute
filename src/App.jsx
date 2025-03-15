@@ -1,18 +1,18 @@
-import ket from "./assets/ket.png";
-import CustomButton from "./components/CustomButton";
+import { Route, Routes } from "react-router-dom"
+import Landing from "./screens/Landing"
+import CustomNavBar from "./components/CustomNavBar"
+import Login from "./screens/Login"
+import Error404 from "./screens/Error404"
 
 function App() {
   return (
-    <div className="w-screen h-screen flex flex-col justify-center p-4 bg-background text-primary-text">
-      <div className="flex flex-col items-center justify-center">
-        {/* Import image of ket.png from assets */}
-        <img src={ket} width={100} alt="Ket" style={{ filter: "invert(1)" }} />
-        <h1>Last Minute</h1>
-      </div>
-      <div className="flex flex-col items-center justify-center">
-        <p>Your courses. At your demand.</p>
-        <CustomButton text="click me" onClick={null} />
-      </div>
+    <div className="w-screen min-h-screen flex-col flex bg-background text-primary-text">
+      <CustomNavBar />
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="*" element={<Error404 />} />
+      </Routes>
     </div>
   );
 }

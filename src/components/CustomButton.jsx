@@ -16,14 +16,14 @@ import PropTypes from "prop-types";
 const CustomButton = ({ filled = false, onClick = () => {}, text = "" }) => {
   return (
     <div
-      className={`px-3 py-1.5 ${
+      className={`px-2.5 py-1 ${
         filled
-          ? "bg-primary border-none text-secondary-text"
-          : "bg-transparent border-primary border-2 text-primary"
-      } bg-primary rounded-md font-semibold text-lg cursor-pointer `}
+          ? "bg-primary text-secondary-text"
+          : "bg-transparent text-primary"
+      } border-primary border-2 box-border rounded-md font-semibold text-lg cursor-pointer `}
       onClick={onClick}
     >
-      <p style={{ margin: 0 }} className="text-text">
+      <p style={{ margin: 0 }}>
         {text}
       </p>
     </div>
