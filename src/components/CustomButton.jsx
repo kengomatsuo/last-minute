@@ -20,7 +20,7 @@ const CustomButton = ({ filled = false, onClick = () => {}, text = "" }) => {
         filled
           ? "bg-primary text-secondary-text"
           : "bg-transparent text-primary"
-      } border-primary border-2 box-border rounded-md font-semibold text-lg cursor-pointer `}
+      } border-primary border-2 text-center box-border rounded-md font-semibold text-lg cursor-pointer `}
       onClick={onClick}
     >
       <p style={{ margin: 0 }}>
