@@ -54,7 +54,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
     <div
       ref={navBarRef}
       className={`sticky top-0 flex justify-between w-full py-4 px-6
-        border-b border-transparent transition-colors  duration-1000 ${
+        border-b border-transparent transition-colors  duration-300 ${
         isScrolled ? "!border-background-secondary/30" : ""
       }`}
     >
@@ -165,10 +165,10 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
           </div>
 
           <div className="flex gap-2 flex-row min-w-50">
-            <NavLink to={"/"} className="flex-1 flex">
+            <NavLink to={{pathname: "/auth", state: {action: "register"}}}  className="flex-1 flex">
               <CustomButton>Register</CustomButton>
             </NavLink>
-            <NavLink to={"/auth"} className="flex-1 flex">
+            <NavLink to={{pathname: "/auth", state: {action: "login"}}} className="flex-1 flex">
               <CustomButton filled>Login</CustomButton>
             </NavLink>
           </div>

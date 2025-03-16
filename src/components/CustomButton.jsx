@@ -20,15 +20,16 @@ const CustomButton = ({ filled = false, onClick = () => {}, children }) => {
   const [isPressed, setIsPressed] = useState(false);
   return (
     <div
-      className={`px-2.5 w-full py-1 truncate ${
+      className={`px-2.5 w-full py-1 truncate  transition-all duration-150 hover:border-primary/50 active:border-opacity ${
         filled
-          ? "bg-primary text-secondary-text"
-          : "bg-transparent text-primary"
-      }  border-primary border-2 text-center box-border rounded-md font-semibold text-lg cursor-pointer `}
+          ? "bg-primary hover:opacity-80 active:opacity-75 text-secondary-text"
+          : "bg-transparent hover:bg-background-secondary/10 active:bg-background-secondary/20 text-primary"
+      }  border-2 border-primary text-center box-border rounded-md font-semibold text-lg cursor-pointer `}
       onClick={onClick}
       onPointerDown={() => setIsPressed(true)}
       onPointerCancel={() => setIsPressed(false)}
       onPointerUp={() => setIsPressed(false)}
+      onPointerLeave={() => setIsPressed(false)}
     >
       <div
         className={`duration-150 ${

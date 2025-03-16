@@ -1,6 +1,8 @@
 import React from 'react'
 
 const Auth = () => {
+  const [action, setAction] = useState(location.state?.action || "login");
+
   return (
     <div>
       Login
