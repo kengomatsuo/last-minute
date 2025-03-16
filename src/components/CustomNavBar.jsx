@@ -3,7 +3,7 @@ import CustomButton from "./CustomButton";
 import { NavLink } from "react-router-dom";
 import { ScreenContext } from "../contexts/ScreenContext";
 import CustomHyperlink from "./CustomHyperlink";
-import { ReactComponent as MenuBurger } from "../assets/icons/menu-burger.svg";
+import MenuBurger from "../assets/icons/menu-burger.svg?react";
 
 const CustomNavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -25,19 +25,18 @@ const CustomNavBar = () => {
       {isSmallScreen ? (
         <>
           <CustomHyperlink
-            className="w-min"
+            className="w-min aspect-square flex items-center justify-center"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            {/* insert menu-burger.svg */}
-            <MenuBurger width={36}/>
+            <MenuBurger width={24} height={24} />
           </CustomHyperlink>
           {isMenuOpen ? (
-            <div className="fixed top-0 rounded-l-2xl gap-2 px-6 py-4 right-0 h-screen bg-background shadow-[-2px_0px_6px_0px_rgba(0,_0,_0,_0.1)]">
+            <div className="min-w-1/3 fixed top-0 rounded-l-2xl gap-2 px-6 py-4 right-0 h-screen bg-background shadow-[-2px_0px_6px_0px_rgba(0,_0,_0,_0.1)]">
               <CustomHyperlink
-                className="ml-auto w-min"
+                className="w-min aspect-square flex items-center justify- ml-auto"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
-                ☰
+                <MenuBurger width={24} height={24} />
               </CustomHyperlink>
               {navigationPaths.map((navPath) => (
                 <NavLink
@@ -49,7 +48,7 @@ const CustomNavBar = () => {
                       : undefined
                   }
                 >
-                  <CustomHyperlink className="px-16">
+                  <CustomHyperlink className="text-right">
                     {navPath.name}
                   </CustomHyperlink>
                 </NavLink>
