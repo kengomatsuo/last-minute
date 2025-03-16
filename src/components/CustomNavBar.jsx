@@ -1,54 +1,95 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import CustomButton from "./CustomButton";
 import { NavLink } from "react-router-dom";
+import { ScreenContext } from "../contexts/ScreenContext";
+import CustomHyperlink from "./CustomHyperlink";
+import { ReactComponent as MenuBurger } from "../assets/icons/menu-burger.svg";
 
 const CustomNavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isSmallScreen } = useContext(ScreenContext);
 
-  // when window is resized, close the menu
-  window.addEventListener("resize", () => {
-    setIsMenuOpen(false);
-  }
-  );
+  const navigationPaths = [
+    { name: "Link", path: "/1" },
+    { name: "Link", path: "/2" },
+    { name: "Link", path: "/3" },
+  ];
 
   return (
-    <nav className="sticky top-0 flex justify-between w-full py-4 px-6">
-      <div className="flex items-center text-2xl justify-start max-md:flex-1 max-md:justify-center">
+    <div className="sticky top-0 flex justify-between w-full py-4 px-6">
+      <div className="flex items-center text-2xl justify-start max-md:flex-1">
         <NavLink to={"/"} className="font-semibold text-nowrap">
           Last Minute
         </NavLink>
       </div>
-
-      <div className="max-md:flex hidden items-center justify-center">
-        <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="text-4xl transition-transform duration-300 ease-in-out"
+      {isSmallScreen ? (
+        <>
+          <CustomHyperlink
+            className="w-min"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {/* insert menu-burger.svg */}
+            <MenuBurger width={36}/>
+          </CustomHyperlink>
+          {isMenuOpen ? (
+            <div className="fixed top-0 rounded-l-2xl gap-2 px-6 py-4 right-0 h-screen bg-background shadow-[-2px_0px_6px_0px_rgba(0,_0,_0,_0.1)]">
+              <CustomHyperlink
+                className="ml-auto w-min"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                ☰
+              </CustomHyperlink>
+              {navigationPaths.map((navPath) => (
+                <NavLink
+                  key={navPath.path}
+                  to={navPath.path}
+                  className={({ isActive }) =>
+                    isActive
+                      ? "underline underline-offset-4 underline-primary"
+                      : undefined
+                  }
+                >
+                  <CustomHyperlink className="px-16">
+                    {navPath.name}
+                  </CustomHyperlink>
+                </NavLink>
+              ))}
+            </div>
+          ) : null}
+        </>
+      ) : (
+        <div
+          className={
+            "text-lg font-medium items-center inline-flex top-0 py-0 gap-4"
+          }
         >
-          ☰
-        </button>
-      </div>
+          <div className="inline-flex gap-2">
+            {navigationPaths.map((navPath) => (
+              <NavLink
+                key={navPath.path}
+                to={navPath.path}
+                className={({ isActive }) =>
+                  isActive
+                    ? "underline underline-offset-4 underline-primary"
+                    : undefined
+                }
+              >
+                <CustomHyperlink>{navPath.name}</CustomHyperlink>
+              </NavLink>
+            ))}
+          </div>
 
-      <div
-        className={`max-md:flex-col max-md:absolute max-md:left-full max-md:py-8 
-          max-md:px-8 max-md:rounded-lg max-md:h-fit max-md:top-[120%] max-md:gap-6
-          max-md:justify-start max-md:bg-background max-md:shadow-[0px_2px_15px_0px_rgba(0,_0,_0,_0.1)]
-          max-md:transition-all max-md:duration-300 max-md:ease-in-out
-          ${isMenuOpen ? "max-md:-translate-x-[110%]" : "max-md:translate-x-0 max-md:shadow-none"}
-          text-lg font-medium flex top-0 flex-row gap-8 justify-end bg-transparent items-center`}
-      >
-        <NavLink className={({isActive}) => isActive && "underline underline-offset-4"} to={"/about"}>About</NavLink>
-        <NavLink className={({isActive}) => isActive && "underline underline-offset-4"} to={"/"}>Home</NavLink>
-        <NavLink className={({isActive}) => isActive && "underline underline-offset-4"} to={"/contact"}>Contact</NavLink>
-        <div className="flex gap-2 max-md:flex-col flex-row min-w-50">
-          <NavLink to={"/"} className="flex-1 flex">
-            <CustomButton text="Register"/>
-          </NavLink>
-          <NavLink to={"/login"} className="flex-1 flex">
-            <CustomButton filled text="Login" />
-          </NavLink>
+          <div className="flex gap-2 max-md:flex-col flex-row min-w-50">
+            <NavLink to={"/"} className="flex-1 flex">
+              <CustomButton>Register</CustomButton>
+            </NavLink>
+            <NavLink to={"/login"} className="flex-1 flex">
+              <CustomButton filled>Login</CustomButton>
+            </NavLink>
+          </div>
         </div>
-      </div>
-    </nav>
+      )}
+    </div>
   );
 };
 

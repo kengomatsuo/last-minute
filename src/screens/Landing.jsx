@@ -12,7 +12,7 @@ const Landing = () => {
       </div>
       <div className="flex flex-col items-center justify-center">
         <p>Your courses. At your demand.</p>
-        <CustomButton text="click me" onClick={null} />
+        <CustomButton onClick={null} >I am a button</CustomButton>
       </div>
     </div>
     

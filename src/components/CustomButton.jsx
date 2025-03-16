@@ -13,7 +13,7 @@ import PropTypes from "prop-types";
  * @param {Function} props.onClick - Click handler function
  * @param {string} props.text - Button text
  */
-const CustomButton = ({ filled = false, onClick = () => {}, text = "" }) => {
+const CustomButton = ({ filled = false, onClick = () => {}, children }) => {
   return (
     <div
       className={`px-2.5 w-full py-1 truncate ${
@@ -23,9 +23,7 @@ const CustomButton = ({ filled = false, onClick = () => {}, text = "" }) => {
       } border-primary border-2 text-center box-border rounded-md font-semibold text-lg cursor-pointer `}
       onClick={onClick}
     >
-      <p style={{ margin: 0 }}>
-        {text}
-      </p>
+      {children}
     </div>
   );
 };
@@ -45,7 +43,7 @@ CustomButton.propTypes = {
    * Button text
    * @type {string}
    */
-  text: PropTypes.string,
+  children: PropTypes.node,
 };
 
 export default CustomButton;

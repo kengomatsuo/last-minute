@@ -18,6 +18,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html::-webkit-scrollbar {
+    display: none;
+}
+
 @theme {
   --color-primary: #ADA991;
   --color-background: #FCFAF1;
