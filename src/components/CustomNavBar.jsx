@@ -31,29 +31,33 @@ const CustomNavBar = () => {
             <MenuBurger width={24} height={24} />
           </CustomHyperlink>
           {isMenuOpen ? (
-            <div className="min-w-1/3 fixed top-0 rounded-l-2xl gap-2 px-6 py-4 right-0 h-screen bg-background shadow-[-2px_0px_6px_0px_rgba(0,_0,_0,_0.1)]">
-              <CustomHyperlink
-                className="w-min aspect-square flex items-center justify- ml-auto"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                <MenuBurger width={24} height={24} />
-              </CustomHyperlink>
-              {navigationPaths.map((navPath) => (
-                <NavLink
-                  key={navPath.path}
-                  to={navPath.path}
-                  className={({ isActive }) =>
-                    isActive
-                      ? "underline underline-offset-4 underline-primary"
-                      : undefined
-                  }
+            <>
+              <div className="absolute top-0 left-0 w-screen h-screen bg-background/75" />
+              <div className="w-72 max-w-4/5 fixed top-0 text-end gap-2 px-6 py-4 right-0 h-screen bg-background shadow-[-2px_0px_6px_0px_rgba(0,_0,_0,_0.1)]">
+                <CustomHyperlink
+                  className="w-min aspect-square flex items-center justify-center ml-auto"
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
                 >
-                  <CustomHyperlink className="text-right">
-                    {navPath.name}
-                  </CustomHyperlink>
-                </NavLink>
-              ))}
-            </div>
+                  <MenuBurger width={24} height={24} />
+                </CustomHyperlink>
+                Navigation
+                {navigationPaths.map((navPath) => (
+                  <NavLink
+                    key={navPath.path}
+                    to={navPath.path}
+                    className={({ isActive }) =>
+                      isActive
+                        ? "underline underline-offset-4 underline-primary"
+                        : undefined
+                    }
+                  >
+                    <CustomHyperlink className="text-right">
+                      {navPath.name}
+                    </CustomHyperlink>
+                  </NavLink>
+                ))}
+              </div>
+            </>
           ) : null}
         </>
       ) : (
