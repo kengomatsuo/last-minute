@@ -1,16 +1,16 @@
 import { useContext, useEffect, useState, useRef } from "react";
+import PropTypes from "prop-types";
 import { motion, AnimatePresence } from "framer-motion";
 import CustomButton from "./CustomButton";
 import { NavLink } from "react-router-dom";
 import { ScreenContext } from "../contexts/ScreenContext";
 import CustomHyperlink from "./CustomHyperlink";
-import MenuBurger from "../assets/icons/menu-burger.svg?react";
 import RightArrow from "../assets/icons/angle-small-right.svg?react";
 import SideBar from "../assets/icons/sidebar.svg?react";
 
-
-const CustomNavBar = () => {
+const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { isSmallScreen, setNavBarHeight } = useContext(ScreenContext);
   const navBarRef = useRef(null);
 
@@ -22,10 +22,26 @@ const CustomNavBar = () => {
 
   useEffect(() => {
     if (navBarRef.current) {
-      console.log(navBarRef.current.offsetHeight);
       setNavBarHeight(navBarRef.current.offsetHeight);
     }
   }, [setNavBarHeight]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(scrollContainerRef.current.scrollTop > 0);
+    };
+
+    const scrollContainer = scrollContainerRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (scrollContainer) {
+        scrollContainer.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [scrollContainerRef]);
 
   const navigationPaths = [
     { name: "Home", path: "/" },
@@ -35,7 +51,13 @@ const CustomNavBar = () => {
   ];
 
   return (
-    <div ref={navBarRef} className="sticky top-0 flex justify-between w-full py-4 px-6">
+    <div
+      ref={navBarRef}
+      className={`sticky top-0 flex justify-between w-full py-4 px-6
+        border-b border-transparent transition-colors  duration-1000 ${
+        isScrolled ? "!border-background-secondary/30" : ""
+      }`}
+    >
       <div className="flex items-center text-2xl justify-start max-md:flex-1">
         <NavLink to={"/"} className="font-semibold text-nowrap">
           Last Minute
@@ -92,10 +114,14 @@ const CustomNavBar = () => {
                   </CustomHyperlink>
 
                   <NavLink to={"/auth"} className="flex">
-                    <CustomButton filled onClick={() => setIsMenuOpen(false)}>Sign in / Register</CustomButton>
+                    <CustomButton filled onClick={() => setIsMenuOpen(false)}>
+                      Sign in / Register
+                    </CustomButton>
                   </NavLink>
-                  
-                  <p className="text-lg font-semibold mr-3 mt-6 mb-2">Navigation</p>
+
+                  <p className="text-lg font-semibold mr-3 mt-6 mb-2">
+                    Navigation
+                  </p>
 
                   {navigationPaths.map((navPath) => (
                     <NavLink
@@ -107,7 +133,10 @@ const CustomNavBar = () => {
                           : undefined
                       }
                     >
-                      <CustomHyperlink onClick={() => setIsMenuOpen(false)} className="py-2 flex justify-end">
+                      <CustomHyperlink
+                        onClick={() => setIsMenuOpen(false)}
+                        className="py-2 flex justify-end"
+                      >
                         {navPath.name}
                       </CustomHyperlink>
                     </NavLink>
@@ -150,3 +179,8 @@ const CustomNavBar = () => {
 };
 
 export default CustomNavBar;
+
+// Props validation
+CustomNavBar.propTypes = {
+  scrollContainerRef: PropTypes.object.isRequired,
+};
