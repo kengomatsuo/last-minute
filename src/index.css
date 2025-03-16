@@ -10,7 +10,7 @@
   @apply bg-background;
 
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -23,15 +23,22 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
 }
 
 @theme {
-  --color-primary: #ADA991;
-  --color-background: #FCFAF1;
-  --color-background-secondary: #BFBBA9;
-  --color-accent: #98D8EF;
+  --color-primary: #ada991;
+  --color-background: #fcfaf1;
+  --color-background-secondary: #bfbba9;
+  --color-accent: #98d8ef;
   --color-primary-text: #000000;
-  --color-secondary-text: #FCFAF1;
+  --color-secondary-text: #fcfaf1;
 }
 
 h1 {

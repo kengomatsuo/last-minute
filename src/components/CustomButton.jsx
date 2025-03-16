@@ -56,7 +56,7 @@ CustomButton.propTypes = {
    * Button text
    * @type {string}
    */
-  children: PropTypes.node,
+  children: PropTypes.node.isRequired,
 };
 
 export default CustomButton;

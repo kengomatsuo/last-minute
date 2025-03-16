@@ -40,5 +40,5 @@ CustomHyperlink.propTypes = {
    * Button text
    * @type {string}
    */
-  children: PropTypes.node,
+  children: PropTypes.node.isRequired,
 };

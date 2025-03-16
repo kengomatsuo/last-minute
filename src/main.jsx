@@ -2,12 +2,12 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
-import { ScreenContextProvider } from "./contexts/ScreenContext.jsx";
+import { UserContextProvider } from "./contexts/UserContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <ScreenContextProvider>
+  <UserContextProvider>
     <BrowserRouter basename="/last-minute/">
       <App />
     </BrowserRouter>
-  </ScreenContextProvider>
+  </UserContextProvider>
 );
