@@ -17,9 +17,10 @@ const CustomNavBar = () => {
   }, [isSmallScreen]);
 
   const navigationPaths = [
-    { name: "Link", path: "/1" },
-    { name: "Link", path: "/2" },
-    { name: "Link", path: "/3" },
+    { name: "Home", path: "/" },
+    { name: "About Us", path: "/about" },
+    { name: "Contact", path: "/contact" },
+    { name: "FAQ", path: "/faq" },
   ];
 
   return (
@@ -46,13 +47,13 @@ const CustomNavBar = () => {
                 <motion.div
                   className="absolute top-0 left-0 w-screen h-screen bg-background-secondary/25"
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                  animate={{ opacity: 1, backdropFilter: "blur(3px)" }}
                   exit={{ opacity: 0 }}
                   onClick={() => setIsMenuOpen(false)}
                 />
 
                 <motion.div
-                  className="w-72 max-w-4/5 fixed top-0 text-end flex flex-col gap-1 px-6 py-4 right-0 h-screen bg-background"
+                  className="w-72 max-w-4/5 fixed top-0 text-end flex flex-col px-6 py-4 right-0 h-screen bg-background"
                   initial={{
                     x: "100%",
                     boxShadow: "0px 0px 0px 0px rgba(0, 0, 0, 0)",
@@ -73,20 +74,21 @@ const CustomNavBar = () => {
                   }}
                 >
                   <CustomHyperlink
-                    className="w-min aspect-square flex items-center justify-center ml-auto"
+                    className="w-min aspect-square flex items-center mb-2 justify-center ml-auto"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <MenuBurger width={24} height={24} />
                   </CustomHyperlink>
 
-                    <NavLink to={"/"} className="flex">
-                      <CustomButton>Register</CustomButton>
-                    </NavLink>
-                    <NavLink to={"/login"} className="flex">
-                      <CustomButton filled>Login</CustomButton>
-                    </NavLink>
+                  <NavLink to={"/auth"} className="flex">
+                    <CustomButton filled onClick={() => setIsMenuOpen(false)}>Sign in / Register</CustomButton>
+                  </NavLink>
 
-                  <p className="text-lg font-semibold mt-2 mr-3">Navigation</p>
+                  {/* spacer */}
+                  <div className="h-10"/>
+                  {/* spacer */}
+                  
+                  <p className="text-lg font-semibold mr-3">Navigation</p>
 
                   {navigationPaths.map((navPath) => (
                     <NavLink
@@ -94,11 +96,11 @@ const CustomNavBar = () => {
                       to={navPath.path}
                       className={({ isActive }) =>
                         isActive
-                          ? "underline underline-offset-4 underline-primary"
+                          ? "underline underline-offset-4 underline-primary pointer-events-none"
                           : undefined
                       }
                     >
-                      <CustomHyperlink className="text-right block py-2">
+                      <CustomHyperlink onClick={() => setIsMenuOpen(false)} className="py-2 flex justify-end">
                         {navPath.name}
                       </CustomHyperlink>
                     </NavLink>
@@ -117,7 +119,7 @@ const CustomNavBar = () => {
                 to={navPath.path}
                 className={({ isActive }) =>
                   isActive
-                    ? "underline underline-offset-4 underline-primary"
+                    ? "underline underline-offset-4 underline-primary pointer-events-none"
                     : undefined
                 }
               >
@@ -130,7 +132,7 @@ const CustomNavBar = () => {
             <NavLink to={"/"} className="flex-1 flex">
               <CustomButton>Register</CustomButton>
             </NavLink>
-            <NavLink to={"/login"} className="flex-1 flex">
+            <NavLink to={"/auth"} className="flex-1 flex">
               <CustomButton filled>Login</CustomButton>
             </NavLink>
           </div>

@@ -1,13 +1,23 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
+import { useContext, useState } from "react"
+import { ScreenContext } from "../contexts/ScreenContext"
 
-const CustomHyperlink = ({className = '', children, onClick = () => {}}) => {
+const CustomHyperlink = ({ className = "", children, onClick = () => {} }) => {
+  const { isSmallScreen } = useContext(ScreenContext);
+  const [isPressed, setIsPressed] = useState(false);
+
   return (
     <div
-      className={`px-3 py-1 w-full rounded-md hover:bg-background-secondary/25 truncate text-primary-text ${className
-      } text-center font-medium text-lg cursor-pointer `}
+      className={`px-3 py-1 w-full ${isSmallScreen ? 'transition-colors duration-150' : ''} rounded-md hover:bg-background-secondary/25 
+        active:bg-background-secondary/50 truncate text-primary-text ${className} text-center font-medium text-lg cursor-pointer `}
       onClick={onClick}
+      onPointerDown={() => setIsPressed(true)}
+      onPointerCancel={() => setIsPressed(false)}
+      onPointerUp={() => setIsPressed(false)}
     >
+      <div className={`transition-transform w-min duration-300 ${isPressed ? 'scale-[97%]' : ''}`}>
       {children}
+      </div>
     </div>
   );
 };

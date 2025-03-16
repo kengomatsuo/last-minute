@@ -1,4 +1,6 @@
 import PropTypes from "prop-types";
+import { useContext, useState } from "react";
+import { ScreenContext } from "../contexts/ScreenContext";
 
 /**
  * CustomButton component
@@ -14,16 +16,27 @@ import PropTypes from "prop-types";
  * @param {string} props.text - Button text
  */
 const CustomButton = ({ filled = false, onClick = () => {}, children }) => {
+  const { isSmallScreen } = useContext(ScreenContext);
+  const [isPressed, setIsPressed] = useState(false);
   return (
     <div
       className={`px-2.5 w-full py-1 truncate ${
         filled
           ? "bg-primary text-secondary-text"
           : "bg-transparent text-primary"
-      } border-primary border-2 text-center box-border rounded-md font-semibold text-lg cursor-pointer `}
+      }  border-primary border-2 text-center box-border rounded-md font-semibold text-lg cursor-pointer `}
       onClick={onClick}
+      onPointerDown={() => setIsPressed(true)}
+      onPointerCancel={() => setIsPressed(false)}
+      onPointerUp={() => setIsPressed(false)}
     >
-      {children}
+      <div
+        className={`duration-150 ${
+          isSmallScreen ? "transition-all" : "transition-transform"
+        } ${isPressed ? "scale-[97%] opacity-75" : ""}`}
+      >
+        {children}
+      </div>
     </div>
   );
 };
