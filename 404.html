@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Redirecting...</title>
   <script>
+    var host = window.location.host;
     var path = window.location.pathname;
     var base = "/last-minute/";
     if (!path.startsWith(base)) {
-      path = base + path;
+      path = host + base + path;
     }
     console.log(path)
     window.location.replace(path);
