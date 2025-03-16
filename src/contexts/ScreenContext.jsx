@@ -1,4 +1,4 @@
-import { useState, createContext, useCallback } from "react";
+import { useState, createContext, useCallback, useEffect } from "react";
 import PropTypes from "prop-types";
 import { convertRemToPixels } from "../utils/calculations";
 import { debounce } from "lodash";
@@ -15,6 +15,7 @@ const ScreenContextProvider = ({ children }) => {
     height: window.innerHeight,
     width: window.innerWidth,
   });
+  const [navBarHeight, setNavBarHeight] = useState(0);
 
   const minWidth = convertRemToPixels(48);
 
@@ -31,16 +32,21 @@ const ScreenContextProvider = ({ children }) => {
   );
 
   // when window is resized, close the menu
-  window.addEventListener("resize", () => {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    debouncedHandleResize(width, height);
-    if (width < minWidth) setIsSmallScreen(true);
-    else setIsSmallScreen(false);
-  });
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      debouncedHandleResize(width, height);
+      if (width < minWidth) setIsSmallScreen(true);
+      else setIsSmallScreen(false);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [debouncedHandleResize, minWidth]);
 
   return (
-    <ScreenContext.Provider value={{ isSmallScreen, screenDimensions }}>
+    <ScreenContext.Provider value={{ isSmallScreen, screenDimensions, navBarHeight, setNavBarHeight }}>
       {children}
     </ScreenContext.Provider>
   );

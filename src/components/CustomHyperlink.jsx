@@ -8,8 +8,8 @@ const CustomHyperlink = ({ className = "", children, onClick = () => {} }) => {
 
   return (
     <div
-      className={`px-3 py-1 w-full ${isSmallScreen ? 'transition-colors duration-150' : ''} rounded-md hover:bg-background-secondary/25 
-        active:bg-background-secondary/50 truncate text-primary-text ${className} text-center font-medium text-lg cursor-pointer `}
+      className={`${className} px-3 py-1 w-full ${isSmallScreen ? 'transition-colors duration-150' : ''} rounded-md hover:bg-background-secondary/20 
+        active:bg-background-secondary/25 truncate text-primary-text text-center font-medium text-lg cursor-pointer `}
       onClick={onClick}
       onPointerDown={() => setIsPressed(true)}
       onPointerCancel={() => setIsPressed(false)}

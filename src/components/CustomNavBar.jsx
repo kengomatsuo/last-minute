@@ -1,20 +1,31 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import CustomButton from "./CustomButton";
 import { NavLink } from "react-router-dom";
 import { ScreenContext } from "../contexts/ScreenContext";
 import CustomHyperlink from "./CustomHyperlink";
 import MenuBurger from "../assets/icons/menu-burger.svg?react";
+import RightArrow from "../assets/icons/angle-small-right.svg?react";
+import SideBar from "../assets/icons/sidebar.svg?react";
+
 
 const CustomNavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isSmallScreen } = useContext(ScreenContext);
+  const { isSmallScreen, setNavBarHeight } = useContext(ScreenContext);
+  const navBarRef = useRef(null);
 
   useEffect(() => {
     if (isSmallScreen) {
       setIsMenuOpen(false);
     }
   }, [isSmallScreen]);
+
+  useEffect(() => {
+    if (navBarRef.current) {
+      console.log(navBarRef.current.offsetHeight);
+      setNavBarHeight(navBarRef.current.offsetHeight);
+    }
+  }, [setNavBarHeight]);
 
   const navigationPaths = [
     { name: "Home", path: "/" },
@@ -24,7 +35,7 @@ const CustomNavBar = () => {
   ];
 
   return (
-    <div className="sticky top-0 flex justify-between w-full py-4 px-6">
+    <div ref={navBarRef} className="sticky top-0 flex justify-between w-full py-4 px-6">
       <div className="flex items-center text-2xl justify-start max-md:flex-1">
         <NavLink to={"/"} className="font-semibold text-nowrap">
           Last Minute
@@ -34,10 +45,10 @@ const CustomNavBar = () => {
       {isSmallScreen ? (
         <>
           <CustomHyperlink
-            className="w-min aspect-square flex items-center justify-center"
+            className="w-min aspect-square flex !p-1.5 items-center justify-center"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            <MenuBurger width={24} height={24} />
+            <SideBar width={28} height={28} />
           </CustomHyperlink>
 
           {/* Animate Presence for smooth entry and exit */}
@@ -74,21 +85,17 @@ const CustomNavBar = () => {
                   }}
                 >
                   <CustomHyperlink
-                    className="w-min aspect-square flex items-center mb-2 justify-center ml-auto"
+                    className="w-min aspect-square flex !p-1 items-center mb-2 justify-center ml-auto"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <MenuBurger width={24} height={24} />
+                    <RightArrow width={32} height={32} />
                   </CustomHyperlink>
 
                   <NavLink to={"/auth"} className="flex">
                     <CustomButton filled onClick={() => setIsMenuOpen(false)}>Sign in / Register</CustomButton>
                   </NavLink>
-
-                  {/* spacer */}
-                  <div className="h-10"/>
-                  {/* spacer */}
                   
-                  <p className="text-lg font-semibold mr-3">Navigation</p>
+                  <p className="text-lg font-semibold mr-3 mt-6 mb-2">Navigation</p>
 
                   {navigationPaths.map((navPath) => (
                     <NavLink
@@ -96,7 +103,7 @@ const CustomNavBar = () => {
                       to={navPath.path}
                       className={({ isActive }) =>
                         isActive
-                          ? "underline underline-offset-4 underline-primary pointer-events-none"
+                          ? " bg-background-secondary/50 rounded-md pointer-events-none"
                           : undefined
                       }
                     >
