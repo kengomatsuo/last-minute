@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import CustomButton from "./CustomButton";
 import { NavLink } from "react-router-dom";
 import { ScreenContext } from "../contexts/ScreenContext";
-import CustomHyperlink from "./CustomHyperlink";
+import CustomInteractive from "./CustomInteractive";
 import RightArrow from "../assets/icons/angle-small-right.svg?react";
 import SideBar from "../assets/icons/sidebar.svg?react";
 
@@ -66,12 +66,12 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
 
       {isSmallScreen ? (
         <>
-          <CustomHyperlink
+          <CustomInteractive
             className="w-min aspect-square flex !p-1.5 items-center justify-center"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <SideBar width={28} height={28} />
-          </CustomHyperlink>
+          </CustomInteractive>
 
           {/* Animate Presence for smooth entry and exit */}
           <AnimatePresence>
@@ -106,12 +106,12 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                     mass: 0.5,
                   }}
                 >
-                  <CustomHyperlink
+                  <CustomInteractive
                     className="w-min aspect-square flex !p-1 items-center mb-2 justify-center ml-auto"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <RightArrow width={32} height={32} />
-                  </CustomHyperlink>
+                  </CustomInteractive>
 
                   <NavLink to={"/auth"} className="flex">
                     <CustomButton filled onClick={() => setIsMenuOpen(false)}>
@@ -133,12 +133,12 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                           : undefined
                       }
                     >
-                      <CustomHyperlink
+                      <CustomInteractive
                         onClick={() => setIsMenuOpen(false)}
                         className="py-2 flex justify-end"
                       >
                         {navPath.name}
-                      </CustomHyperlink>
+                      </CustomInteractive>
                     </NavLink>
                   ))}
                 </motion.div>
@@ -159,17 +159,17 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                     : undefined
                 }
               >
-                <CustomHyperlink>{navPath.name}</CustomHyperlink>
+                <CustomInteractive>{navPath.name}</CustomInteractive>
               </NavLink>
             ))}
           </div>
 
           <div className="flex gap-2 flex-row min-w-50">
-            <NavLink to={{pathname: "/auth", state: {action: "register"}}}  className="flex-1 flex">
+            <NavLink to={{pathname: "/auth"}} state={{action: "register"}} className={({isActive}) => `flex-1 flex transition-opacity ${isActive ? "pointer-events-none opacity-50" : ""}`}>
               <CustomButton>Register</CustomButton>
             </NavLink>
-            <NavLink to={{pathname: "/auth", state: {action: "login"}}} className="flex-1 flex">
-              <CustomButton filled>Login</CustomButton>
+            <NavLink to={{pathname: "/auth"}} state={{action: "signin"}} className={({isActive}) => `flex-1 flex transition-opacity ${isActive ? "pointer-events-none opacity-50" : ""}`}>
+              <CustomButton filled>Sign in</CustomButton>
             </NavLink>
           </div>
         </div>

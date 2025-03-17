@@ -33,12 +33,16 @@ html::-webkit-scrollbar {
 }
 
 @theme {
-  --color-primary: #ada991;
-  --color-background: #fcfaf1;
-  --color-background-secondary: #bfbba9;
-  --color-accent: #98d8ef;
-  --color-primary-text: #000000;
-  --color-secondary-text: #fcfaf1;
+  --color-primary: rgba(173, 169, 145);
+  --color-background: rgba(252, 250, 241);
+  --color-background-secondary: rgba(191, 187, 169);
+  --color-accent: rgba(152, 216, 239);
+  --color-primary-text: rgba(0, 0, 0);
+  --color-secondary-text: rgba(252, 250, 241);
+  --color-interactive-hover: rgba(191, 187, 169, 0.15);
+  --color-interactive-active: rgba(191, 187, 169, 0.30);
+  --color-filled-button-hover: rgba(191, 187, 169, 0.8);
+  --color-filled-button-active: rgba(191, 187, 169, 0.75);
 }
 
 h1 {
