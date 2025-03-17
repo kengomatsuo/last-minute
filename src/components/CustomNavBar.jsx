@@ -8,8 +8,8 @@ import CustomInteractive from "./CustomInteractive";
 import RightArrow from "../assets/icons/angle-small-right.svg?react";
 import SideBar from "../assets/icons/sidebar.svg?react";
 import { UserContext } from "../contexts/UserContext";
-import { signOut } from "firebase/auth"
-import { auth } from "../../firebaseConfig"
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebaseConfig";
 
 const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
   const { user } = useContext(UserContext);
@@ -21,7 +21,6 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
-
     await signOut(auth)
       .then(() => {
         console.log("Signed out successfully!");
@@ -63,11 +62,10 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
 
   const navigationPaths = user
     ? [
-        { name: "Dashboard", path: "/dashboard" },
+        { name: "Dashboard", path: "/" },
         { name: "Book", path: "/booking" },
         { name: "History", path: "/history" },
         { name: "Settings", path: "/settings" },
-        { name: "Landing Page", path: "/" },
       ]
     : [
         { name: "Home", path: "/" },
@@ -147,7 +145,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                         handleSignOut();
                       }}
                     >
-                      {user ? "Sign out" :  "Sign in / Register"}
+                      {user ? "Sign out" : "Sign in / Register"}
                     </CustomButton>
                   </NavLink>
 
@@ -179,7 +177,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
           </AnimatePresence>
         </>
       ) : (
-        <div className="text-lg font-medium items-center inline-flex top-0 py-0 gap-4">
+        <div className="text-lg font-medium items-center justify-end inline-flex top-0 py-0 gap-4">
           <div className="inline-flex gap-2">
             {navigationPaths.map((navPath) => (
               <NavLink
@@ -196,30 +194,38 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
             ))}
           </div>
 
-          <div className="flex gap-2 flex-row min-w-50">
-            <NavLink
-              to={{ pathname: "/auth" }}
-              state={{ action: "register" }}
-              className={({ isActive }) =>
-                `flex-1 flex transition-opacity ${
-                  isActive ? "pointer-events-none opacity-50" : ""
-                }`
-              }
-            >
-              <CustomButton>Register</CustomButton>
-            </NavLink>
-            <NavLink
-              to={{ pathname: "/auth" }}
-              state={{ action: "signin" }}
-              className={({ isActive }) =>
-                `flex-1 flex transition-opacity ${
-                  isActive ? "pointer-events-none opacity-50" : ""
-                }`
-              }
-            >
-              <CustomButton filled>Sign in</CustomButton>
-            </NavLink>
-          </div>
+          {user ? (
+            <div className="flex gap-2 flex-row">
+              <CustomButton onClick={() => handleSignOut()}>
+                Sign out
+              </CustomButton>
+            </div>
+          ) : (
+            <div className="flex gap-2 flex-row">
+              <NavLink
+                to={{ pathname: "/auth" }}
+                state={{ action: "register" }}
+                className={({ isActive }) =>
+                  `flex-1 flex transition-opacity ${
+                    isActive ? "pointer-events-none opacity-50" : ""
+                  }`
+                }
+              >
+                <CustomButton>Register</CustomButton>
+              </NavLink>
+              <NavLink
+                to={{ pathname: "/auth" }}
+                state={{ action: "signin" }}
+                className={({ isActive }) =>
+                  `flex-1 flex transition-opacity ${
+                    isActive ? "pointer-events-none opacity-50" : ""
+                  }`
+                }
+              >
+                <CustomButton filled>Sign in</CustomButton>
+              </NavLink>
+            </div>
+          )}
         </div>
       )}
     </div>

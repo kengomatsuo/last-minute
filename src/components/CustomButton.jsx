@@ -5,15 +5,15 @@ import { ScreenContext } from "../contexts/ScreenContext";
 /**
  * CustomButton component
  *
- * This component renders a button with two types: primary and secondary.
- *
- * - `primary`: Filled with the primary color (e.g., background brown, text white).
- * - `secondary`: Transparent with the primary text color (e.g., text brown).
+ * The style of the button is controlled by the `filled` prop:
+ * - If `filled` is true, the button will have a background color and white text.
+ * - If `filled` is false, the button will be transparent with primary colored text.
  *
  * @param {Object} props - Component props
  * @param {boolean} props.filled - Whether the button is filled with the primary color
  * @param {Function} props.onClick - Click handler function
- * @param {string} props.text - Button text
+ * @param {string} props.className - Custom class name for additional styling
+ * @param {React.ReactNode} props.children - Button content, typically text or an icon
  */
 const CustomButton = ({ filled = false, onClick = () => {}, className, children }) => {
   const { isSmallScreen } = useContext(ScreenContext);
@@ -44,26 +44,31 @@ const CustomButton = ({ filled = false, onClick = () => {}, className, children 
 
 CustomButton.propTypes = {
   /**
-   * Button type
-   * @type {'primary' | 'secondary'}
+   * Whether the button is filled with the primary color.
+   * If true, the button will have a background color and white text.
+   * If false, the button will be transparent with primary colored text.
+   * @type {boolean}
    */
   filled: PropTypes.bool,
   /**
-   * Click handler function
+   * Function to handle click events.
+   * This function will be called when the button is clicked.
    * @type {Function}
    */
   onClick: PropTypes.func,
   /**
-   * Button text
-   * @type {string}
-   */
-  children: PropTypes.node.isRequired,
-  /**
-   * Custom class name
-   * @
+   * Custom class name for additional styling.
+   * This allows for custom styles to be applied to the button.
    * @type {string}
    */
   className: PropTypes.string,
+  /**
+   * The content of the button.
+   * This can be text, an icon, or any other React node.
+   * This prop is required.
+   * @type {React.ReactNode}
+   */
+  children: PropTypes.node.isRequired,
 };
 
 export default CustomButton;

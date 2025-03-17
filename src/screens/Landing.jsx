@@ -1,6 +1,7 @@
 import ket from "../assets/ket.png";
 import CustomButton from "../components/CustomButton";
 import { motion } from "framer-motion";
+import FAQ from "./FAQ"
 
 const Landing = () => {
 
@@ -11,6 +12,8 @@ const Landing = () => {
       animate={{ opacity: 1, transition: { duration: 0.5 } }}
       exit={{ opacity: 0 }}
     >
+
+
       {/* Clear everything between these comments to start fresh */}
         <div className="flex flex-col items-center justify-center">
           <img src={ket} width={100} alt="Ket" />
@@ -21,6 +24,10 @@ const Landing = () => {
           <CustomButton onClick={null}>I am a button</CustomButton>
         </div>
       {/* Clear everything between these comments to start fresh */}
+
+      {/* bagian FAQ kerjain di file FAQ.jsx */}
+      <FAQ />
+
     </motion.div>
   );
 };

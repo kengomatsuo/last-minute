@@ -2,6 +2,16 @@ import PropTypes from "prop-types";
 import { useContext, useState } from "react";
 import { ScreenContext } from "../contexts/ScreenContext";
 
+/**
+ * CustomInteractive component
+ *
+ * This component renders an interactive div that changes style when pressed.
+ *
+ * @param {Object} props - Component props
+ * @param {string} props.className - Custom class name for additional styling
+ * @param {Function} props.onClick - Click handler function
+ * @param {React.ReactNode} props.children - Content of the interactive element, typically text or an icon
+ */
 const CustomInteractive = ({ className = "", children, onClick = () => {} }) => {
   const { isSmallScreen } = useContext(ScreenContext);
   const [isPressed, setIsPressed] = useState(false);
@@ -29,23 +39,26 @@ const CustomInteractive = ({ className = "", children, onClick = () => {} }) => 
   );
 };
 
-export default CustomInteractive;
-
 CustomInteractive.propTypes = {
   /**
-   * Custom class name
-   * @
+   * Custom class name for additional styling.
+   * This allows for custom styles to be applied to the interactive element.
    * @type {string}
    */
   className: PropTypes.string,
   /**
-   * Click handler function
+   * Function to handle click events.
+   * This function will be called when the interactive element is clicked.
    * @type {Function}
    */
   onClick: PropTypes.func,
   /**
-   * Button text
-   * @type {string}
+   * The content of the interactive element.
+   * This can be text, an icon, or any other React node.
+   * This prop is required.
+   * @type {React.ReactNode}
    */
   children: PropTypes.node.isRequired,
 };
+
+export default CustomInteractive;
