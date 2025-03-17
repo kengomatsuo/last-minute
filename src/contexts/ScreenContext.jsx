@@ -11,18 +11,18 @@ const ScreenContextProvider = ({ children }) => {
   const [isSmallScreen, setIsSmallScreen] = useState(
     window.innerWidth < convertRemToPixels(48)
   );
-  const [screenDimensions, setScreenDimensions] = useState({
+  const [dimensions, setdimensions] = useState({
     height: window.innerHeight,
     width: window.innerWidth,
   });
   const [navBarHeight, setNavBarHeight] = useState(0);
 
-  const minWidth = convertRemToPixels(48);
+  const minWidth = convertRemToPixels(52);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedHandleResize = useCallback(
     debounce((width, height) => {
-      setScreenDimensions({
+      setdimensions({
         height: width,
         width: height,
       });
@@ -46,7 +46,7 @@ const ScreenContextProvider = ({ children }) => {
   }, [debouncedHandleResize, minWidth]);
 
   return (
-    <ScreenContext.Provider value={{ isSmallScreen, screenDimensions, navBarHeight, setNavBarHeight }}>
+    <ScreenContext.Provider value={{ isSmallScreen, dimensions, navBarHeight, setNavBarHeight }}>
       {children}
     </ScreenContext.Provider>
   );

@@ -17,7 +17,7 @@ function App() {
     <div className="w-screen h-screen overflow-hidden flex-col flex text-primary-text">
       <ScreenContextProvider>
         <CustomNavBar scrollContainerRef={scrollContainerRef} />
-        <div ref={scrollContainerRef} className="overflow-y-scroll">
+        <div ref={scrollContainerRef} className="overflow-y-auto h-screen flex">
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
               <Route path="/" element={<Landing />} />
