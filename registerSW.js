@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/last-minute/sw.js', { scope: '/last-minute/' })})}
