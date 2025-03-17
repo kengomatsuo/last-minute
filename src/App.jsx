@@ -7,6 +7,10 @@ import { ScreenContextProvider } from "./contexts/ScreenContext";
 import { useContext, useRef } from "react";
 import { UserContext } from "./contexts/UserContext";
 import { AnimatePresence } from "framer-motion";
+import Dashboard from "./screens/Dashboard";
+import Booking from "./screens/Booking";
+import Session from "./screens/Session";
+import Settings from "./screens/Settings";
 
 function App() {
   const { user } = useContext(UserContext);
@@ -20,12 +24,18 @@ function App() {
         <div ref={scrollContainerRef} className="overflow-y-auto h-screen flex">
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
-              <Route path="/" element={<Landing />} />
+              <Route path="/" element={user ? <Dashboard /> : <Landing />} />
+
               {user ? (
-                <Route path="/dashboard" element={<div>Dashboard</div>} />
+                <>
+                  <Route path="/booking" element={<Booking />} />
+                  <Route path="/session" element={<Session />} />
+                  <Route path="/settings" element={<Settings />} />
+                </>
               ) : (
                 <Route path="/auth" element={<Auth />} />
               )}
+
               <Route path="*" element={<Error404 />} />
             </Routes>
           </AnimatePresence>

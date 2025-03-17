@@ -17,6 +17,7 @@ const Auth = () => {
     >
 
       {/* Semangt je :D */}
+      auth
 
     </motion.div>
   );

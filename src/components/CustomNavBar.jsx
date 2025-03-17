@@ -7,8 +7,10 @@ import { ScreenContext } from "../contexts/ScreenContext";
 import CustomInteractive from "./CustomInteractive";
 import RightArrow from "../assets/icons/angle-small-right.svg?react";
 import SideBar from "../assets/icons/sidebar.svg?react";
+import { UserContext } from "../contexts/UserContext"
 
 const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
+  const { user } = useContext(UserContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { isSmallScreen, setNavBarHeight } = useContext(ScreenContext);
@@ -43,9 +45,14 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
     };
   }, [scrollContainerRef]);
 
-  const navigationPaths = [
+  const navigationPaths = user ? [
+    { name: "Dashboard", path: "/dashboard" },
+    { name: "Book", path: "/booking" },
+    { name: "History", path: "/history" },
+    { name: "Settings", path: "/settings" },
+    { name: "Landing Page", path: '/'}
+  ] : [
     { name: "Home", path: "/" },
-    { name: "About Us", path: "/about" },
     { name: "Contact", path: "/contact" },
     { name: "FAQ", path: "/faq" },
   ];
@@ -55,8 +62,8 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
       ref={navBarRef}
       className={`sticky top-0 flex justify-between w-full py-4 px-6
         border-b border-transparent transition-colors  duration-300 ${
-        isScrolled ? "!border-background-secondary/30" : ""
-      }`}
+          isScrolled ? "!border-background-secondary/30" : ""
+        }`}
     >
       <div className="flex items-center text-2xl justify-start max-md:flex-1">
         <NavLink to={"/"} className="font-semibold text-nowrap">
@@ -125,7 +132,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
 
                   {navigationPaths.map((navPath) => (
                     <NavLink
-                      key={navPath.path}
+                      key={navPath.name}
                       to={navPath.path}
                       className={({ isActive }) =>
                         isActive
@@ -151,7 +158,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
           <div className="inline-flex gap-2">
             {navigationPaths.map((navPath) => (
               <NavLink
-                key={navPath.path}
+                key={navPath.name}
                 to={navPath.path}
                 className={({ isActive }) =>
                   isActive
@@ -165,10 +172,26 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
           </div>
 
           <div className="flex gap-2 flex-row min-w-50">
-            <NavLink to={{pathname: "/auth"}} state={{action: "register"}} className={({isActive}) => `flex-1 flex transition-opacity ${isActive ? "pointer-events-none opacity-50" : ""}`}>
+            <NavLink
+              to={{ pathname: "/auth" }}
+              state={{ action: "register" }}
+              className={({ isActive }) =>
+                `flex-1 flex transition-opacity ${
+                  isActive ? "pointer-events-none opacity-50" : ""
+                }`
+              }
+            >
               <CustomButton>Register</CustomButton>
             </NavLink>
-            <NavLink to={{pathname: "/auth"}} state={{action: "signin"}} className={({isActive}) => `flex-1 flex transition-opacity ${isActive ? "pointer-events-none opacity-50" : ""}`}>
+            <NavLink
+              to={{ pathname: "/auth" }}
+              state={{ action: "signin" }}
+              className={({ isActive }) =>
+                `flex-1 flex transition-opacity ${
+                  isActive ? "pointer-events-none opacity-50" : ""
+                }`
+              }
+            >
               <CustomButton filled>Sign in</CustomButton>
             </NavLink>
           </div>

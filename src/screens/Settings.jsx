@@ -1,11 +1,11 @@
 import React from 'react'
 
-const Session = () => {
+const Settings = () => {
   return (
     <div>
-      session
+      settings
     </div>
   )
 }
 
-export default Session
+export default Settings
