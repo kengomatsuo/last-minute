@@ -1,8 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
     <title>Last Minute</title>
     <script type="text/javascript">
       (function (l) {
@@ -14,7 +23,11 @@
               return s.replace(/~and~/g, "&");
             })
             .join("?");
-          window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
+          window.history.replaceState(
+            null,
+            null,
+            l.pathname.slice(0, -1) + decoded + l.hash
+          );
         }
       })(window.location);
     </script>
@@ -35,7 +48,7 @@
     <link rel="modulepreload" crossorigin href="/last-minute/assets/react-router-BCISYrXQ.js">
     <link rel="stylesheet" crossorigin href="/last-minute/assets/index-Bg_etAYa.css">
   <link rel="manifest" href="/last-minute/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/last-minute/registerSW.js"></script></head>
-  <body >
+  <body>
     <div id="root"></div>
   </body>
 </html>
