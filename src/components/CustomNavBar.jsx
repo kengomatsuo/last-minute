@@ -2,12 +2,14 @@ import { useContext, useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import { motion, AnimatePresence } from "framer-motion";
 import CustomButton from "./CustomButton";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { ScreenContext } from "../contexts/ScreenContext";
 import CustomInteractive from "./CustomInteractive";
 import RightArrow from "../assets/icons/angle-small-right.svg?react";
 import SideBar from "../assets/icons/sidebar.svg?react";
-import { UserContext } from "../contexts/UserContext"
+import { UserContext } from "../contexts/UserContext";
+import { signOut } from "firebase/auth"
+import { auth } from "../../firebaseConfig"
 
 const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
   const { user } = useContext(UserContext);
@@ -15,6 +17,20 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const { isSmallScreen, setNavBarHeight } = useContext(ScreenContext);
   const navBarRef = useRef(null);
+
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+
+    await signOut(auth)
+      .then(() => {
+        console.log("Signed out successfully!");
+        navigate("/auth");
+      })
+      .catch((error) => {
+        console.error("Error signing out:", error);
+      });
+  };
 
   useEffect(() => {
     if (isSmallScreen) {
@@ -45,17 +61,19 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
     };
   }, [scrollContainerRef]);
 
-  const navigationPaths = user ? [
-    { name: "Dashboard", path: "/dashboard" },
-    { name: "Book", path: "/booking" },
-    { name: "History", path: "/history" },
-    { name: "Settings", path: "/settings" },
-    { name: "Landing Page", path: '/'}
-  ] : [
-    { name: "Home", path: "/" },
-    { name: "Contact", path: "/contact" },
-    { name: "FAQ", path: "/faq" },
-  ];
+  const navigationPaths = user
+    ? [
+        { name: "Dashboard", path: "/dashboard" },
+        { name: "Book", path: "/booking" },
+        { name: "History", path: "/history" },
+        { name: "Settings", path: "/settings" },
+        { name: "Landing Page", path: "/" },
+      ]
+    : [
+        { name: "Home", path: "/" },
+        { name: "Contact", path: "/contact" },
+        { name: "FAQ", path: "/faq" },
+      ];
 
   return (
     <div
@@ -121,8 +139,15 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                   </CustomInteractive>
 
                   <NavLink to={"/auth"} className="flex">
-                    <CustomButton filled onClick={() => setIsMenuOpen(false)}>
-                      Sign in / Register
+                    <CustomButton
+                      filled
+                      className="flex-1"
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        handleSignOut();
+                      }}
+                    >
+                      {user ? "Sign out" :  "Sign in / Register"}
                     </CustomButton>
                   </NavLink>
 

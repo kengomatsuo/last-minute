@@ -15,12 +15,12 @@ import { ScreenContext } from "../contexts/ScreenContext";
  * @param {Function} props.onClick - Click handler function
  * @param {string} props.text - Button text
  */
-const CustomButton = ({ filled = false, onClick = () => {}, children }) => {
+const CustomButton = ({ filled = false, onClick = () => {}, className, children }) => {
   const { isSmallScreen } = useContext(ScreenContext);
   const [isPressed, setIsPressed] = useState(false);
   return (
     <div
-      className={`px-2.5 w-full py-1 truncate  transition-all ${
+      className={`${className} px-2.5 py-1 truncate  transition-all ${
         filled
           ? "bg-primary hover:bg-filled-button-hover active:bg-filled-button-active text-secondary-text"
           : "bg-transparent hover:bg-interactive-hover active:bg-interactive-active  text-primary"
@@ -58,6 +58,12 @@ CustomButton.propTypes = {
    * @type {string}
    */
   children: PropTypes.node.isRequired,
+  /**
+   * Custom class name
+   * @
+   * @type {string}
+   */
+  className: PropTypes.string,
 };
 
 export default CustomButton;
