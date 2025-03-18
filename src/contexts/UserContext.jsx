@@ -1,13 +1,13 @@
-import { createContext, useState, useEffect } from "react";
-import PropTypes from "prop-types";
+import { createContext, useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
 import {
   createUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
-} from "firebase/auth"; // Import Firebase auth functions
-import { app, auth } from "../../firebaseConfig";
+} from 'firebase/auth' // Import Firebase auth functions
+import { app, auth } from '../../firebaseConfig'
 
 /**
  * @typedef {Object} UserContextType
@@ -23,22 +23,21 @@ const defaultContext = {
   signUp: async () => Promise.resolve(),
   signIn: async () => Promise.resolve(),
   signOut: async () => Promise.resolve(),
-};
+}
 
 /** @type {import("react").Context<UserContextType>} */
-const UserContext = createContext(defaultContext);
+const UserContext = createContext(defaultContext)
 
 const UserContextProvider = ({ children }) => {
-  const [user, setUser] = useState(undefined);
+  const [user, setUser] = useState(undefined)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
-    });
-  
-    return () => unsubscribe();
-  }, []);
-  
+    const unsubscribe = onAuthStateChanged(auth, firebaseUser => {
+      setUser(firebaseUser)
+    })
+
+    return () => unsubscribe()
+  }, [])
 
   /**
    * Signs up a new user.
@@ -48,12 +47,12 @@ const UserContextProvider = ({ children }) => {
   const signUp = async ({ email, password }) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password)
-      await waitForUserUpdate();
-      console.log("Signed up successfully!");
+      await waitForUserUpdate()
+      console.log('Signed up successfully!')
     } catch (error) {
-      console.error("Error signing up:", error);
+      console.error('Error signing up:', error)
     }
-  };
+  }
 
   /**
    * Signs in an existing user.
@@ -63,11 +62,11 @@ const UserContextProvider = ({ children }) => {
   const signIn = async ({ email, password }) => {
     try {
       await signInWithEmailAndPassword(auth, email, password)
-      await waitForUserUpdate();
+      await waitForUserUpdate()
     } catch (error) {
-      console.error("Error signing in:", error);
+      console.error('Error signing in:', error)
     }
-  };
+  }
 
   /**
    * Signs out the current user.
@@ -75,34 +74,40 @@ const UserContextProvider = ({ children }) => {
    */
   const signOut = async () => {
     try {
-      await firebaseSignOut(auth);
-      await waitForUserUpdate();
+      await firebaseSignOut(auth)
+      await waitForUserUpdate()
     } catch (error) {
-      console.error("Error signing out:", error);
+      console.error('Error signing out:', error)
     }
-  };
+  }
 
+  /**
+   * Waits for the user state to update.
+   * @returns {Promise<import("firebase/auth").User | null>}
+   */
   const waitForUserUpdate = () => {
-    return new Promise((resolve) => {
-      const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-        setUser(firebaseUser);
-        unsubscribe();
-        resolve(firebaseUser);
-      });
-    });
-  };
-  
-  
+    return new Promise(resolve => {
+      const unsubscribe = onAuthStateChanged(auth, firebaseUser => {
+        setUser(firebaseUser)
+        unsubscribe()
+        resolve(firebaseUser)
+      })
+    })
+  }
 
   return (
     <UserContext.Provider value={{ user, signUp, signIn, signOut }}>
       {children}
     </UserContext.Provider>
-  );
-};
+  )
+}
 
 UserContextProvider.propTypes = {
+  /**
+   * The children elements to be rendered within the provider.
+   * @type {React.ReactNode}
+   */
   children: PropTypes.node.isRequired,
-};
+}
 
-export { UserContextProvider, UserContext };
+export { UserContextProvider, UserContext }

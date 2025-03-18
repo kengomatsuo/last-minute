@@ -35,6 +35,8 @@ export default [
       ],
       'no-unused-vars': 'warn', // Change this line to set the rule as a warning
       'react/prop-types': 'warn', // Add this line to set prop validation as a warning
+      'semi': ['error', 'never'], // Add this line to enforce no semicolons
+      'quotes': ['error', 'single'], // Add this line to enforce single quotes
     },
   },
 ]

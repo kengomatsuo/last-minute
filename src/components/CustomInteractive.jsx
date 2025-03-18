@@ -1,6 +1,6 @@
-import PropTypes from "prop-types";
-import { useContext, useState } from "react";
-import { ScreenContext } from "../contexts/ScreenContext";
+import PropTypes from 'prop-types'
+import { useContext, useState } from 'react'
+import { ScreenContext } from '../contexts/ScreenContext'
 
 /**
  * CustomInteractive component
@@ -12,14 +12,18 @@ import { ScreenContext } from "../contexts/ScreenContext";
  * @param {Function} props.onClick - Click handler function
  * @param {React.ReactNode} props.children - Content of the interactive element, typically text or an icon
  */
-const CustomInteractive = ({ className = "", children, onClick = () => {} }) => {
-  const { isSmallScreen } = useContext(ScreenContext);
-  const [isPressed, setIsPressed] = useState(false);
+const CustomInteractive = ({
+  className = '',
+  children,
+  onClick = () => {},
+}) => {
+  const { isSmallScreen } = useContext(ScreenContext)
+  const [isPressed, setIsPressed] = useState(false)
 
   return (
     <div
       className={`${className} px-3 py-1 w-full ${
-        isSmallScreen ? "transition-all" : ""
+        isSmallScreen ? 'transition-all' : ''
       } rounded-md hover:bg-interactive-hover
         active:bg-interactive-active active:ring-background-secondary active:ring truncate text-primary-text text-center font-medium text-lg cursor-pointer `}
       onClick={onClick}
@@ -30,14 +34,14 @@ const CustomInteractive = ({ className = "", children, onClick = () => {} }) => 
     >
       <div
         className={`transition-transform w-min ${
-          isPressed ? "scale-[97%]" : ""
+          isPressed ? 'scale-[97%]' : ''
         }`}
       >
         {children}
       </div>
     </div>
-  );
-};
+  )
+}
 
 CustomInteractive.propTypes = {
   /**
@@ -59,6 +63,6 @@ CustomInteractive.propTypes = {
    * @type {React.ReactNode}
    */
   children: PropTypes.node.isRequired,
-};
+}
 
-export default CustomInteractive;
+export default CustomInteractive
