@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { use } from 'react'
 import ket from '../assets/ket.png'
 import CustomButton from '../components/CustomButton'
 import CustomFooter from '../components/CustomFooter'
@@ -6,7 +6,7 @@ import FAQComponent from '../components/FAQComponent'
 import { ScreenContext } from '../contexts/ScreenContext'
 
 const Landing = () => {
-  const { navBarHeight } = useContext(ScreenContext)
+  const { navBarHeight } = use(ScreenContext)
   return (
     <div
       className='flex flex-col flex-1 items-center w-screen justify-center'

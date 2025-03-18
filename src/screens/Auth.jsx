@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { use, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import CustomButton from '../components/CustomButton'
 import { UserContext } from '../contexts/UserContext'
@@ -6,7 +6,7 @@ import { UserContext } from '../contexts/UserContext'
 const Auth = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { signIn, signUp } = useContext(UserContext)
+  const { signIn, signUp } = use(UserContext)
 
   // location state is used to determine the action (signin or register)
   const [action, setAction] = useState(location.state?.action || 'signin')
