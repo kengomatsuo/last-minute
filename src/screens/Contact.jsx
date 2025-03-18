@@ -1,13 +1,13 @@
 import React from 'react'
 import CustomFooter from '../components/CustomFooter'
 
-const FAQ = () => {
+const Contact = () => {
   return (
     <>
-      <div>this is a FAQ. Edit me in src/screens/FAQ.jsx</div>
+      <div>Contact</div>
       <CustomFooter />
     </>
   )
 }
 
-export default FAQ
+export default Contact

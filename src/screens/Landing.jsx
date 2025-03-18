@@ -1,5 +1,6 @@
 import ket from '../assets/ket.png'
 import CustomButton from '../components/CustomButton'
+import CustomFooter from '../components/CustomFooter'
 import FAQ from './FAQ'
 
 const Landing = () => {
@@ -18,6 +19,7 @@ const Landing = () => {
 
       {/* bagian FAQ kerjain di file FAQ.jsx */}
       <FAQ />
+      <CustomFooter />
     </div>
   )
 }

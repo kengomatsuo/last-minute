@@ -74,7 +74,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
       ]
 
   return (
-    <div
+    <nav
       ref={navBarRef}
       className={`sticky top-0 flex justify-between w-full py-4 px-6
         border-b border-transparent transition-colors  duration-300 ${
@@ -228,7 +228,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
           )}
         </div>
       )}
-    </div>
+    </nav>
   )
 }
 
