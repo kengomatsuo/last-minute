@@ -76,8 +76,8 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
   return (
     <nav
       ref={navBarRef}
-      className={`sticky top-0 flex justify-between w-full py-4 px-6
-        border-b border-transparent transition-colors  duration-300 ${
+      className={`fixed z-10 top-0 flex justify-between w-full py-4 px-6
+        border-b border-transparent transition-colors bg-background  duration-300 ${
           isScrolled ? '!border-background-secondary/30' : ''
         }`}
     >
@@ -101,7 +101,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
             {isMenuOpen && (
               <>
                 <motion.div
-                  className='absolute top-0 left-0 w-screen h-screen bg-background-secondary/25'
+                  className='absolute z-20 top-0 left-0 w-screen h-screen bg-background-secondary/25'
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1, backdropFilter: 'blur(3px)' }}
                   exit={{ opacity: 0 }}
@@ -109,7 +109,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                 />
 
                 <motion.div
-                  className='w-72 max-w-4/5 fixed top-0 text-end flex flex-col px-6 py-4 right-0 h-screen bg-background'
+                  className='w-72 max-w-4/5 fixed z-30 top-0 text-end flex flex-col px-6 py-4 right-0 h-screen bg-background'
                   initial={{
                     x: '100%',
                     boxShadow: '0px 0px 0px 0px rgba(0, 0, 0, 0)',

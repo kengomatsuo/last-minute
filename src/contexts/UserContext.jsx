@@ -2,12 +2,11 @@ import { createContext, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import {
   createUserWithEmailAndPassword,
-  getAuth,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
 } from 'firebase/auth' // Import Firebase auth functions
-import { app, auth } from '../../firebaseConfig'
+import { auth } from '../../firebaseConfig'
 
 /**
  * @typedef {Object} UserContextType
