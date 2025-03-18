@@ -1,16 +1,12 @@
 import ket from "../assets/ket.png";
 import CustomButton from "../components/CustomButton";
-import { motion } from "framer-motion";
 import FAQ from "./FAQ"
 
 const Landing = () => {
 
   return (
-    <motion.div
+    <div
     className="flex flex-col flex-1 items-center w-screen justify-center"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1, transition: { duration: 0.5 } }}
-      exit={{ opacity: 0 }}
     >
 
 
@@ -28,7 +24,7 @@ const Landing = () => {
       {/* bagian FAQ kerjain di file FAQ.jsx */}
       <FAQ />
 
-    </motion.div>
+    </div>
   );
 };
 

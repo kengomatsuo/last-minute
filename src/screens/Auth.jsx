@@ -1,10 +1,10 @@
 import { useContext, useState } from "react";
-import { motion } from "framer-motion";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CustomButton from "../components/CustomButton";
 import { UserContext } from "../contexts/UserContext";
 
 const Auth = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const { signIn, signUp } = useContext(UserContext);
 
@@ -12,24 +12,27 @@ const Auth = () => {
   const [action, setAction] = useState(location.state?.action || "signin");
 
   const handleSignin = async () => {
-    await signIn({email: "admin@admin.com", password: "admin123"});
+    await signIn({ email: "admin@admin.com", password: "admin123" }).then(
+      () => {
+        navigate("/");
+      }
+    );
   };
 
   const handleSignup = async () => {
-    await signUp({username: "", email: "", password: ""})
-  }
+    await signUp({ username: "", email: "", password: "" }).then(() => {
+      navigate("/");
+    });
+  };
 
   return (
-    <motion.div
+    <div
       className="flex flex-col flex-1 items-center justify-center"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1, transition: { duration: 0.5 } }}
-      exit={{ opacity: 0 }}
     >
       {/* Semangt je :D */}
       auth
       <CustomButton onClick={() => handleSignin()}>Login</CustomButton>
-    </motion.div>
+    </div>
   );
 };
 
