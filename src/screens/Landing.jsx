@@ -1,7 +1,7 @@
 import ket from '../assets/ket.png'
 import CustomButton from '../components/CustomButton'
 import CustomFooter from '../components/CustomFooter'
-import FAQ from './FAQ'
+import FAQComponent from '../components/FAQComponent'
 
 const Landing = () => {
   return (
@@ -18,7 +18,7 @@ const Landing = () => {
       {/* Clear everything between these comments to start fresh */}
 
       {/* bagian FAQ kerjain di file FAQ.jsx */}
-      <FAQ />
+      <FAQComponent />
       <CustomFooter />
     </div>
   )
