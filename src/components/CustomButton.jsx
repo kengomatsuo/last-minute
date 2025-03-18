@@ -1,6 +1,6 @@
-import PropTypes from "prop-types";
-import { useContext, useState } from "react";
-import { ScreenContext } from "../contexts/ScreenContext";
+import PropTypes from 'prop-types'
+import { useContext, useState } from 'react'
+import { ScreenContext } from '../contexts/ScreenContext'
 
 /**
  * CustomButton component
@@ -15,16 +15,21 @@ import { ScreenContext } from "../contexts/ScreenContext";
  * @param {string} props.className - Custom class name for additional styling
  * @param {React.ReactNode} props.children - Button content, typically text or an icon
  */
-const CustomButton = ({ filled = false, onClick = () => {}, className, children }) => {
-  const { isSmallScreen } = useContext(ScreenContext);
-  const [isPressed, setIsPressed] = useState(false);
+const CustomButton = ({
+  filled = false,
+  onClick = () => {},
+  className,
+  children,
+}) => {
+  const { isSmallScreen } = useContext(ScreenContext)
+  const [isPressed, setIsPressed] = useState(false)
   return (
     <div
-      className={`${className} px-2.5 py-1 truncate  transition-all ${
+      className={`${className} px-2.5 py-1 truncate transition-all ${
         filled
-          ? "bg-primary hover:bg-filled-button-hover active:bg-filled-button-active text-secondary-text"
-          : "bg-transparent hover:bg-interactive-hover active:bg-interactive-active  text-primary"
-      }  border-2 border-primary hover:border-filled-button-hover active:border-filled-button-active text-center box-border rounded-md font-semibold text-lg cursor-pointer `}
+          ? 'bg-primary hover:bg-filled-button-hover active:bg-filled-button-active text-secondary-text'
+          : 'bg-transparent hover:bg-interactive-hover active:bg-interactive-active  text-primary'
+      }  border-2 border-primary hover:border-filled-button-hover active:border-filled-button-active active:ring-primary active:ring text-center box-border rounded-md font-semibold text-lg cursor-pointer `}
       onClick={onClick}
       onPointerDown={() => setIsPressed(true)}
       onPointerCancel={() => setIsPressed(false)}
@@ -33,14 +38,14 @@ const CustomButton = ({ filled = false, onClick = () => {}, className, children 
     >
       <div
         className={`${
-          isSmallScreen ? "transition-all" : "transition-transform"
-        } ${isPressed ? "scale-[97%] opacity-75" : ""}`}
+          isSmallScreen ? 'transition-all' : 'transition-transform'
+        } ${isPressed ? 'scale-[97%] opacity-75' : ''}`}
       >
         {children}
       </div>
     </div>
-  );
-};
+  )
+}
 
 CustomButton.propTypes = {
   /**
@@ -69,6 +74,6 @@ CustomButton.propTypes = {
    * @type {React.ReactNode}
    */
   children: PropTypes.node.isRequired,
-};
+}
 
-export default CustomButton;
+export default CustomButton
