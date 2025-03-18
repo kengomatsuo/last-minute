@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { useContext, useState } from 'react'
+import { use, useState } from 'react'
 import { ScreenContext } from '../contexts/ScreenContext'
 
 /**
@@ -21,7 +21,7 @@ const CustomButton = ({
   className,
   children,
 }) => {
-  const { isSmallScreen } = useContext(ScreenContext)
+  const { isSmallScreen } = use(ScreenContext)
   const [isPressed, setIsPressed] = useState(false)
   return (
     <div

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, useRef } from 'react'
+import { use, useEffect, useState, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { motion, AnimatePresence } from 'framer-motion'
 import CustomButton from './CustomButton'
@@ -12,10 +12,10 @@ import { signOut } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
 
 const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
-  const { user } = useContext(UserContext)
+  const { user } = use(UserContext)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const { isSmallScreen, setNavBarHeight } = useContext(ScreenContext)
+  const { isSmallScreen, setNavBarHeight } = use(ScreenContext)
   const navBarRef = useRef(null)
 
   const navigate = useNavigate()
