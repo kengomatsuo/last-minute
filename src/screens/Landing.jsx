@@ -17,7 +17,6 @@ const Landing = () => {
       </div>
       {/* Clear everything between these comments to start fresh */}
 
-      {/* bagian FAQ kerjain di file FAQ.jsx */}
       <FAQComponent />
       <CustomFooter />
     </div>
