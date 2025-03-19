@@ -1,5 +1,4 @@
-import React from 'react'
-import CustomFooter from '../components/CustomFooter'
+import { CustomFooter } from '../components'
 
 const Contact = () => {
   return (

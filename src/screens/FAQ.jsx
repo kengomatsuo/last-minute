@@ -1,5 +1,4 @@
-import React from 'react'
-import FAQComponent from '../components/FAQComponent'
+import { FAQComponent } from '../components'
 
 const FAQ = () => {
   return (
