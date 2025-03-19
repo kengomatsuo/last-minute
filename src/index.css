@@ -87,6 +87,8 @@ html::-webkit-scrollbar {
   --color-filled-button-active: rgba(191, 187, 169, 0.75);
   --color-card-background: rgba(252, 250, 241);
   --color-card-outline: rgba(172, 169, 145);
+  --color-card-outline-hover: rgba(172, 169, 145, 0.8);
+  --color-card-outline-active: rgba(172, 169, 145, 0.2);
 }
 
 h1 {

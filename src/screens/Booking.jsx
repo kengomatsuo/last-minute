@@ -12,7 +12,7 @@ const Booking = () => {
       <CustomCard interactive header='Find a Tutor'>
         <div className='flex flex-col gap-2'>
           <>This is the content</>
-          <CustomButton onClick={() => console.log('hey')}>Book Now</CustomButton>
+          <CustomButton>Book Now</CustomButton>
         </div>
       </CustomCard>
     </div>

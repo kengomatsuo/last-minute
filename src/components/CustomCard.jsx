@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
 /**
@@ -20,24 +19,14 @@ const CustomCard = ({
   interactive = !!onClick,
   children,
 }) => {
-  const [isPressed, setIsPressed] = useState(false)
-
-  React.useEffect(() => {
-    console.log(isPressed)
-  }, [isPressed])
-
   return (
     <div
       className={`${className} ${
-        interactive && !isPressed
-          ? 'transition-all hover:ring hover:ring-primary cursor-pointer hover:scale-101 active:ring active:ring-primary active:scale-101'
+        interactive
+          ? 'transition-all cursor-pointer hover:scale-101 hover:caret-card-outline-hover active:ring active:ring-primary active:caret-card-outline-active active:scale-100'
           : ''
       } bg-card-background box-border border-card-outline border-2 backdrop-blur-sm flex p-4 flex-col rounded-xl`}
       onClick={onClick}
-      onPointerDown={() => setIsPressed(true)}
-      onPointerCancel={() => setIsPressed(false)}
-      onPointerUp={() => setIsPressed(false)}
-      onPointerLeave={() => setIsPressed(false)}
     >
       <div className='text-lg font-semibold pb-2'>{header}</div>
       <div
