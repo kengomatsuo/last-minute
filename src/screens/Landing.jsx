@@ -1,8 +1,6 @@
 import { use } from 'react'
 import ket from '../assets/ket.png'
-import CustomButton from '../components/CustomButton'
-import CustomFooter from '../components/CustomFooter'
-import FAQComponent from '../components/FAQComponent'
+import { CustomButton, CustomFooter, FAQComponent } from '../components'
 import { ScreenContext } from '../contexts/ScreenContext'
 
 const Landing = () => {

@@ -1,8 +1,5 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import CustomButton from './CustomButton'
-import CustomInteractive from './CustomInteractive'
-import { set } from 'lodash'
 
 /**
  * CustomCard component
@@ -14,7 +11,7 @@ import { set } from 'lodash'
  * @param {string} props.header - Header content of the card
  * @param {Function} props.onClick - Function to run when the card is clicked
  * @param {boolean} props.interactive - Whether the card is interactive (clickable). If `onClick` has a value, `interactive` will be `true` unless specified otherwise.
- * @param {React.ReactNode} props.children - Content of the card, typically text or other elements. Must be a <div> element.
+ * @param {React.ReactNode} props.children - Content of the card, typically text or other elements. Must be a `<div>` element.
  */
 const CustomCard = ({
   className,
@@ -84,7 +81,7 @@ CustomCard.propTypes = {
   /**
    * The content of the card.
    * This can be text, an icon, or any other React node.
-   * Must be a <div> element.
+   * Must be a \<div> element.
    * This prop is required.
    * @type {React.ReactNode}
    */

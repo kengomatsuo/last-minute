@@ -1,0 +1,43 @@
+{
+  "useConsoleLogSnippet": {
+    "prefix": "useConsoleLogSnippet",
+    "body": [
+      "useConsoleLog('${1:label}', ${2:value})"
+    ],
+    "description": "Logs a value to the console whenever it changes."
+  },
+
+  "useDebounceSnippet": {
+    "prefix": "useDebounceSnippet",
+    "body": [
+      "const ${1:debouncedFunction} = useDebounce(${2:callback}, ${3:delay}, [${4:dependencies}])"
+    ],
+    "description": "Creates a debounced function with optional dependencies."
+  },
+
+  "useLocalStorageSnippet": {
+    "prefix": "useLocalStorageSnippet",
+    "body": [
+      "const [${1:key}, ${2:setKey}] = useLocalStorage('${3:storageKey}', ${4:initialValue})"
+    ],
+    "description": "Manages state with localStorage."
+  },
+
+  "useStopWatchSnippet": {
+    "prefix": "useStopWatchSnippet",
+    "body": [
+      "const { time, isRunning, start, stop, reset } = useStopWatch(${1:false}, ${2:0})"
+    ],
+    "description": "Manages a stopwatch with start, stop, and reset."
+  },
+
+  "useTimeoutSnippet": {
+    "prefix": "useTimeoutSnippet",
+    "body": [
+      "const { reset, clear } = useTimeout(() => {",
+      "  ${1:// Callback function}",
+      "}, ${2:1000})"
+    ],
+    "description": "Executes a function after a delay, with reset and clear capabilities."
+  }
+}

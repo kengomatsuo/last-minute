@@ -1,7 +1,6 @@
 import { use } from 'react'
 import { ScreenContext } from '../contexts/ScreenContext'
-import CustomCard from '../components/CustomCard'
-import CustomButton from '../components/CustomButton'
+import { CustomCard, CustomButton } from '../components'
 
 const Booking = () => {
   const { navBarHeight } = use(ScreenContext)
@@ -10,10 +9,10 @@ const Booking = () => {
       className='flex flex-col flex-1 items-center'
       style={{ paddingTop: navBarHeight }}
     >
-      <CustomCard interactive header='This is a Header'>
+      <CustomCard interactive header='Find a Tutor'>
         <div className='flex flex-col gap-2'>
           <>This is the content</>
-          <CustomButton onClick={() => console.log('hey')}>This is a button</CustomButton>
+          <CustomButton onClick={() => console.log('hey')}>Book Now</CustomButton>
         </div>
       </CustomCard>
     </div>

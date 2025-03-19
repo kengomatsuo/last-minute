@@ -1,8 +1,7 @@
 import { useState, createContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { convertRemToPixels } from '../utils/calculations'
-import useDebounce from '../hooks/useDebounce'
-import useConsoleLog from '../hooks/useConsoleLog'
+import { useDebounce } from '../hooks'
 // import { debounce } from 'lodash'
 
 /**
@@ -35,7 +34,6 @@ const ScreenContextProvider = ({ children }) => {
     defaultContext.isSmallScreen
   )
   const [dimensions, setDimensions] = useState(defaultContext.dimensions)
-  useConsoleLog('dimensions', dimensions)
   const debouncedSetDimensions = useDebounce(
     ({ width, height }) => setDimensions({ width, height }),
     300
@@ -44,7 +42,6 @@ const ScreenContextProvider = ({ children }) => {
   const [isOnline, setIsOnline] = useState(defaultContext.isOnline)
 
   const minWidth = convertRemToPixels(smallScreenThreshold)
-
 
   useEffect(() => {
     const handleResize = () => {

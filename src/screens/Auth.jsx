@@ -1,6 +1,6 @@
 import { use, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import CustomButton from '../components/CustomButton'
+import { CustomButton } from '../components'
 import { UserContext } from '../contexts/UserContext'
 
 const Auth = () => {
