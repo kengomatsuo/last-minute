@@ -4,7 +4,7 @@ import CustomNavBar from './components/CustomNavBar'
 import Auth from './screens/Auth'
 import Error404 from './screens/Error404'
 import { ScreenContextProvider } from './contexts/ScreenContext'
-import { use, useEffect, useRef } from 'react'
+import { use, useRef } from 'react'
 import { UserContext } from './contexts/UserContext'
 import { AnimatePresence, motion } from 'framer-motion'
 import Dashboard from './screens/Dashboard'
@@ -17,10 +17,6 @@ function App() {
   const { user } = use(UserContext)
   const location = useLocation()
   const scrollContainerRef = useRef(null)
-
-  useEffect(() => {
-    console.log(user)
-  }, [user])
 
   return (
     <AnimatePresence mode='wait'>
