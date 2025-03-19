@@ -1,0 +1,23 @@
+{
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+      {
+          "file": ".copilot-commit-message-instructions.md"
+      },
+  ],
+  "github.copilot.chat.codeGeneration.instructions": [
+    {
+        "file": ".copilot-codeGeneration-instructions.md"
+    },
+  ],
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "files.autoSave": "onFocusChange",
+  "files.exclude": {
+      "**/.git": true,
+      "**/.DS_Store": true,
+      "**/node_modules": true
+  },
+  "terminal.integrated.shell.osx": "/bin/zsh",
+  "eslint.enable": true,
+  "eslint.run": "onSave"
+}
