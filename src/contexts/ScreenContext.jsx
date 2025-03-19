@@ -1,7 +1,9 @@
-import { useState, createContext, useCallback, useEffect } from 'react'
+import { useState, createContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { convertRemToPixels } from '../utils/calculations'
-import { debounce } from 'lodash'
+import useDebounce from '../hooks/useDebounce'
+import useConsoleLog from '../hooks/useConsoleLog'
+// import { debounce } from 'lodash'
 
 /**
  * @typedef {Object} ScreenContextType
@@ -33,26 +35,22 @@ const ScreenContextProvider = ({ children }) => {
     defaultContext.isSmallScreen
   )
   const [dimensions, setDimensions] = useState(defaultContext.dimensions)
+  useConsoleLog('dimensions', dimensions)
+  const debouncedSetDimensions = useDebounce(
+    ({ width, height }) => setDimensions({ width, height }),
+    300
+  )
   const [navBarHeight, setNavBarHeight] = useState(defaultContext.navBarHeight)
   const [isOnline, setIsOnline] = useState(defaultContext.isOnline)
 
   const minWidth = convertRemToPixels(smallScreenThreshold)
 
-  // Debounced resize handler
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedHandleResize = useCallback(
-    debounce((width, height) => {
-      setDimensions({ width, height })
-      console.log('debounced')
-    }, 200),
-    []
-  )
 
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth
       const height = window.innerHeight
-      debouncedHandleResize(width, height)
+      debouncedSetDimensions({ width, height })
       setIsSmallScreen(width < minWidth)
     }
 
@@ -68,11 +66,17 @@ const ScreenContextProvider = ({ children }) => {
       window.removeEventListener('online', handleOnline)
       window.removeEventListener('offline', handleOffline)
     }
-  }, [debouncedHandleResize, minWidth])
+  }, [minWidth, debouncedSetDimensions])
 
   return (
     <ScreenContext.Provider
-      value={{ isSmallScreen, dimensions, navBarHeight, setNavBarHeight, isOnline }}
+      value={{
+        isSmallScreen,
+        dimensions,
+        navBarHeight,
+        setNavBarHeight,
+        isOnline,
+      }}
     >
       {children}
     </ScreenContext.Provider>
