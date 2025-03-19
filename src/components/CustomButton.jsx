@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
-import { use, useState } from 'react'
-import { ScreenContext } from '../contexts/ScreenContext'
+import { useState } from 'react'
 
 /**
  * CustomButton component
@@ -12,38 +11,54 @@ import { ScreenContext } from '../contexts/ScreenContext'
  * @param {Object} props - Component props
  * @param {boolean} props.filled - Whether the button is filled with the primary color
  * @param {Function} props.onClick - Click handler function
+ * @param {boolean} props.disabled - Whether the button is disabled
  * @param {string} props.className - Custom class name for additional styling
  * @param {React.ReactNode} props.children - Button content, typically text or an icon
+ * @param {'button' | 'submit' | 'reset'} props.type - The type of the button (e.g., "button", "submit", "reset")
  */
 const CustomButton = ({
   filled = false,
   onClick = () => {},
+  disabled = false,
   className,
   children,
+  type = 'button',
 }) => {
-  const { isSmallScreen } = use(ScreenContext)
-  const [isPressed, setIsPressed] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleClick = async (event) => {
+    if (disabled || isLoading) return
+    setIsLoading(true)
+    await onClick(event)
+    setIsLoading(false)
+  }
+
   return (
-    <div
-      className={`${className} px-2.5 py-1 truncate transition-all ${
+    <button
+      type={type}
+      onClick={handleClick}
+      className={`${
+        isLoading ? 'pointer-events-none opacity-50' : ''
+      } ${className} px-2.5 py-1 truncate transition-all ${
         filled
-          ? 'bg-primary hover:bg-filled-button-hover active:bg-filled-button-active text-secondary-text'
-          : 'bg-transparent hover:bg-interactive-hover active:bg-interactive-active  text-primary'
-      }  border-2 border-primary hover:border-filled-button-hover active:border-filled-button-active active:ring-primary active:ring text-center box-border rounded-md font-semibold text-lg cursor-pointer `}
-      onClick={onClick}
-      onPointerDown={() => setIsPressed(true)}
-      onPointerCancel={() => setIsPressed(false)}
-      onPointerUp={() => setIsPressed(false)}
-      onPointerLeave={() => setIsPressed(false)}
+          ? 'bg-primary text-secondary-text'
+          : 'bg-transparent text-primary'
+      } ${
+        disabled || isLoading
+          ? 'opacity-50 !cursor-not-allowed !hover:border-primary'
+          : filled
+          ? 'hover:bg-filled-button-hover hover:border-filled-button-hover active:bg-filled-button-active  active:ring-primary active:ring'
+          : 'hover:bg-interactive-hover hover:border-filled-button-hover active:bg-interactive-active  active:ring-primary active:ring'
+      } border-2 border-primary text-center box-border rounded-md font-semibold text-lg cursor-pointer`}
     >
       <div
         className={`${
-          isSmallScreen ? 'transition-all' : 'transition-transform'
-        } ${isPressed ? 'scale-[97%] opacity-75' : ''}`}
+          disabled ? 'pointer-events-none' : ''
+        } transition-transform active:scale-[97%] active:opacity-75`}
       >
         {children}
       </div>
-    </div>
+    </button>
   )
 }
 
@@ -62,6 +77,12 @@ CustomButton.propTypes = {
    */
   onClick: PropTypes.func,
   /**
+   * Whether the button is disabled.
+   * If true, the button will be disabled and unclickable.
+   * @type {boolean}
+   */
+  disabled: PropTypes.bool,
+  /**
    * Custom class name for additional styling.
    * This allows for custom styles to be applied to the button.
    * @type {string}
@@ -74,6 +95,12 @@ CustomButton.propTypes = {
    * @type {React.ReactNode}
    */
   children: PropTypes.node.isRequired,
+  /**
+   * The type of the button.
+   * This can be "button", "submit", or "reset".
+   * @type {string}
+   */
+  type: PropTypes.string,
 }
 
 export default CustomButton

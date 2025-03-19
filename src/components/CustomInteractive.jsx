@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import { use, useState } from 'react'
-import { ScreenContext } from '../contexts/ScreenContext'
 
 /**
  * CustomInteractive component
@@ -17,16 +16,22 @@ const CustomInteractive = ({
   children,
   onClick = () => {},
 }) => {
-  const { isSmallScreen } = use(ScreenContext)
   const [isPressed, setIsPressed] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleClick = async () => {
+    setIsLoading(true)
+    await onClick()
+    setIsLoading(false)
+  }
 
   return (
     <div
-      className={`${className} px-3 py-1 w-full ${
-        isSmallScreen ? 'transition-all' : ''
-      } rounded-md hover:bg-interactive-hover
-        active:bg-interactive-active active:ring-background-secondary active:ring truncate text-primary-text text-center font-medium text-lg cursor-pointer `}
-      onClick={onClick}
+      className={`${
+        isLoading ? 'pointer-events-none opacity-50' : ''
+      } ${className} px-3 py-1 w-full  rounded-md hover:bg-interactive-hover
+        active:bg-interactive-active active:ring-background-secondary active:ring truncate text-primary-text text-center font-medium text-lg cursor-pointer`}
+      onClick={handleClick}
       onPointerDown={() => setIsPressed(true)}
       onPointerCancel={() => setIsPressed(false)}
       onPointerUp={() => setIsPressed(false)}
