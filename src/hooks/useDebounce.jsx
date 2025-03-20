@@ -38,7 +38,7 @@ const useDebounce = (callback, delay, dependencies = null) => {
     if (dependencies !== null) {
       callbackRef.current()
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, dependencies ?? [])
 
   return debouncedFunction
