@@ -1,31 +1,52 @@
-# Pull Request Description Instructions
+# 📄 Pull Request Description Instructions
 
-## Guidelines for Writing Pull Request Descriptions
+## 📝 Guidelines for Writing Pull Request Descriptions
 
-### 1. Provide a Clear and Descriptive Title
+### 1. 🏷️ Provide a Clear and Descriptive Title
 - **Limit**: 50 characters or less
 - **Style**: Capitalize the first letter
-- **Example**: `Add user authentication feature`
+- **Format**: `<Type>: <Short description>` (e.g., `Feature:`, `Fix:`, `Refactor:`)
+- **Example**: `Feature: Add user authentication system`
 
-### 2. Detailed Description
-- **Explain**: What, Why, and How
-- **Include**: Any relevant context or background information
+### 2. 📋 Detailed Description
+- **Structure your description with these sections:**
+  - **What**: Specifically what changes were made (be concrete)
+  - **Why**: The specific problem these changes solve
+  - **How**: The technical approach used to implement the solution
+- **Be specific**: Never use vague terms like "enhanced," "improved," "refactored," "optimized"
+- **Use bullet points** for better readability
+- **Include**: Measurable impacts where possible (e.g., "reduced load time by 30%")
 - **Example**:
     ```
-    This pull request adds the user authentication feature.
+    ## 🔍 What
+    This pull request adds a user authentication feature.
 
-    - Implemented login and registration forms
-    - Added JWT token generation and validation
-    - Updated user model to include authentication fields
-    - Ensured compatibility with existing user data
+    - Created login and registration forms with field validation
+    - Built JWT token generation and validation endpoints
+    - Added password hashing with bcrypt (10 salt rounds)
+    - Added remember-me functionality with 30-day token expiration
 
-    This feature enhances security by allowing users to authenticate
-    before accessing restricted areas of the application.
+    ## 🎯 Why
+    Users need to securely access their personal data. This prevents:
+    - Unauthorized access to user information
+    - Data manipulation by unauthenticated requests
+    - Session hijacking via token validation
+
+    ## 🛠️ How
+    - Used React Hook Form for field validation
+    - Implemented stateless JWT authentication
+    - Added secure HttpOnly cookies for token storage
     ```
 
-### 3. Reference Issues and Related Pull Requests
-- **Format**: `Fixes #123`, `Closes #456`
-- **Example**: `Fixes #789`
+### 3. 🔗 Reference Issues and Related Pull Requests
+- **Format**: Use keywords like `Fixes #123`, `Closes #456`, `Related to #789`
+- **Link multiple issues**: `Fixes #123, #456, #789`
+- **Reference external issues**: `Fixes organization/repo#123`
+- **Example**: 
+    ```
+    🐛 Fixes #789
+    📌 Related to #456
+    ```
 
 ### 4. Include Screenshots or GIFs (if applicable)
 - **Example**:
