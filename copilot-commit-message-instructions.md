@@ -12,6 +12,7 @@
 ### 3. Detailed Description in the Body
 - **Explain**: What, Why, and How
 - **Wrap**: Lines at 72 characters
+
 - **Example**:
     ```
     Add user authentication feature
@@ -23,6 +24,42 @@
 
     This feature enhances security by allowing users to authenticate
     before accessing restricted areas of the application.
+    ```
+
+### 3.1. Explain How to Use New Additions
+- **Describe**: How to use new exports, components, hooks, etc.
+- **Include**: Example code snippets if possible
+- **Purpose**: Help others understand how to integrate and use the new additions
+- **Mention**: Always mention variable names added for exported variables, functions, hooks, contexts, etc.
+
+- **Example**:
+    ```
+    Add user authentication feature
+
+    - Implemented login and registration forms
+    - Added JWT token generation and validation
+    - Updated user model to include authentication fields
+    - Ensured compatibility with existing user data
+
+    This feature enhances security by allowing users to authenticate
+    before accessing restricted areas of the application.
+
+    Usage:
+    ```jsx
+    import { login, register } from './authService'
+
+    // To login a user
+    login(username, password).then(token => {
+      // handle token
+    })
+
+    // To register a new user
+    register(username, password, email).then(user => {
+      // handle new user
+    })
+    ```
+
+    Fixes #123
     ```
 
 ### 4. Use Bullet Points for Multiple Changes

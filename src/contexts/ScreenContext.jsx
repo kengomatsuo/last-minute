@@ -11,6 +11,7 @@ import { useDebounce } from '../hooks'
  * @property {number} navBarHeight - The height of the navigation bar.
  * @property {(height: number) => void} setNavBarHeight - Function to update the navigation bar height.
  * @property {boolean} isOnline - Whether the user is currently online.
+ * @property {import('framer-motion').Transition} movementTransition - The transition configuration for motion components.
  */
 
 const smallScreenThreshold = 52
@@ -27,6 +28,16 @@ const defaultContext = {
 // Create context with default values
 /** @type {import("react").Context<ScreenContextType>} */
 const ScreenContext = createContext(defaultContext)
+
+// Transition configuration for motion components
+const movementTransition = {
+  type: 'spring',
+  stiffness: 170,
+  damping: 26,
+  mass: 1,
+  restDelta: 0.001,
+  velocity: 0.5,
+}
 
 // Create a provider component
 const ScreenContextProvider = ({ children }) => {
@@ -84,4 +95,4 @@ ScreenContextProvider.propTypes = {
   children: PropTypes.node.isRequired,
 }
 
-export { ScreenContextProvider, ScreenContext }
+export { ScreenContextProvider, ScreenContext, movementTransition }

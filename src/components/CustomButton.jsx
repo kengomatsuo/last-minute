@@ -35,6 +35,7 @@ const CustomButton = ({
 
   return (
     <button
+    formNoValidate
       type={type}
       onClick={handleClick}
       className={`${
@@ -47,14 +48,15 @@ const CustomButton = ({
         disabled || isLoading
           ? 'opacity-50 !cursor-not-allowed !hover:border-primary'
           : filled
-          ? 'hover:bg-filled-button-hover hover:border-filled-button-hover active:bg-filled-button-active  active:ring-primary active:ring'
-          : 'hover:bg-interactive-hover hover:border-filled-button-hover active:bg-interactive-active  active:ring-primary active:ring'
-      } border-2 border-primary text-center box-border rounded-md font-semibold text-lg cursor-pointer`}
+          ? 'hover:bg-filled-button-hover hover:border-filled-button-hover active:bg-filled-button-active  active:ring-primary active:ring focus:ring-primary/75'
+          : 'hover:bg-interactive-hover hover:border-filled-button-hover active:bg-interactive-active  active:ring-primary active:ring focus:ring-primary'
+      } border-2 min-w-fit border-primary text-center box-border rounded-md font-semibold text-lg cursor-pointer
+       focus:outline-none focus:ring-2`}
     >
       <div
         className={`${
           disabled ? 'pointer-events-none' : ''
-        } transition-transform active:scale-[97%] active:opacity-75`}
+        } transition-transform active:scale-[97%] active:opacity-75 flex gap-2 justify-center`}
       >
         {children}
       </div>

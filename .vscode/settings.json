@@ -1,13 +1,18 @@
 {
   "github.copilot.chat.commitMessageGeneration.instructions": [
       {
-          "file": ".copilot-commit-message-instructions.md"
+          "file": "copilot-commit-message-instructions.md"
       },
   ],
   "github.copilot.chat.codeGeneration.instructions": [
     {
-        "file": ".copilot-codeGeneration-instructions.md"
+        "file": "copilot-codeGeneration-instructions.md"
     },
+  ],
+  "github.copilot.chat.pullRequestDescriptionGeneration.instructions": [
+    {
+        "file": "copilot-pull-request-description-instructions.md"
+    }
   ],
   "editor.tabSize": 4,
   "editor.insertSpaces": true,

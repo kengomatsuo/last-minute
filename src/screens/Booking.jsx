@@ -1,48 +1,61 @@
 import { use, useRef } from 'react'
 import { ScreenContext } from '../contexts/ScreenContext'
-import {
-  CustomCard,
-  CustomButton,
-  CustomInput,
-} from '../components'
+import { CustomCard, CustomButton, CustomInput } from '../components'
+import ScheduleIcon from '../assets/icons/calendar-clock.svg?react'
 
 const Booking = () => {
-  const { navBarHeight } = use(ScreenContext)
+  const { navBarHeight, isSmallScreen } = use(ScreenContext)
   const formRef = useRef()
 
-  const handleSubmit = (event) => {
+  const handleSubmit = event => {
     event.preventDefault()
     const formData = new FormData(formRef.current)
     const data = Object.fromEntries(formData.entries())
-    console.log(data)
   }
 
   return (
     <div
-      className='flex flex-col flex-1 items-center'
-      style={{ paddingTop: navBarHeight }}
+      className='flex flex-col w-full items-center justify-center'
+      // style={{ paddingTop: navBarHeight }}
     >
-      <CustomCard header='Find a Tutor '>
+      <CustomCard header='Find a Tutor' className='min-w-1/2 w-xl max-w-full'>
         <div className='gap-2'>
           <>This is the content</>
-          <form onSubmit={handleSubmit} className='flex flex-col gap-2' tabIndex="0" ref={formRef}>
+          <form
+            onSubmit={handleSubmit}
+            className='flex flex-1 flex-col gap-2'
+            tabIndex='0'
+            ref={formRef}
+          >
             <CustomInput
-              name='Name'
-              type='text'
-              placeholder='Enter your name'
+              name='Subject / Material'
+              type='password'
+              placeholder='Biology, Algebra, etc.'
+              validateFunction={e => {
+                if (e) throw new Error('Subject is error')
+              }}
               required
             />
-            <CustomInput
-              name='Email'
-              type='email'
-              placeholder='Enter your email'
-            />
-            <CustomInput
-              name='Phone Number'
-              type='tel'
-              placeholder='Enter your phone number'
-            />
-            <CustomButton type='submit'>Book Now</CustomButton>
+            <CustomInput multiline name='Message' placeholder='Message' />
+            <div className='flex gap-1'>
+              <CustomButton
+                className={!isSmallScreen ? 'flex-1' : ''}
+                type='submit'
+              >
+                {!isSmallScreen ? (
+                  'Schedule'
+                ) : (
+                  <ScheduleIcon
+                    width={24}
+                    height={24}
+                    className='fill-primary'
+                  />
+                )}
+              </CustomButton>
+              <CustomButton className='flex-1' type='submit' filled>
+                Book Now
+              </CustomButton>
+            </div>
           </form>
         </div>
       </CustomCard>

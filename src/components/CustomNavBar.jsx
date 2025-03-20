@@ -3,10 +3,10 @@ import PropTypes from 'prop-types'
 import { motion, AnimatePresence } from 'framer-motion'
 import CustomButton from './CustomButton'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { ScreenContext } from '../contexts/ScreenContext'
+import { movementTransition, ScreenContext } from '../contexts/ScreenContext'
 import CustomInteractive from './CustomInteractive'
-import RightArrow from '../assets/icons/angle-small-right.svg?react'
-import SideBar from '../assets/icons/sidebar.svg?react'
+import RightArrowIcon from '../assets/icons/angle-small-right.svg?react'
+import SideBarIcon from '../assets/icons/sidebar.svg?react'
 import { UserContext } from '../contexts/UserContext'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
@@ -93,7 +93,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
             className='w-min aspect-square flex !p-1.5 items-center justify-center'
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            <SideBar width={28} height={28} />
+            <SideBarIcon width={28} height={28} />
           </CustomInteractive>
 
           {/* Animate Presence for smooth entry and exit */}
@@ -101,10 +101,10 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
             {isMenuOpen && (
               <>
                 <motion.div
-                  className='absolute z-20 top-0 left-0 w-screen h-screen bg-background-secondary/25'
+                  className='absolute z-20 top-0 left-0 w-screen h-screen bg-background-secondary/30'
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: 1, backdropFilter: 'blur(3px)' }}
-                  exit={{ opacity: 0 }}
+                  animate={{ opacity: 1, backdropFilter: 'blur(4px)' }}
+                  exit={{ opacity: 0, transition: { delay: 0.3, duration: 1 } }}
                   onClick={() => setIsMenuOpen(false)}
                 />
 
@@ -120,20 +120,15 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                   }}
                   exit={{
                     x: '100%',
-                    boxShadow: '0px 0px 0px 0px rgba(0, 0, 0, 0)',
+                    boxShadow: '0px 0px 0px 0px rgba(0, 0, 0, 0.1)',
                   }}
-                  transition={{
-                    type: 'spring',
-                    stiffness: 200,
-                    damping: 20,
-                    mass: 0.5,
-                  }}
+                  transition={movementTransition}
                 >
                   <CustomInteractive
                     className='w-min aspect-square flex !p-1 items-center mb-2 justify-center ml-auto'
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <RightArrow width={32} height={32} />
+                    <RightArrowIcon width={32} height={32} />
                   </CustomInteractive>
 
                   <NavLink to={'/auth'} className='flex'>
