@@ -73,7 +73,7 @@ const CustomInput = ({
           {...props}
           rows={rows}
           onChange={handleChange}
-          className={`${commonClassName} resize-y min-h-[70px]`}
+          className={`${commonClassName} resize-none min-h-[70px]`}
         />
       ) : (
         <input

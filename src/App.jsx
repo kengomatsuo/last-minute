@@ -13,6 +13,7 @@ import Session from './screens/Session'
 import Settings from './screens/Settings'
 import MainLoading from './screens/MainLoading'
 import Contact from './screens/Contact'
+import History from './screens/History'
 
 function App() {
   const { user } = use(UserContext)
@@ -70,6 +71,7 @@ function App() {
                     <>
                       <Route path='/booking' element={<Booking />} />
                       <Route path='/session' element={<Session />} />
+                      <Route path='/history' element={<History />} />
                       <Route path='/settings' element={<Settings />} />
                       <Route path='/landing' element={<Landing />} />
                       <Route path='/contact' element={<Contact />} />

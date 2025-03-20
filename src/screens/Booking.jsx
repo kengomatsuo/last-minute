@@ -4,7 +4,7 @@ import { CustomCard, CustomButton, CustomInput } from '../components'
 import ScheduleIcon from '../assets/icons/calendar-clock.svg?react'
 
 const Booking = () => {
-  const { navBarHeight, isSmallScreen } = use(ScreenContext)
+  const { isSmallScreen } = use(ScreenContext)
   const formRef = useRef()
 
   const handleSubmit = event => {
@@ -18,9 +18,11 @@ const Booking = () => {
       className='flex flex-col w-full items-center justify-center'
       // style={{ paddingTop: navBarHeight }}
     >
-      <CustomCard header='Find a Tutor' className='min-w-1/2 w-xl max-w-full'>
+      <CustomCard
+        header='Find a Tutor'
+        className={`${isSmallScreen ? 'w-11/12' : 'w-xl'} min-w-1/2 max-w-full`}
+      >
         <div className='gap-2'>
-          <>This is the content</>
           <form
             onSubmit={handleSubmit}
             className='flex flex-1 flex-col gap-2'
@@ -36,7 +38,12 @@ const Booking = () => {
               }}
               required
             />
-            <CustomInput multiline name='Message' placeholder='Message' />
+            <CustomInput
+              multiline
+              name='Details'
+              placeholder='I need help with this particular subject...'
+              rows={5}
+            />
             <div className='flex gap-1'>
               <CustomButton
                 className={!isSmallScreen ? 'flex-1' : ''}

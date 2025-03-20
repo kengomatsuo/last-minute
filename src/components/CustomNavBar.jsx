@@ -104,7 +104,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                   className='absolute z-20 top-0 left-0 w-screen h-screen bg-background-secondary/30'
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1, backdropFilter: 'blur(4px)' }}
-                  exit={{ opacity: 0, transition: { delay: 0.3, duration: 1 } }}
+                  exit={{ opacity: 0, transition: { delay: 0.3, duration: 0.3 } }}
                   onClick={() => setIsMenuOpen(false)}
                 />
 
