@@ -16,7 +16,6 @@ const Booking = () => {
   return (
     <div
       className='flex flex-col w-full items-center justify-center'
-      // style={{ paddingTop: navBarHeight }}
     >
       <CustomCard
         header='Find a Tutor'

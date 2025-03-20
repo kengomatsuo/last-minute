@@ -1,8 +1,6 @@
-import React, { useContext } from 'react'
-import { ScreenContext } from '../contexts/ScreenContext'
+import { navBarHeight } from '../constants/visualConstants'
 
 const History = () => {
-  const { navBarHeight } = useContext(ScreenContext)
   return <div style={{ paddingTop: navBarHeight }}>History</div>
 }
 

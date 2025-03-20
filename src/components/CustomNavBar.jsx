@@ -1,22 +1,22 @@
-import { use, useEffect, useState, useRef } from 'react'
+import { use, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { motion, AnimatePresence } from 'framer-motion'
 import CustomButton from './CustomButton'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { movementTransition, ScreenContext } from '../contexts/ScreenContext'
+import { ScreenContext } from '../contexts/ScreenContext'
 import CustomInteractive from './CustomInteractive'
 import RightArrowIcon from '../assets/icons/angle-small-right.svg?react'
 import SideBarIcon from '../assets/icons/sidebar.svg?react'
 import { UserContext } from '../contexts/UserContext'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
+import { movementTransition } from '../constants/visualConstants'
 
 const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
   const { user } = use(UserContext)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const { isSmallScreen, setNavBarHeight } = use(ScreenContext)
-  const navBarRef = useRef(null)
+  const { isSmallScreen } = use(ScreenContext)
 
   const navigate = useNavigate()
 
@@ -36,12 +36,6 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
       setIsMenuOpen(false)
     }
   }, [isSmallScreen])
-
-  useEffect(() => {
-    if (navBarRef.current) {
-      setNavBarHeight(navBarRef.current.offsetHeight)
-    }
-  }, [setNavBarHeight])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -75,8 +69,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
 
   return (
     <nav
-      ref={navBarRef}
-      className={`fixed z-10 top-0 flex justify-between w-full py-4 px-6
+      className={`fixed h-[4.5rem] z-10 top-0 flex justify-between w-full py-4 px-6
         border-b border-transparent transition-colors bg-background  duration-300 ${
           isScrolled ? '!border-background-secondary/30' : ''
         }`}

@@ -1,10 +1,8 @@
-import { use } from 'react'
 import ket from '../assets/ket.png'
 import { CustomButton, CustomFooter, FAQComponent } from '../components'
-import { ScreenContext } from '../contexts/ScreenContext'
+import { navBarHeight } from '../constants/visualConstants'
 
 const Landing = () => {
-  const { navBarHeight } = use(ScreenContext)
   return (
     <div
       className='flex flex-col flex-1 items-center w-screen justify-center'

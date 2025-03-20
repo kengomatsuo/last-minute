@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import { useDebounce } from '../hooks'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { movementTransition } from '../contexts/ScreenContext'
+import { movementTransition } from '../constants/visualConstants'
 
 /**
  * CustomInput component

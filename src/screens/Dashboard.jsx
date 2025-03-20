@@ -1,13 +1,7 @@
-import { use } from 'react'
-import { ScreenContext } from '../contexts/ScreenContext'
+import { navBarHeight } from '../constants/visualConstants'
 
 const Dashboard = () => {
-  const { navBarHeight } = use(ScreenContext)
-  return (
-    <div style={{ paddingTop: navBarHeight }}>
-      dashboard
-    </div>
-  )
+  return <div style={{ paddingTop: navBarHeight }}>dashboard</div>
 }
 
 export default Dashboard
