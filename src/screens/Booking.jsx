@@ -46,17 +46,17 @@ const Booking = () => {
             />
             <div className='flex gap-1'>
               <CustomButton
-                className={!isSmallScreen ? 'flex-1' : ''}
+                className={isSmallScreen ? '' : 'flex-1'}
                 type='submit'
               >
-                {!isSmallScreen ? (
-                  'Schedule'
-                ) : (
+                {isSmallScreen ? (
                   <ScheduleIcon
-                    width={24}
-                    height={24}
-                    className='fill-primary'
-                  />
+                  width={24}
+                  height={24}
+                  className='fill-primary'
+                />
+                ) : (
+                  'Schedule'
                 )}
               </CustomButton>
               <CustomButton className='flex-1' type='submit' filled>
