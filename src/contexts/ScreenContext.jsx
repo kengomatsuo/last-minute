@@ -8,7 +8,6 @@ import { useDebounce } from '../hooks'
  * @property {boolean} isSmallScreen - Whether the screen width is below the small screen threshold.
  * @property {{ width: number; height: number }} dimensions - The current screen dimensions.
  * @property {boolean} isOnline - Whether the user is currently online.
- * @property {import('framer-motion').Transition} movementTransition - The transition configuration for motion components.
  */
 
 const smallScreenThreshold = 52

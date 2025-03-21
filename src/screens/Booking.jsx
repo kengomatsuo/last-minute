@@ -1,11 +1,14 @@
 import { use, useRef } from 'react'
-import { ScreenContext } from '../contexts/ScreenContext'
 import { CustomCard, CustomButton, CustomInput } from '../components'
-import ScheduleIcon from '../assets/icons/calendar-clock.svg?react'
+import { CourseContext } from '../contexts/CourseContext'
+import { details } from 'framer-motion/client'
 
 const Booking = () => {
-  const { isSmallScreen } = use(ScreenContext)
+  const { requestCourse, isRequestPending } = use(CourseContext)
   const formRef = useRef()
+  const topicRef = useRef()
+  const subjectRef = useRef()
+  const detailsRef = useRef()
 
   const subjectOptions = [
     { label: 'Math', value: 'math' },
@@ -19,18 +22,33 @@ const Booking = () => {
     { label: 'Other', value: 'other' },
   ]
 
-  const handleSubmit = event => {
+  const handleSubmit = async event => {
     event.preventDefault()
+
+    let isValid = true
+    isValid = (await topicRef.current.validate()) && isValid
+    isValid = (await subjectRef.current.validate()) && isValid
+    isValid = (await detailsRef.current.validate()) && isValid
+
+    if (!isValid) return
+
     const formData = new FormData(formRef.current)
     const data = Object.fromEntries(formData.entries())
-    alert(JSON.stringify(data))
+    try {
+      await requestCourse(data)
+      topicRef.current.reset()
+      subjectRef.current.reset()
+      detailsRef.current.reset()
+    } catch (error) {
+      alert(`Error requesting course: ${error.message}`)
+    }
   }
 
   return (
     <div className='flex flex-col w-full items-center justify-center'>
       <CustomCard
         header='Find a Tutor'
-        className={`${isSmallScreen ? 'w-11/12' : 'w-xl'} min-w-1/2 max-w-full`}
+        className='w-[min(48rem,11/12*100%)] p-[min(3rem,4%)]'
       >
         <div className='gap-2 '>
           <form
@@ -40,28 +58,41 @@ const Booking = () => {
             ref={formRef}
           >
             <CustomInput
+              ref={topicRef}
               name='Topic'
               type='text'
+              disabled={isRequestPending}
               placeholder='Topics, keywords, etc.'
-              validateFunction={e => {
-                if (e) throw new Error('Subject is error')
-              }}
               required
+              autoSave='BookingDraft_Topic'
             />
             <CustomInput
+              ref={subjectRef}
               name='Subject'
               type='suggest'
+              disabled={isRequestPending}
               options={subjectOptions}
               placeholder='Select a subject'
               required
               forceSuggestions
+              autoSave='BookingDraft_Subject'
             />
             <CustomInput
+              ref={detailsRef}
               multiline={5}
               name='Details'
-              placeholder='I need help with this particular subject...'
+              disabled={isRequestPending}
+              placeholder='I need help with this particular question...'
+              autoSave='BookingDraft_Details'
             />
-            <CustomButton filled>Next</CustomButton>
+            <CustomButton
+              disabled={isRequestPending}
+              className='mt-4'
+              filled
+              type='submit'
+            >
+              Find Tutors
+            </CustomButton>
           </form>
         </div>
       </CustomCard>

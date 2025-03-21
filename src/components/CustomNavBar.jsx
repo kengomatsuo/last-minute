@@ -10,7 +10,7 @@ import SideBarIcon from '../assets/icons/sidebar.svg?react'
 import { UserContext } from '../contexts/UserContext'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
-import { movementTransition } from '../constants/visualConstants'
+import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
 
 const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
   const { user } = use(UserContext)
@@ -115,7 +115,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                     x: '100%',
                     boxShadow: '0px 0px 0px 0px rgba(0, 0, 0, 0.1)',
                   }}
-                  transition={movementTransition}
+                  transition={MOVEMENT_TRANSITION}
                 >
                   <CustomInteractive
                     className='w-min aspect-square flex !p-1 items-center mb-2 justify-center ml-auto'
