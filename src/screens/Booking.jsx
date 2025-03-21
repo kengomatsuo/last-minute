@@ -53,35 +53,15 @@ const Booking = () => {
               type='suggest'
               options={subjectOptions}
               placeholder='Select a subject'
-              validateFunction={e => {
-                if (e) throw new Error('Subject is error')
-              }}
               required
+              forceSuggestions
             />
             <CustomInput
               multiline={5}
               name='Details'
               placeholder='I need help with this particular subject...'
             />
-            <div className='flex gap-1'>
-              <CustomButton
-                className={isSmallScreen ? '' : 'flex-1'}
-                type='submit'
-              >
-                {isSmallScreen ? (
-                  <ScheduleIcon
-                    width={24}
-                    height={24}
-                    className='fill-primary'
-                  />
-                ) : (
-                  'Schedule'
-                )}
-              </CustomButton>
-              <CustomButton className='flex-1' type='submit' filled>
-                Book Now
-              </CustomButton>
-            </div>
+            <CustomButton filled>Next</CustomButton>
           </form>
         </div>
       </CustomCard>

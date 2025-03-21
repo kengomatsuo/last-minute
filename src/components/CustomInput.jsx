@@ -3,7 +3,6 @@ import { useDebounce } from '../hooks'
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { movementTransition } from '../constants/visualConstants'
-import { filter } from 'framer-motion/client'
 
 /**
  * CustomInput component
@@ -31,6 +30,7 @@ import { filter } from 'framer-motion/client'
  * @param {boolean | number} [props.multiline] - Whether the input field is a textarea, and the number of rows if it is
  * @param {Array<string | {label: string, value: string}>} [props.options] - Options to display when type is 'suggest'
  * @param {function} [props.onOptionSelect] - Function called when an option is selected
+ * @param {boolean} [props.forceSuggestions] - When true, requires selection from available options for suggest inputs
  */
 const CustomInput = ({
   onChange = () => {},
@@ -41,6 +41,7 @@ const CustomInput = ({
   onOptionSelect = () => {},
   type,
   value = '',
+  forceSuggestions = false,
   ...props
 }) => {
   const [errorMessage, setErrorMessage] = useState('')
@@ -48,6 +49,7 @@ const CustomInput = ({
   const [highlightedIndex, setHighlightedIndex] = useState(-1)
   const [filteredOptions, setFilteredOptions] = useState(options)
   const [inputValue, setInputValue] = useState(value)
+  const [selectedFromOptions, setSelectedFromOptions] = useState(false)
   const inputRef = useRef(null)
   const dropdownRef = useRef(null)
 
@@ -82,6 +84,10 @@ const CustomInput = ({
   // Update input value when external value prop changes
   useEffect(() => {
     setInputValue(value)
+    // Reset selected from options when value is changed externally
+    if (value === '') {
+      setSelectedFromOptions(false)
+    }
   }, [value])
 
   const filterOptions = (text) => {
@@ -114,8 +120,22 @@ const CustomInput = ({
   const handleValidate = async value => {
     // First check if field is required but empty
     if (props.required && (!value || value.trim() === '')) {
-      setErrorMessage('This field is required')
+      setErrorMessage('This field is required', value)
       return
+    }
+
+    // Check if we need to force selection from suggestions
+    if (type === 'suggest' && forceSuggestions && value && !selectedFromOptions) {
+      // Check if the current value exactly matches any option
+      const exactMatch = options.some(option => {
+        const optionText = typeof option === 'string' ? option : option.label
+        return optionText.toLowerCase() === value.toLowerCase()
+      })
+
+      if (!exactMatch) {
+        setErrorMessage('Please select a value from the options available')
+        return
+      }
     }
 
     // If there's a custom validation function, run it
@@ -138,7 +158,9 @@ const CustomInput = ({
     const newValue = e.target.value
     setInputValue(newValue)
 
+    // When typing, the user is no longer selecting from options
     if (type === 'suggest') {
+      setSelectedFromOptions(false)
       filterOptions(newValue)
     }
 
@@ -159,6 +181,7 @@ const CustomInput = ({
    * @returns {void}
    */
   const handleBlur = (e) => {
+    handleValidate(inputValue)
     if (type !== 'suggest') {
       setIsFocused(false)
       return
@@ -180,6 +203,7 @@ const CustomInput = ({
     const label = typeof option === 'string' ? option : option.label
 
     setInputValue(label)
+    setSelectedFromOptions(true)
 
     // Create a synthetic event to mimic the onChange event
     const syntheticEvent = {
@@ -192,6 +216,9 @@ const CustomInput = ({
     onChange(syntheticEvent)
     onOptionSelect(value, label)
     setIsFocused(false)
+    
+    // Clear any error messages when a valid option is selected
+    setErrorMessage('')
   }
 
   const handleKeyDown = e => {
@@ -218,7 +245,7 @@ const CustomInput = ({
 
   // Common styling for both input and textarea
   const commonClassName =
-    `${errorMessage ? '!ring-2 !ring-error' : ''} 
+    `${errorMessage && !isFocused ? '!ring-2 !ring-error' : ''} 
       mt-0.5 flex bg-white border-2 border-primary/50 transition-all rounded p-2 focus:outline-none focus:ring-2 focus:ring-primary font-medium`
 
   return (
@@ -272,7 +299,7 @@ const CustomInput = ({
                     className={`px-3 py-2 cursor-pointer hover:bg-primary/10 ${
                       index === highlightedIndex ? 'bg-primary/20' : ''
                     }`}
-                    onClick={() => handleOptionClick(option)}
+                    onPointerDown={() => handleOptionClick(option)}
                     onMouseEnter={() => setHighlightedIndex(index)}
                   >
                     {label}
@@ -289,7 +316,7 @@ const CustomInput = ({
           <motion.div
             initial={{ height: 0, opacity: 0, marginTop: 0 }}
             animate={{ height: 'auto', opacity: 1, marginTop: 4 }}
-            exit={{ height: 0, opacity: 0, marginTop: 0 }}
+            exit={{ height: 0, opacity: 0, marginTop: 0, transition: { duration: 0.1 } }}
             transition={movementTransition}
           >
             <motion.p
@@ -401,6 +428,7 @@ CustomInput.propTypes = {
     ])
   ),
   onOptionSelect: PropTypes.func,
+  forceSuggestions: PropTypes.bool,
 }
 
 export default CustomInput
