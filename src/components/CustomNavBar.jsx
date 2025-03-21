@@ -75,7 +75,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
         }`}
     >
       <div className='flex items-center text-2xl justify-start max-md:flex-1'>
-        <NavLink to={'/'} className='font-semibold text-nowrap'>
+        <NavLink to={'/'} className='font-semibold text-nowrap focus:ring-offset-2'>
           Last Minute
         </NavLink>
       </div>

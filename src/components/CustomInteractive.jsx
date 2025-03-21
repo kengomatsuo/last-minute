@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { use, useState } from 'react'
+import { useState } from 'react'
 
 /**
  * CustomInteractive component
