@@ -10,12 +10,13 @@
 
 ### 2. 📋 Detailed Description
 - **Structure your description with these sections:**
-  - **What**: Specifically what changes were made (be concrete)
+  - **What**: Specifically what changes were made (be concrete, do not leave any behind)
   - **Why**: The specific problem these changes solve
   - **How**: The technical approach used to implement the solution
 - **Be specific**: Never use vague terms like "enhanced," "improved," "refactored," "optimized"
 - **Use bullet points** for better readability
 - **Include**: Measurable impacts where possible (e.g., "reduced load time by 30%")
+- **Document all new code elements**: Always mention all newly added props, functions, hooks, components, etc. and include examples of how to use them
 - **Example**:
     ```
     ## 🔍 What
@@ -25,17 +26,22 @@
     - Built JWT token generation and validation endpoints
     - Added password hashing with bcrypt (10 salt rounds)
     - Added remember-me functionality with 30-day token expiration
-
-    ## 🎯 Why
-    Users need to securely access their personal data. This prevents:
-    - Unauthorized access to user information
-    - Data manipulation by unauthenticated requests
-    - Session hijacking via token validation
-
-    ## 🛠️ How
-    - Used React Hook Form for field validation
-    - Implemented stateless JWT authentication
-    - Added secure HttpOnly cookies for token storage
+    
+    ### New Components/Functions/Hooks:
+    
+    #### useAuth() Hook
+    ```jsx
+    // Returns authentication state and methods
+    const { user, login, logout, register } = useAuth();
+    ```
+    
+    #### <ProtectedRoute> Component
+    ```jsx
+    // Redirects to login if user is not authenticated
+    <ProtectedRoute>
+      <Dashboard />
+    </ProtectedRoute>
+    ```
     ```
 
 ### 3. 🔗 Reference Issues and Related Pull Requests
