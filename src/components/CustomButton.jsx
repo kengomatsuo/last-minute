@@ -39,7 +39,7 @@ const CustomButton = ({
       type={type}
       onClick={handleClick}
       className={`${
-        isLoading ? 'pointer-events-none opacity-50' : ''
+        isLoading ? 'pointer-events-none' : ''
       } ${className} px-2.5 py-1 truncate transition-all ${
         filled
           ? 'bg-primary text-secondary-text'
@@ -48,7 +48,7 @@ const CustomButton = ({
         disabled || isLoading
           ? 'opacity-50 !cursor-not-allowed !hover:border-primary'
           : filled
-          ? 'hover:bg-filled-button-hover hover:border-filled-button-hover active:bg-filled-button-active  active:ring-primary active:ring focus:ring-primary/75'
+          ? 'hover:bg-filled-button-hover hover:border-filled-button-hover active:bg-filled-button-active  active:ring-primary active:ring focus:!ring-background-secondary'
           : 'hover:bg-interactive-hover hover:border-filled-button-hover active:bg-interactive-active  active:ring-primary active:ring focus:ring-primary'
       } border-2 min-w-fit border-primary text-center box-border rounded-md font-semibold text-lg cursor-pointer
        focus:outline-none focus:ring-2`}
