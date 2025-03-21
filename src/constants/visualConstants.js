@@ -1,6 +1,6 @@
-export const navBarHeight = '4.5rem'
+export const NAVBAR_HEIGHT = '4.5rem'
 
-export const movementTransition = {
+export const MOVEMENT_TRANSITION = {
     type: 'spring',
     stiffness: 170,
     damping: 26,

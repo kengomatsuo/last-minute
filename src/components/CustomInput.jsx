@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import { useDebounce } from '../hooks'
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { movementTransition } from '../constants/visualConstants'
+import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
 
 /**
  * CustomInput component
@@ -287,7 +287,7 @@ const CustomInput = ({
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0, transition: { duration: 0.1 } }}
               exit={{ opacity: 0, y: -10, transition: { duration: 0.1 } }}
-              transition={movementTransition}
+              transition={MOVEMENT_TRANSITION}
               className='absolute left-0 right-0 top-full mt-1 max-h-60 overflow-y-auto rounded-md border border-primary/30 bg-white shadow-lg z-10'
               ref={dropdownRef}
             >
@@ -316,8 +316,8 @@ const CustomInput = ({
           <motion.div
             initial={{ height: 0, opacity: 0, marginTop: 0 }}
             animate={{ height: 'auto', opacity: 1, marginTop: 4 }}
-            exit={{ height: 0, opacity: 0, marginTop: 0, transition: { duration: 0.1 } }}
-            transition={movementTransition}
+            exit={{ height: 0, opacity: 0, marginTop: 0, transition: { duration: 0.15 } }}
+            transition={MOVEMENT_TRANSITION}
           >
             <motion.p
               className='text-error'

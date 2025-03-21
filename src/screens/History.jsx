@@ -1,7 +1,7 @@
-import { navBarHeight } from '../constants/visualConstants'
+import { NAVBAR_HEIGHT } from '../constants/visualConstants'
 
 const History = () => {
-  return <div style={{ paddingTop: navBarHeight }}>History</div>
+  return <div style={{ paddingTop: NAVBAR_HEIGHT }}>History</div>
 }
 
 export default History
