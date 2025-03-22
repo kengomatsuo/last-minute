@@ -15,8 +15,11 @@ import { useConsoleLog } from '../hooks'
 
 const defaultContext = {
   courses: [],
+	pendingCourses: [],
   requestCourse: async () => Promise.resolve(),
   isRequestPending: false,
+	cancelRequestCourse: async () => Promise.resolve(),
+	setIsCancelRequestPending: false,
   cancelCourse: async () => Promise.resolve(),
   isCancelPending: false,
 }
@@ -34,6 +37,7 @@ const CourseContextProvider = ({ children }) => {
   const [courses, setCourses] = useState([])
   const [pendingCourses, setPendingCourses] = useState([])
   const [isRequestPending, setIsRequestPending] = useState(false)
+	const [isCancelRequestPending, setIsCancelRequestPending] = useState(false)
   const [isCancelPending, setIsCancelPending] = useState(false)
 
   useConsoleLog('pendingCourses', pendingCourses)
@@ -98,6 +102,24 @@ const CourseContextProvider = ({ children }) => {
     }
   }
 
+	/**
+	 * Cancel a course request by deleting it from the requests collection.
+	 *
+	 * @param {string} id - The ID of the request to cancel
+	 * @returns {Promise<void>} Promise that resolves when the cancellation is complete
+	 */
+	const cancelRequestCourse = async id => {
+		try {
+			setIsCancelRequestPending(true)
+			await deleteDoc(doc(db, 'requests', id))
+			console.log('Course cancelled successfully!')
+		} catch (error) {
+			console.error('Error cancelling course:', error)
+		} finally {
+			setIsCancelRequestPending(false)
+		}
+	}
+
   /**
    * Cancel a course by deleting it from the courses collection.
    *
@@ -122,8 +144,10 @@ const CourseContextProvider = ({ children }) => {
         courses,
         pendingCourses,
         requestCourse,
+				cancelRequestCourse,
         cancelCourse,
         isRequestPending,
+				isCancelRequestPending,
         isCancelPending,
       }}
     >
