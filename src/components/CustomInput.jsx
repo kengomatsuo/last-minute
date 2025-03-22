@@ -12,24 +12,37 @@ import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
  *
  * @param {Object} props - Component props
  * @param {string} props.name - The name of the input field
- * @param {'text' | 'password' | 'email' | 'number' | 'tel' | 'url' | 'search' | 'date' | 'datetime-local' | 'month' | 'week' | 'time' | 'color' | 'suggest'} props.type - The type of the input field
- * @param {function} props.onChange - The function to call when the input value changes
+ * @param {'text' | 'password' | 'email' | 'number' | 'tel' | 'url' | 'search' | 
+ * 'date' | 'datetime-local' | 'month' | 'week' | 'time' | 'color' | 'suggest'} 
+ * props.type - The type of the input field
+ * @param {function} props.onChange - The function to call when the input value 
+ * changes
  * @param {string} [props.placeholder] - The placeholder text for the input field
  * @param {string} [props.value] - The current value of the input field
  * @param {boolean} [props.required] - Whether the input field is required
  * @param {string} [props.className] - Additional CSS classes for the input field
  * @param {boolean} [props.disabled] - Whether the input field is disabled
- * @param {boolean} [props.autoFocus] - Whether the input field should be focused on mount
- * @param {string} [props.autoComplete] - The autocomplete behavior for the input field
- * @param {function} [props.validateFunction] - A custom validation function for the input value
- * @param {string} [props.errorMessage] - The error message to display when validation fails
+ * @param {boolean} [props.autoFocus] - Whether the input field should be focused 
+ * on mount
+ * @param {string} [props.autoComplete] - The autocomplete behavior for the 
+ * input field
+ * @param {function} [props.validateFunction] - A custom validation function 
+ * for the input value
+ * @param {string} [props.errorMessage] - The error message to display when 
+ * validation fails
  * @param {React.RefObject} [props.ref] - A ref object to expose the input field
- * @param {boolean | string} [props.autoSave] - The key to use for saving to localStorage (defaults to `form_${props.name}`)
-  or false to disable auto-save
- * @param {number} [props.saveDelay] - The delay in ms before saving to localStorage (defaults to 1000ms)
- * @param {boolean} [props.multiline] - Whether the input field is a textarea, and the number of rows if it is
- * @param {Array<string | {label: string, value: string}>} [props.options] - Options to display when type is 'suggest'
- * @param {boolean} [props.forceSuggestions] - When true, requires selection from available options for suggest inputs
+ * @param {boolean | string} [props.autoSave] - The key to use for saving to 
+ * localStorage (defaults to `form_${props.name}`) or false to disable auto-save
+ * @param {number} [props.saveDelay] - The delay in ms before saving to 
+ * localStorage (defaults to 1000ms)
+ * @param {boolean | number} [props.multiline] - Whether the input field is a 
+ * textarea, and the number of rows if it is
+ * @param {Array<string | {label: string, value: string}>} [props.options] - 
+ * Options to display when type is 'suggest'
+ * @param {function} [props.onOptionSelect] - Function called when an option 
+ * is selected
+ * @param {boolean} [props.forceSuggestions] - When true, requires selection from 
+ * available options for suggest inputs
  */
 const CustomInput = ({
   onChange = () => {},
@@ -60,13 +73,17 @@ const CustomInput = ({
   const [highlightedIndex, setHighlightedIndex] = useState(-1)
   const [filteredOptions, setFilteredOptions] = useState(options)
 
-  // Initialize input value from localStorage if autoSave is enabled, otherwise use prop value
+  // Initialize input value from localStorage if autoSave is enabled, 
+  // otherwise use prop value
   const [inputValue, setInputValue] = useState(
     autoSave && savedValue ? savedValue : value
   )
 
   const [selectedFromOptions, setSelectedFromOptions] = useState(false)
   const dropdownRef = useRef(null)
+  const inputContainerRef = useRef(null)
+  // Add refs to track highlighted option elements
+  const highlightedOptionRef = useRef(null)
 
   // Create a debounced save function
   const debouncedSave = useDebounce(valueToSave => {
@@ -76,13 +93,51 @@ const CustomInput = ({
     }
   }, saveDelay)
 
+  // Scroll highlighted option into view when navigating with keyboard
+  useEffect(() => {
+    if (
+      highlightedIndex >= 0 &&
+      dropdownRef.current &&
+      type === 'suggest' &&
+      isFocused
+    ) {
+      try {
+        const optionElements = dropdownRef.current.querySelectorAll('div')
+        if (
+          optionElements &&
+          optionElements.length > highlightedIndex
+        ) {
+          const highlightedOption = optionElements[highlightedIndex]
+          
+          if (highlightedOption) {
+            // Calculate if element is outside of visible area
+            const containerRect = dropdownRef.current.getBoundingClientRect()
+            const optionRect = highlightedOption.getBoundingClientRect()
+            
+            // Check if the highlighted option is outside the visible area
+            if (
+              optionRect.bottom > containerRect.bottom || 
+              optionRect.top < containerRect.top
+            ) {
+              // Scroll the option into view with a smooth behavior
+              highlightedOption.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest'
+              })
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error scrolling dropdown option into view:', error)
+      }
+    }
+  }, [highlightedIndex, isFocused, type])
+
   useImperativeHandle(ref, () => {
     return {
       validate: () => handleValidate(inputValue),
-      // Expose saved value and manual save function
       getSavedValue: () => savedValue,
       saveValue: val => autoSave && setSavedValue(val || inputValue),
-      // Reset auto-saved value
       reset: () => {
         setInputValue('')
         setSavedValue('')
@@ -95,8 +150,8 @@ const CustomInput = ({
     const handleClickOutside = event => {
       if (
         isFocused &&
-        ref.current &&
-        !ref.current.contains(event.target) &&
+        inputContainerRef.current &&
+        !inputContainerRef.current.contains(event.target) &&
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target)
       ) {
@@ -108,7 +163,7 @@ const CustomInput = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isFocused, ref])
+  }, [isFocused])
 
   // Update filtered options when options or input value changes
   useEffect(() => {
@@ -133,8 +188,7 @@ const CustomInput = ({
   // Save the current value when the component unmounts
   useEffect(() => {
     return () => {
-      // Final save on unmount - this is more reliable now because we're saving the state
-      // rather than trying to access DOM elements during unmount
+      // Final save on unmount 
       if (autoSave && inputValue) {
         setSavedValue(inputValue)
         console.log(`Saved ${props.name} value on unmount: ${inputValue}`)
@@ -143,6 +197,12 @@ const CustomInput = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  /**
+   * Filters the options based on input text
+   * 
+   * @param {string} text - Text to filter options by
+   * @returns {void}
+   */
   const filterOptions = text => {
     if (!text.length) {
       setFilteredOptions(options)
@@ -168,7 +228,8 @@ const CustomInput = ({
    * Validates the input value against requirements and custom validation
    *
    * @param {string} value - The value to validate
-   * @returns {Promise<boolean>} - Promise that resolves when validation is complete
+   * @returns {Promise<boolean>} - Promise that resolves when validation is 
+   * complete
    */
   const handleValidate = async value => {
     // First check if field is required but empty
@@ -215,6 +276,12 @@ const CustomInput = ({
 
   const debouncedValidateFunction = useDebounce(handleValidate, 500)
 
+  /**
+   * Handles input change events
+   * 
+   * @param {React.ChangeEvent} e - The change event
+   * @returns {void}
+   */
   const handleChange = e => {
     setErrorMessage('')
     const newValue = e.target.value
@@ -235,6 +302,11 @@ const CustomInput = ({
     onChange(e)
   }
 
+  /**
+   * Handles input focus events
+   * 
+   * @returns {void}
+   */
   const handleFocus = () => {
     setIsFocused(true)
   }
@@ -243,6 +315,7 @@ const CustomInput = ({
    * Handles the blur event for the input.
    * For suggest-type inputs, we need to check if this is a tab navigation.
    *
+   * @param {React.FocusEvent} e - The blur event
    * @returns {void}
    */
   const handleBlur = e => {
@@ -271,6 +344,12 @@ const CustomInput = ({
     }
   }
 
+  /**
+   * Handles the selection of an option from the dropdown
+   *
+   * @param {string | Object} option - The selected option
+   * @returns {void}
+   */
   const handleOptionClick = option => {
     const value = typeof option === 'string' ? option : option.value
     const label = typeof option === 'string' ? option : option.label
@@ -299,6 +378,12 @@ const CustomInput = ({
     }
   }
 
+  /**
+   * Handles keyboard navigation of the dropdown
+   *
+   * @param {React.KeyboardEvent} e - The keyboard event
+   * @returns {void}
+   */
   const handleKeyDown = e => {
     if (!isFocused || type !== 'suggest' || !filteredOptions.length) return
 
@@ -334,6 +419,7 @@ const CustomInput = ({
       className={`${className} w-full flex flex-col text-sm font-semibold relative`}
       htmlFor={props.name}
       layout
+      ref={inputContainerRef}
     >
       {props.name}
       {props.required && '*'}
@@ -388,6 +474,7 @@ const CustomInput = ({
                     }`}
                     onPointerDown={() => handleOptionClick(option)}
                     onMouseEnter={() => setHighlightedIndex(index)}
+                    ref={index === highlightedIndex ? highlightedOptionRef : null}
                   >
                     {label}
                   </div>

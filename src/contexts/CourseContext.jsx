@@ -69,6 +69,7 @@ const CourseContextProvider = ({ children }) => {
       coursesUnsubscribe()
       requestsUnsubscribe()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   /**
