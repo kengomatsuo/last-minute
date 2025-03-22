@@ -318,6 +318,10 @@ const CustomInput = ({
     } else if (e.key === 'Escape') {
       e.preventDefault()
       setIsFocused(false)
+    } else if (e.key === 'Tab') {
+      // Close the dropdown when tabbing away, but don't prevent default
+      // to allow natural tab navigation
+      setIsFocused(false)
     }
   }
 

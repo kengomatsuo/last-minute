@@ -43,8 +43,8 @@
 }
 
 * {
-  @apply focus:ring-2;
-  @apply focus:ring-primary;
+  /* @apply focus:ring-2;
+  @apply focus:ring-primary; */
   @apply focus:outline-none;
   @apply focus:rounded-md;
 }

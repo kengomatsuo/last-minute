@@ -29,7 +29,7 @@ const CustomInteractive = ({
     <div
       className={`${
         isLoading ? 'pointer-events-none opacity-50' : ''
-      } ${className} px-3 py-1 w-full  rounded-md hover:bg-interactive-hover
+      } ${className} px-3 py-1 w-full rounded-md hover:bg-interactive-hover
         active:bg-interactive-active active:ring-background-secondary active:ring truncate text-primary-text text-center font-medium text-lg cursor-pointer`}
       onClick={handleClick}
       onPointerDown={() => setIsPressed(true)}
