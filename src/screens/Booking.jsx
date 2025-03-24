@@ -1,7 +1,6 @@
 import { use, useRef } from 'react'
 import { CustomCard, CustomButton, CustomInput } from '../components'
 import { CourseContext } from '../contexts/CourseContext'
-import { details } from 'framer-motion/client'
 
 const Booking = () => {
   const { requestCourse, isRequestPending } = use(CourseContext)

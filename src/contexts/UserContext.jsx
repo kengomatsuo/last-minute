@@ -33,6 +33,10 @@ const UserContextProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, firebaseUser => {
       setUser(firebaseUser)
+      // if user is not signed in, delete all the data from the local storage
+      if (!firebaseUser) {
+        localStorage.clear()
+      }
     })
 
     return () => unsubscribe()
