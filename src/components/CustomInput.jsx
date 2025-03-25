@@ -13,36 +13,36 @@ import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
  * @param {Object} props - Component props
  * @param {string} [props.label] - The label for the input field
  * @param {string} props.name - The name of the input field
- * @param {'text' | 'password' | 'email' | 'number' | 'tel' | 'url' | 'search' | 
- * 'date' | 'datetime-local' | 'month' | 'week' | 'time' | 'color' | 'suggest'} 
+ * @param {'text' | 'password' | 'email' | 'number' | 'tel' | 'url' | 'search' |
+ * 'date' | 'datetime-local' | 'month' | 'week' | 'time' | 'color' | 'suggest' | 'display'}
  * props.type - The type of the input field
- * @param {function} props.onChange - The function to call when the input value 
+ * @param {function} props.onChange - The function to call when the input value
  * changes
  * @param {string} [props.placeholder] - The placeholder text for the input field
  * @param {string} [props.value] - The current value of the input field
  * @param {boolean} [props.required] - Whether the input field is required
  * @param {string} [props.className] - Additional CSS classes for the input field
  * @param {boolean} [props.disabled] - Whether the input field is disabled
- * @param {boolean} [props.autoFocus] - Whether the input field should be focused 
+ * @param {boolean} [props.autoFocus] - Whether the input field should be focused
  * on mount
- * @param {string} [props.autoComplete] - The autocomplete behavior for the 
+ * @param {string} [props.autoComplete] - The autocomplete behavior for the
  * input field
- * @param {function} [props.validateFunction] - A custom validation function 
+ * @param {function} [props.validateFunction] - A custom validation function
  * for the input value
- * @param {string} [props.errorMessage] - The error message to display when 
+ * @param {string} [props.errorMessage] - The error message to display when
  * validation fails
  * @param {React.RefObject} [props.ref] - A ref object to expose the input field
- * @param {boolean | string} [props.autoSave] - The key to use for saving to 
+ * @param {boolean | string} [props.autoSave] - The key to use for saving to
  * localStorage (defaults to `form_${props.name}`) or false to disable auto-save
- * @param {number} [props.saveDelay] - The delay in ms before saving to 
+ * @param {number} [props.saveDelay] - The delay in ms before saving to
  * localStorage (defaults to 1000ms)
- * @param {boolean | number} [props.multiline] - Whether the input field is a 
+ * @param {boolean | number} [props.multiline] - Whether the input field is a
  * textarea, and the number of rows if it is
- * @param {Array<string | {label: string, value: string}>} [props.options] - 
+ * @param {Array<string | {label: string, value: string}>} [props.options] -
  * Options to display when type is 'suggest'
- * @param {function} [props.onOptionSelect] - Function called when an option 
+ * @param {function} [props.onOptionSelect] - Function called when an option
  * is selected
- * @param {boolean} [props.forceSuggestions] - When true, requires selection from 
+ * @param {boolean} [props.forceSuggestions] - When true, requires selection from
  * available options for suggest inputs
  */
 const CustomInput = ({
@@ -75,7 +75,7 @@ const CustomInput = ({
   const [highlightedIndex, setHighlightedIndex] = useState(-1)
   const [filteredOptions, setFilteredOptions] = useState(options)
 
-  // Initialize input value from localStorage if autoSave is enabled, 
+  // Initialize input value from localStorage if autoSave is enabled,
   // otherwise use prop value
   const [inputValue, setInputValue] = useState(
     autoSave && savedValue ? savedValue : value
@@ -105,26 +105,23 @@ const CustomInput = ({
     ) {
       try {
         const optionElements = dropdownRef.current.querySelectorAll('div')
-        if (
-          optionElements &&
-          optionElements.length > highlightedIndex
-        ) {
+        if (optionElements && optionElements.length > highlightedIndex) {
           const highlightedOption = optionElements[highlightedIndex]
-          
+
           if (highlightedOption) {
             // Calculate if element is outside of visible area
             const containerRect = dropdownRef.current.getBoundingClientRect()
             const optionRect = highlightedOption.getBoundingClientRect()
-            
+
             // Check if the highlighted option is outside the visible area
             if (
-              optionRect.bottom > containerRect.bottom || 
+              optionRect.bottom > containerRect.bottom ||
               optionRect.top < containerRect.top
             ) {
               // Scroll the option into view with a smooth behavior
               highlightedOption.scrollIntoView({
                 behavior: 'smooth',
-                block: 'nearest'
+                block: 'nearest',
               })
             }
           }
@@ -190,7 +187,7 @@ const CustomInput = ({
   // Save the current value when the component unmounts
   useEffect(() => {
     return () => {
-      // Final save on unmount 
+      // Final save on unmount
       if (autoSave && inputValue) {
         setSavedValue(inputValue)
         console.log(`Saved ${props.name} value on unmount: ${inputValue}`)
@@ -201,7 +198,7 @@ const CustomInput = ({
 
   /**
    * Filters the options based on input text
-   * 
+   *
    * @param {string} text - Text to filter options by
    * @returns {void}
    */
@@ -230,7 +227,7 @@ const CustomInput = ({
    * Validates the input value against requirements and custom validation
    *
    * @param {string} value - The value to validate
-   * @returns {Promise<boolean>} - Promise that resolves when validation is 
+   * @returns {Promise<boolean>} - Promise that resolves when validation is
    * complete
    */
   const handleValidate = async value => {
@@ -280,7 +277,7 @@ const CustomInput = ({
 
   /**
    * Handles input change events
-   * 
+   *
    * @param {React.ChangeEvent} e - The change event
    * @returns {void}
    */
@@ -306,7 +303,7 @@ const CustomInput = ({
 
   /**
    * Handles input focus events
-   * 
+   *
    * @returns {void}
    */
   const handleFocus = () => {
@@ -416,6 +413,11 @@ const CustomInput = ({
   const commonClassName = `${errorMessage && !isFocused ? '!border-error' : ''} 
       mt-0.5 flex bg-white border-2 border-primary/50 transition-all rounded p-2 focus:outline-none focus:ring-2 focus:ring-primary font-medium`
 
+      // console.log("type:", type)
+
+      // console.log("savedValue:", savedValue)
+  if (type === 'display')
+    return <input className={`${className} pointer-events-none`} type='text' name={props.name} value={savedValue} />
   return (
     <motion.label
       className={`${className} w-full flex flex-col text-sm font-semibold relative`}
@@ -450,6 +452,8 @@ const CustomInput = ({
           disabled={props.disabled}
           placeholder={props.placeholder}
           className={commonClassName}
+          min={props.min}
+          max={props.max}
           autoComplete={type === 'suggest' ? 'off' : props.autoComplete}
           ref={ref}
         />
@@ -476,7 +480,9 @@ const CustomInput = ({
                     }`}
                     onPointerDown={() => handleOptionClick(option)}
                     onMouseEnter={() => setHighlightedIndex(index)}
-                    ref={index === highlightedIndex ? highlightedOptionRef : null}
+                    ref={
+                      index === highlightedIndex ? highlightedOptionRef : null
+                    }
                   >
                     {label}
                   </div>

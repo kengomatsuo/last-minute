@@ -91,22 +91,22 @@ const CourseContextProvider = ({ children }) => {
       // Tutor view: all requests
       requestsUnsubscribe = onSnapshot(
         query(
-          collection(db, 'requests'), 
-          orderBy('createdAt', 'desc'), 
+          collection(db, 'requests'),
+          orderBy('createdAt', 'desc'),
           limit(25)
-        ), 
+        ),
         snapshot => {
-          const requestDocs = snapshot.docs.map(doc => ({ 
-            id: doc.id, 
-            ...doc.data() 
-          }));
+          const requestDocs = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
 
           // Store the last document for potential future pagination
           if (snapshot.docs.length > 0) {
-            setLastVisibleRequest(snapshot.docs[snapshot.docs.length - 1]);
+            setLastVisibleRequest(snapshot.docs[snapshot.docs.length - 1])
           }
 
-          setrequests(requestDocs);
+          setrequests(requestDocs)
         },
         error => {
           console.error('Error fetching tutor requests:', error)
@@ -134,9 +134,7 @@ const CourseContextProvider = ({ children }) => {
           where('tuteeId', '==', auth.currentUser.uid)
         ),
         snapshot => {
-          setrequests(
-            snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-          )
+          setrequests(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })))
         },
         error => {
           console.error('Error fetching student requests:', error)
@@ -158,8 +156,8 @@ const CourseContextProvider = ({ children }) => {
   const loadNewerRequests = async () => {
     if (!isTutor) return
     if (!lastVisibleRequest) {
-      console.warn('No more requests to load');
-      return;
+      console.warn('No more requests to load')
+      return
     }
 
     try {
@@ -168,28 +166,25 @@ const CourseContextProvider = ({ children }) => {
         orderBy('createdAt', 'asc'),
         startAfter(lastVisibleRequest),
         limit(25)
-      );
+      )
 
-      const snapshot = await getDocs(newerRequestsQuery);
+      const snapshot = await getDocs(newerRequestsQuery)
 
       if (!snapshot.empty) {
         // Convert snapshot to array of request objects
         const newerRequests = snapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data()
-        }));
+          ...doc.data(),
+        }))
 
         // Update state by appending older requests
-        setrequests(currentRequests => [
-          ...currentRequests, 
-          ...newerRequests
-        ]);
+        setrequests(currentRequests => [...currentRequests, ...newerRequests])
 
         // Update the last visible document for next pagination
-        setLastVisibleRequest(snapshot.docs[snapshot.docs.length - 1]);
+        setLastVisibleRequest(snapshot.docs[snapshot.docs.length - 1])
       }
     } catch (error) {
-      console.error('Error loading older requests:', error);
+      console.error('Error loading older requests:', error)
     }
   }
 
@@ -220,7 +215,7 @@ const CourseContextProvider = ({ children }) => {
       })
       alert('Request accepted successfully!')
     } catch (error) {
-      alert('Error accepting request:', error);
+      alert('Error accepting request:', error)
     }
     setIsAcceptPending(false)
   }
@@ -240,7 +235,9 @@ const CourseContextProvider = ({ children }) => {
             course.topic === courseForm.topic
         )
       )
-        throw new Error('Course already requested')
+        throw new Error(
+          `Course already requested with subject: ${courseForm.subject} and topic: ${courseForm.topic}`
+        )
       setIsRequestPending(true)
       await addDoc(collection(db, 'requests'), {
         tuteeId: auth.currentUser.uid,
