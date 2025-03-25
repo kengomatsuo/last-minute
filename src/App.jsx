@@ -15,10 +15,11 @@ import MainLoading from './screens/MainLoading'
 import Contact from './screens/Contact'
 import History from './screens/History'
 import { CourseContextProvider } from './contexts/CourseContext'
+import Requests from './screens/Requests'
 
 /**
  * Layout component that wraps authenticated routes with CourseContextProvider
- * 
+ *
  * @returns {JSX.Element} The authenticated route layout with course context
  */
 const AuthenticatedLayout = () => (
@@ -29,7 +30,7 @@ const AuthenticatedLayout = () => (
 
 /**
  * Main application component that handles routing and authentication state.
- * 
+ *
  * @returns {JSX.Element} The rendered application
  */
 function App() {
@@ -81,18 +82,24 @@ function App() {
                 <Routes location={location} key={location.pathname}>
                   <Route
                     path='/'
-                    element={user ? (
-                      <CourseContextProvider>
-                        <Dashboard />
-                      </CourseContextProvider>
-                    ) : (
-                      <Landing />
-                    )}
+                    element={
+                      user ? (
+                        <CourseContextProvider>
+                          <Dashboard />
+                        </CourseContextProvider>
+                      ) : (
+                        <Landing />
+                      )
+                    }
                   />
 
                   {user ? (
                     <Route element={<AuthenticatedLayout />}>
-                      <Route path='/booking' element={<Booking />} />
+                      {user.claims?.isTutor ? (
+                        <Route path='/requests' element={<Requests />}/>
+                      ) : (
+                        <Route path='/booking' element={<Booking />} />
+                      )}
                       <Route path='/session' element={<Session />} />
                       <Route path='/history' element={<History />} />
                       <Route path='/settings' element={<Settings />} />

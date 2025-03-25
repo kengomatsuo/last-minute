@@ -1,7 +1,6 @@
 import { use, useRef } from 'react'
 import { CustomCard, CustomButton, CustomInput } from '../components'
 import { CourseContext } from '../contexts/CourseContext'
-import { details } from 'framer-motion/client'
 
 const Booking = () => {
   const { requestCourse, isRequestPending } = use(CourseContext)
@@ -59,7 +58,8 @@ const Booking = () => {
           >
             <CustomInput
               ref={topicRef}
-              name='Topic'
+              name='topic'
+              label='Topic'
               type='text'
               disabled={isRequestPending}
               placeholder='Topics, keywords, etc.'
@@ -68,7 +68,8 @@ const Booking = () => {
             />
             <CustomInput
               ref={subjectRef}
-              name='Subject'
+              name='subject'
+              label='Subject'
               type='suggest'
               disabled={isRequestPending}
               options={subjectOptions}
@@ -79,8 +80,9 @@ const Booking = () => {
             />
             <CustomInput
               ref={detailsRef}
+              name='details'
+              label='Details'
               multiline={5}
-              name='Details'
               disabled={isRequestPending}
               placeholder='I need help with this particular question...'
               autoSave='BookingDraft_Details'

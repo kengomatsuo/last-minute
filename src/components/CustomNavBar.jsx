@@ -64,7 +64,9 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
   const navigationPaths = user
     ? [
         { name: 'Dashboard', path: '/' },
-        { name: 'Book', path: '/booking' },
+        user.claims?.isAdmin
+          ? { name: 'Requests', path: '/requests' }
+          : { name: 'Booking', path: '/booking' },
         { name: 'History', path: '/history' },
         { name: 'Settings', path: '/settings' },
       ]
@@ -219,7 +221,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                     >
                       <CustomInteractive
                         onClick={() => setIsMenuOpen(false)}
-                        className='py-2 flex justify-end'
+                        className='py-2 flex justify-end text-right'
                       >
                         {navPath.name}
                       </CustomInteractive>
