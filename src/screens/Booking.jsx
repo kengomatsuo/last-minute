@@ -1,8 +1,11 @@
 import { use, useRef } from 'react'
 import { CustomCard, CustomButton, CustomInput } from '../components'
 import { CourseContext } from '../contexts/CourseContext'
+import { ScreenContext } from '../contexts/ScreenContext'
+import CalendarIcon from '../assets/icons/calendar-clock.svg?react'
 
 const Booking = () => {
+  const { isSmallScreen } = use(ScreenContext)
   const { requestCourse, isRequestPending } = use(CourseContext)
   const formRef = useRef()
   const topicRef = useRef()
@@ -87,14 +90,26 @@ const Booking = () => {
               placeholder='I need help with this particular question...'
               autoSave='BookingDraft_Details'
             />
-            <CustomButton
-              disabled={isRequestPending}
-              className='mt-4'
-              filled
-              type='submit'
-            >
-              Find Tutors
-            </CustomButton>
+            <div className='mt-4 w-full flex gap-2'>
+              <CustomButton
+                disabled={isRequestPending}
+                className={isSmallScreen ? '' : 'flex-1'}
+              >
+                {isSmallScreen ? (
+                  <CalendarIcon width={24} height={24} />
+                ) : (
+                  'Schedule Booking'
+                )}
+              </CustomButton>
+              <CustomButton
+                disabled={isRequestPending}
+                className='flex-1'
+                filled
+                type='submit'
+              >
+                Instant Booking
+              </CustomButton>
+            </div>
           </form>
         </div>
       </CustomCard>

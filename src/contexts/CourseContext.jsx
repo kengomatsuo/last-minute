@@ -207,7 +207,6 @@ const CourseContextProvider = ({ children }) => {
       await runTransaction(db, async transaction => {
         // exclude request.id from the request object
         const { id, createdAt, ...request } = request
-
         // Create a new course document with the request data
         transaction.set(doc(collection(db, 'courses')), {
           ...request,
