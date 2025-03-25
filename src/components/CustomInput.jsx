@@ -11,6 +11,7 @@ import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
  * Uses debouncing to prevent excessive saves during typing.
  *
  * @param {Object} props - Component props
+ * @param {string} [props.label] - The label for the input field
  * @param {string} props.name - The name of the input field
  * @param {'text' | 'password' | 'email' | 'number' | 'tel' | 'url' | 'search' | 
  * 'date' | 'datetime-local' | 'month' | 'week' | 'time' | 'color' | 'suggest'} 
@@ -45,6 +46,7 @@ import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
  * available options for suggest inputs
  */
 const CustomInput = ({
+  label = '',
   onChange = () => {},
   className,
   validateFunction,
@@ -421,7 +423,7 @@ const CustomInput = ({
       layout
       ref={inputContainerRef}
     >
-      {props.name}
+      {label}
       {props.required && '*'}
 
       {multiline ? (
