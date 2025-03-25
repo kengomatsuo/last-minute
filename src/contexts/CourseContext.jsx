@@ -193,6 +193,12 @@ const CourseContextProvider = ({ children }) => {
     }
   }
 
+  /**
+   * Accept a course request by creating a new course and deleting the request.
+   *
+   * @param {Object} request - The request to accept
+   * @returns {Promise<void>} Promise that resolves when the request is accepted
+   */
   const acceptRequest = async request => {
     if (!isTutor) return
     setIsAcceptPending(true)
