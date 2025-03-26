@@ -11,6 +11,7 @@ import User from '../assets/icons/user.svg?react'
 import Email from '../assets/icons/email'
 import Password from '../assets/icons/password.svg?react'
 import Logo from '../assets/icons/logo.svg?react'
+import Error from '../assets/icons/error'
 import { isEmpty, set } from 'lodash'
 import { AnimatePresence, motion } from 'framer-motion'
 import Popup from '../components/PopUp'
@@ -25,6 +26,7 @@ const Auth = () => {
 
   const [hover, setHover] = useState(false)
   const [showPopup, setShowPopup] = useState(false)
+  const [popupContent, setPopupContent] = useState(<></>)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -47,22 +49,34 @@ const Auth = () => {
   const [action, setAction] = useState(location.state?.action || 'signin')
 
   useEffect(() => {
-    setErrorMessage({
-      name: '',
-      email: '',
-      retypePassword: '',
-    })
-    setName('')
-    setEmail('')
-    setPassword('')
-    setRetypePassword('')
-    handleInputChange(password)
+    if (action === 'signin') {
+      setErrorMessage({
+        name: '',
+        email: '',
+        retypePassword: '',
+      })
+      setName('')
+      setEmail('')
+      setPassword('')
+      setRetypePassword('')
+      handleInputChange(password)
+    } else if (action === 'register') {
+      setName('')
+      setPassword('')
+    }
   }, [action])
 
   useEffect(() => {
     if (!isEmpty(user)) {
       if (!user?.emailVerified) {
         setShowPopup(true)
+        setPopupContent(
+          <div className='flex flex-col items-center justify-center pt-4'>
+            <Email width={100} height={100} color={'rgba(173, 169, 145)'} />
+            <h2 className='font-semibold text-center text-lg text-primary mt-6'>Email Verification has been sent to {isEmpty(user?.email) ? 'your email' : user?.email}!</h2>
+            <p className='font-extralight text-sm mt-3'>Please verify your email before signing in...</p>
+          </div>
+        )
         setAction('signin')
       } else {
         navigate('/')
@@ -103,7 +117,18 @@ const Auth = () => {
     setErrorMessage(newErrors)
 
     if (validated) {
-      await signUp({ username: name, email: email, password: password })
+      const response = await signUp({ username: name, email: email, password: password })
+
+      if (response === 'Email already in use') {
+        setShowPopup(true)
+        setPopupContent(
+          <div className='flex flex-col items-center justify-center pt-4'>
+            <Error width={100} height={100} color={'rgba(173, 169, 145)'} />
+            <h2 className='font-semibold text-center text-lg text-primary mt-6'>Oops! {response}!</h2>
+            <p className='font-extralight text-sm mt-3'>Try signing in instead...</p>
+          </div>
+        )
+      }
     }
 
     return
@@ -137,11 +162,7 @@ const Auth = () => {
 
       {showPopup && (
         <Popup onClose={() => setShowPopup(false)}>
-          <div className='flex flex-col items-center justify-center pt-4'>
-            <Email width={100} height={100} color={'rgba(173, 169, 145)'} />
-            <h2 className='font-semibold text-center text-lg text-primary mt-6'>Email Verification has been sent to {isEmpty(user?.email) ? 'your email' : user?.email}!</h2>
-            <p className='font-extralight text-sm mt-3'>Please verify your email before signing in...</p>
-          </div>
+          {popupContent}
         </Popup>
       )}
 

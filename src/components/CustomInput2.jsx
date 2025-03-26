@@ -53,7 +53,6 @@ const CustomInput2 = ({
   }, [props])
 
   const handleValidate = async value => {
-    console.log('a')
     try {
       await validateFunction(value)
       setErrorMessage('')
@@ -71,7 +70,7 @@ const CustomInput2 = ({
   }
 
   // Common styling for both input and textarea
-  const commonClassName = 'mt-0.5 flex bg-white w-full border-b-2 border-primary/50 transition-all p-2 focus:outline-none font-medium'
+  const commonClassName = 'mt-0.5 flex bg-white w-full border-b-2 border-primary/50 transition-all p-2 !rounded-none !focus:shadow-none focus:rounded-none focus:ring-0 focus:outline-none font-medium'
 
   return (
     <motion.label
@@ -100,13 +99,13 @@ const CustomInput2 = ({
             </div>
             <input
                 {...props}
-                type={see ? 'text' : props.type}
+                type={see ? 'text' : props?.type}
                 onChange={handleChange}
                 className={commonClassName}
                 onFocus={() => setFocus(true)}
                 onBlur={() => setFocus(false)}
             />
-            {props.type === 'password' && (
+            {props?.type === 'password' && (
                 <button
                     type='button'
                     className='focus:outline-none border-b-2 border-primary/50 flex items-center justify-center h-10'

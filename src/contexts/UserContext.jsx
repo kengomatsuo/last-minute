@@ -98,6 +98,10 @@ const UserContextProvider = ({ children }) => {
 
       await waitForUserUpdate()
     } catch (error) {
+      if (error.code === 'auth/email-already-in-use') {
+        return 'Email already in use'
+      }
+
       console.error('Error signing up:', error)
     }
   }
