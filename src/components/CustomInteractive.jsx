@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { use, useState } from 'react'
+import { useState } from 'react'
 
 /**
  * CustomInteractive component
@@ -29,7 +29,7 @@ const CustomInteractive = ({
     <div
       className={`${
         isLoading ? 'pointer-events-none opacity-50' : ''
-      } ${className} px-3 py-1 w-full  rounded-md hover:bg-interactive-hover
+      } ${className} px-3 py-1 w-full rounded-md hover:bg-interactive-hover
         active:bg-interactive-active active:ring-background-secondary active:ring truncate text-primary-text text-center font-medium text-lg cursor-pointer`}
       onClick={handleClick}
       onPointerDown={() => setIsPressed(true)}
@@ -38,7 +38,7 @@ const CustomInteractive = ({
       onPointerLeave={() => setIsPressed(false)}
     >
       <div
-        className={`transition-transform w-min ${
+        className={`transition-transform w-full ${
           isPressed ? 'scale-[97%]' : ''
         }`}
       >

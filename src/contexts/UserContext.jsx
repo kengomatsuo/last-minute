@@ -5,15 +5,26 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
-} from 'firebase/auth' // Import Firebase auth functions
-import { auth } from '../../firebaseConfig'
+  sendEmailVerification,
+  onIdTokenChanged,
+} from 'firebase/auth'
+import { auth, db, functions } from '../../firebaseConfig'
+import { useConsoleLog } from '../hooks'
+import { httpsCallable } from 'firebase/functions'
+import { doc, setDoc } from 'firebase/firestore'
 
 /**
  * @typedef {Object} UserContextType
- * @property {import("firebase/auth").User | undefined} user - The current authenticated user.
- * @property {(userDetails: { email: string; password: string }) => Promise<void>} signUp - Function to sign up a new user.
- * @property {(credentials: { email: string; password: string }) => Promise<void>} signIn - Function to sign in an existing user.
- * @property {() => Promise<void>} signOut - Function to sign out the current user.
+ * @property {Object} user - The current authenticated user
+ * @property {Object} user.claims - Custom claims for the user
+ * @property {boolean} user.claims.isTutor - Whether the user is a tutor
+ * @property {boolean} user.claims.isAdmin - Whether the user is an admin
+ * @property {(userDetails: { email: string; password: string }) => Promise<void>} signUp - Function to sign up a new user
+ * @property {(credentials: { email: string; password: string }) => Promise<void>} signIn - Function to sign in an existing user
+ * @property {() => Promise<void>} signOut - Function to sign out the current user
+ * @property {() => Promise<void>} applyTutor - Function to apply to become a tutor
+ * @property {(email: string) => Promise<void>} addTutor - Function to add a user as a tutor
+ * @property {(email: string) => Promise<void>} addAdmin - Function to add a user as an admin
  */
 
 /** @type {UserContextType} */
@@ -22,6 +33,9 @@ const defaultContext = {
   signUp: async () => Promise.resolve(),
   signIn: async () => Promise.resolve(),
   signOut: async () => Promise.resolve(),
+  applyTutor: async () => Promise.resolve(),
+  addTutor: async () => Promise.resolve(),
+  addAdmin: async () => Promise.resolve(),
 }
 
 /** @type {import("react").Context<UserContextType>} */
@@ -29,25 +43,60 @@ const UserContext = createContext(defaultContext)
 
 const UserContextProvider = ({ children }) => {
   const [user, setUser] = useState(undefined)
+  useConsoleLog('user', user)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, firebaseUser => {
-      setUser(firebaseUser)
+    // const unsubscribe = onAuthStateChanged(auth, async firebaseUser => {
+    //   setUser(firebaseUser)
+    //   // if user is not signed in, delete all the data from the local storage
+    //   if (!firebaseUser) {
+    //     localStorage.clear()
+    //   }
+    // })
+
+    // better listener to get custom claims
+    const unsubscribe = onIdTokenChanged(auth, async user => {
+      console.log('User claims updated! New ID token:', user)
+      // get custom claims
+      if (user) {
+        const token = await user.getIdTokenResult(true)
+        user.claims = token.claims
+      }
+      setUser(user)
+      // if user is not signed in, delete all the data from the local storage
+      if (!user) {
+        localStorage.clear()
+      }
     })
 
     return () => unsubscribe()
   }, [])
-
   /**
    * Signs up a new user.
    * @param {{ email: string; password: string }} userDetails
    * @returns {Promise<void>}
    */
+  const sendEmail = async (targetUser) => {
+    try {
+      // Send email verification
+      await sendEmailVerification(targetUser)
+      console.log('Verification email sent to:', targetUser?.email)
+  
+    } catch (error) {
+      console.error('Sign up error:', error)
+    }
+  }
+
   const signUp = async ({ email, password }) => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password)
+      const userCredentials = await createUserWithEmailAndPassword(auth, email, password)
+      const user = userCredentials.user
+
+      if (user?.emailVerified === false) {
+        sendEmail(user)
+      }
+
       await waitForUserUpdate()
-      console.log('Signed up successfully!')
     } catch (error) {
       console.error('Error signing up:', error)
     }
@@ -60,7 +109,15 @@ const UserContextProvider = ({ children }) => {
    */
   const signIn = async ({ email, password }) => {
     try {
-      await signInWithEmailAndPassword(auth, email, password)
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      const user = userCredential.user
+
+      if (!user?.emailVerified) {
+        sendEmail(user)
+        await auth.signOut()
+        return
+      }
+
       await waitForUserUpdate()
     } catch (error) {
       console.error('Error signing in:', error)
@@ -74,28 +131,74 @@ const UserContextProvider = ({ children }) => {
   const signOut = async () => {
     try {
       await firebaseSignOut(auth)
-      await waitForUserUpdate()
     } catch (error) {
       console.error('Error signing out:', error)
     }
   }
 
   /**
-   * Waits for the user state to update.
-   * @returns {Promise<import("firebase/auth").User | null>}
+   * Function to apply to be a tutor.
+   * @returns {Promise<void>}
    */
-  const waitForUserUpdate = () => {
-    return new Promise(resolve => {
-      const unsubscribe = onAuthStateChanged(auth, firebaseUser => {
-        setUser(firebaseUser)
-        unsubscribe()
-        resolve(firebaseUser)
+  const applyTutor = async () => {
+    try {
+      // check custom claims to see if user is already a tutor
+      if (user.claims?.isTutor) {
+        alert('You are already a tutor!')
+        return
+      }
+
+      const docRef = doc(db, 'tutorApplications', user.uid)
+      const docSnap = await docRef.get()
+      if (docSnap.exists()) {
+        alert('You have already applied to be a tutor!')
+        return
+      }
+      await setDoc(doc(db, 'tutorApplications', user.uid), {
+        email: user.email,
+        uid: user.uid,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
       })
-    })
+      alert('You have successfully applied to be a tutor!')
+    } catch (error) {
+      alert(error)
+    }
+  }
+
+  const setTutorClaim = httpsCallable(functions, 'setTutorClaim')
+  /**
+   * Function to add a tutor.
+   * @returns {Promise<void>}
+   */
+  const addTutor = async email => {
+    try {
+      result = await setTutorClaim({ email, isTutor: true })
+      alert(result)
+    } catch (error) {
+      alert(error)
+    }
+  }
+
+  const setAdminClaim = httpsCallable(functions, 'setAdminClaim')
+  /**
+   * Function to apply to be an admin.
+   * @returns {Promise<void>}
+   */
+  const addAdmin = async email => {
+    try {
+      console.log(email)
+      result = await setAdminClaim({ email, isAdmin: true })
+      alert(result)
+    } catch (error) {
+      alert(error)
+    }
   }
 
   return (
-    <UserContext.Provider value={{ user, signUp, signIn, signOut }}>
+    <UserContext.Provider
+      value={{ user, signUp, signIn, signOut, applyTutor, addTutor, addAdmin }}
+    >
       {children}
     </UserContext.Provider>
   )

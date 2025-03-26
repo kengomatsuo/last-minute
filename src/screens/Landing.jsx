@@ -1,12 +1,12 @@
 import ket from '../assets/ket.png'
 import { CustomButton, CustomFooter, FAQComponent } from '../components'
-import { navBarHeight } from '../constants/visualConstants'
+import { NAVBAR_HEIGHT } from '../constants/visualConstants'
 
 const Landing = () => {
   return (
     <div
       className='flex flex-col flex-1 items-center w-screen justify-center'
-      style={{ paddingTop: navBarHeight }}
+      style={{ paddingTop: NAVBAR_HEIGHT }}
     >
       {/* Clear everything between these comments to start fresh */}
       <div className='flex flex-col items-center justify-center'>
