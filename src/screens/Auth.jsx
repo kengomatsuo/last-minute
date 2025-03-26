@@ -42,6 +42,7 @@ const Auth = () => {
       req.complete = new RegExp(req.regEx).test(password)
     })
     setPasswordRequirements(requirements)
+    setPasswordSuccess(requirements.every(req => req.complete))
   }
 
   const handleSignin = async () => {
