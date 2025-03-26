@@ -21,7 +21,7 @@ const CustomCard = ({ className, header, onClick, children }) => {
       } bg-card-background box-border border-card-outline border-2 backdrop-blur-sm flex p-4 flex-col rounded-xl`}
       onClick={onClick}
     >
-      <div className='text-lg font-semibold pb-2'>{header}</div>
+      <div className='text-2xl font-bold pb-2'>{header}</div>
       <div>{children}</div>
     </div>
   )

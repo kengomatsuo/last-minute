@@ -42,6 +42,13 @@
   font-style: italic;
 }
 
+* {
+  /* @apply focus:ring-2;
+  @apply focus:ring-primary; */
+  @apply focus:outline-none;
+  @apply focus:rounded-md;
+}
+
 :root {
   font-family: 'Montserrat', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -91,6 +98,8 @@ html::-webkit-scrollbar {
   --color-card-outline: rgba(172, 169, 145);
   --color-card-outline-hover: rgba(172, 169, 145, 0.8);
   --color-card-outline-active: rgba(172, 169, 145, 0.2);
+  --color-error: rgba(255, 0, 0);
+  --color-success: rgba(0, 255, 0);
 }
 
 h1 {

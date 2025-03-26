@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Route, Routes, useLocation, Outlet } from 'react-router-dom'
 import Landing from './screens/Landing'
 import CustomNavBar from './components/CustomNavBar'
 import Auth from './screens/Auth'
@@ -14,7 +14,25 @@ import Settings from './screens/Settings'
 import MainLoading from './screens/MainLoading'
 import Contact from './screens/Contact'
 import History from './screens/History'
+import { CourseContextProvider } from './contexts/CourseContext'
+import Requests from './screens/Requests'
 
+/**
+ * Layout component that wraps authenticated routes with CourseContextProvider
+ *
+ * @returns {JSX.Element} The authenticated route layout with course context
+ */
+const AuthenticatedLayout = () => (
+  <CourseContextProvider>
+    <Outlet />
+  </CourseContextProvider>
+)
+
+/**
+ * Main application component that handles routing and authentication state.
+ *
+ * @returns {JSX.Element} The rendered application
+ */
 function App() {
   const { user } = use(UserContext)
   const location = useLocation()
@@ -43,7 +61,7 @@ function App() {
             <CustomNavBar scrollContainerRef={scrollContainerRef} />
             <AnimatePresence mode='wait'>
               <motion.div
-                key={location.pathname + (user ? '-auth' : '-guest')} // Ensure animation when user state changes
+                key={location.pathname + (user ? '-auth' : '-guest')}
                 variants={{
                   initial: { opacity: 0 },
                   animate: {
@@ -64,7 +82,15 @@ function App() {
                 <Routes location={location} key={location.pathname}>
                   <Route
                     path='/'
-                    element={user ? <Dashboard /> : <Landing />}
+                    element={
+                      user ? (
+                        <CourseContextProvider>
+                          <Dashboard />
+                        </CourseContextProvider>
+                      ) : (
+                        <Landing />
+                      )
+                    }
                   />
                   <Route path='/booking' element={<Booking />} />
                   <Route path='/session' element={<Session />} />

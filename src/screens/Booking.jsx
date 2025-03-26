@@ -1,67 +1,100 @@
 import { use, useRef } from 'react'
-import { ScreenContext } from '../contexts/ScreenContext'
 import { CustomCard, CustomButton, CustomInput } from '../components'
-import ScheduleIcon from '../assets/icons/calendar-clock.svg?react'
+import { CourseContext } from '../contexts/CourseContext'
 
 const Booking = () => {
-  const { isSmallScreen } = use(ScreenContext)
+  const { requestCourse, isRequestPending } = use(CourseContext)
   const formRef = useRef()
+  const topicRef = useRef()
+  const subjectRef = useRef()
+  const detailsRef = useRef()
 
-  const handleSubmit = event => {
+  const subjectOptions = [
+    { label: 'Math', value: 'math' },
+    { label: 'Science', value: 'science' },
+    { label: 'English', value: 'english' },
+    { label: 'History', value: 'history' },
+    { label: 'Computer Science', value: 'computer-science' },
+    { label: 'Art', value: 'art' },
+    { label: 'Music', value: 'music' },
+    { label: 'Physical Education', value: 'physical-education' },
+    { label: 'Other', value: 'other' },
+  ]
+
+  const handleSubmit = async event => {
     event.preventDefault()
+
+    let isValid = true
+    isValid = (await topicRef.current.validate()) && isValid
+    isValid = (await subjectRef.current.validate()) && isValid
+    isValid = (await detailsRef.current.validate()) && isValid
+
+    if (!isValid) return
+
     const formData = new FormData(formRef.current)
     const data = Object.fromEntries(formData.entries())
+    try {
+      await requestCourse(data)
+      topicRef.current.reset()
+      subjectRef.current.reset()
+      detailsRef.current.reset()
+    } catch (error) {
+      alert(`Error requesting course: ${error.message}`)
+    }
   }
 
   return (
-    <div
-      className='flex flex-col w-full items-center justify-center'
-    >
+    <div className='flex flex-col w-full items-center justify-center'>
       <CustomCard
         header='Find a Tutor'
-        className={`${isSmallScreen ? 'w-11/12' : 'w-xl'} min-w-1/2 max-w-full`}
+        className='w-[min(48rem,11/12*100%)] p-[min(3rem,4%)]'
       >
-        <div className='gap-2'>
+        <div className='gap-2 '>
           <form
             onSubmit={handleSubmit}
-            className='flex flex-1 flex-col gap-2'
+            className='flex flex-1 flex-col gap-2 focus:!ring-0'
             tabIndex='0'
             ref={formRef}
           >
             <CustomInput
-              name='Subject / Material'
-              type='password'
-              placeholder='Biology, Algebra, etc.'
-              validateFunction={e => {
-                if (e) throw new Error('Subject is error')
-              }}
+              ref={topicRef}
+              name='topic'
+              label='Topic'
+              type='text'
+              disabled={isRequestPending}
+              placeholder='Topics, keywords, etc.'
               required
+              autoSave='BookingDraft_Topic'
             />
             <CustomInput
-              multiline
-              name='Details'
-              placeholder='I need help with this particular subject...'
-              rows={5}
+              ref={subjectRef}
+              name='subject'
+              label='Subject'
+              type='suggest'
+              disabled={isRequestPending}
+              options={subjectOptions}
+              placeholder='Select a subject'
+              required
+              forceSuggestions
+              autoSave='BookingDraft_Subject'
             />
-            <div className='flex gap-1'>
-              <CustomButton
-                className={isSmallScreen ? '' : 'flex-1'}
-                type='submit'
-              >
-                {isSmallScreen ? (
-                  <ScheduleIcon
-                  width={24}
-                  height={24}
-                  className='fill-primary'
-                />
-                ) : (
-                  'Schedule'
-                )}
-              </CustomButton>
-              <CustomButton className='flex-1' type='submit' filled>
-                Book Now
-              </CustomButton>
-            </div>
+            <CustomInput
+              ref={detailsRef}
+              name='details'
+              label='Details'
+              multiline={5}
+              disabled={isRequestPending}
+              placeholder='I need help with this particular question...'
+              autoSave='BookingDraft_Details'
+            />
+            <CustomButton
+              disabled={isRequestPending}
+              className='mt-4'
+              filled
+              type='submit'
+            >
+              Find Tutors
+            </CustomButton>
           </form>
         </div>
       </CustomCard>
