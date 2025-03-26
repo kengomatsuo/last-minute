@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { CustomButton, CustomInput, CustomInput2 } from '../components'
 import { UserContext } from '../contexts/UserContext'
 import { ScreenContext } from '../contexts/ScreenContext'
-import { navBarHeight } from '../constants/visualConstants'
+import { NAVBAR_HEIGHT } from '../constants/visualConstants'
 
 import SignInDecoration from '../assets/icons/signInDecoration'
 import ArrowLeft from '../assets/icons/arrowLeft'
@@ -133,7 +133,7 @@ const Auth = () => {
   }
 
   return (
-    <div className={`flex flex-col flex-1 items-center justify-center`} style={{ paddingTop: navBarHeight }}>
+    <div className={`flex flex-col flex-1 items-center justify-center`} style={{ paddingTop: NAVBAR_HEIGHT }}>
 
       {showPopup && (
         <Popup onClose={() => setShowPopup(false)}>

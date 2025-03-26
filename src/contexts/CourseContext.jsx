@@ -3,19 +3,23 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDocs,
   limit,
   onSnapshot,
   orderBy,
   query,
   runTransaction,
   serverTimestamp,
+  startAfter,
   where,
 } from 'firebase/firestore'
+import { httpsCallable } from 'firebase/functions'
+import { auth, db, functions } from '../../firebaseConfig'
 import { createContext, useEffect, useState, useContext } from 'react'
-import { auth, db } from '../../firebaseConfig'
 import PropTypes from 'prop-types'
 import { useConsoleLog } from '../hooks'
 import { UserContext } from './UserContext'
+import { stringToFirestamp } from '../utils/conversions'
 
 /**
  * @typedef {Object} CourseContextType
@@ -41,6 +45,7 @@ const defaultContext = {
   isCancelRequestPending: false,
   cancelCourse: async () => Promise.resolve(),
   isCancelPending: false,
+  loadNewerRequests: async () => Promise.resolve(), // Add this line
 }
 
 const CourseContext = createContext(defaultContext)
@@ -54,7 +59,7 @@ const CourseContext = createContext(defaultContext)
  */
 const CourseContextProvider = ({ children }) => {
   const [courses, setCourses] = useState([])
-  const [requests, setrequests] = useState([])
+  const [requests, setRequests] = useState([])
   const [isRequestPending, setIsRequestPending] = useState(false)
   const [isCancelRequestPending, setIsCancelRequestPending] = useState(false)
   const [isAcceptPending, setIsAcceptPending] = useState(false)
@@ -91,22 +96,32 @@ const CourseContextProvider = ({ children }) => {
       // Tutor view: all requests
       requestsUnsubscribe = onSnapshot(
         query(
-          collection(db, 'requests'), 
-          orderBy('createdAt', 'desc'), 
+          collection(db, 'requests'),
+          orderBy('createdAt', 'desc'),
           limit(25)
-        ), 
+        ),
         snapshot => {
-          const requestDocs = snapshot.docs.map(doc => ({ 
-            id: doc.id, 
-            ...doc.data() 
-          }));
+          const requestDocs = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
 
           // Store the last document for potential future pagination
           if (snapshot.docs.length > 0) {
-            setLastVisibleRequest(snapshot.docs[snapshot.docs.length - 1]);
+            setLastVisibleRequest(snapshot.docs[snapshot.docs.length - 1])
           }
 
-          setrequests(requestDocs);
+          requestDocs.sort((a, b) => {
+            if (!a.bookingTime && b.bookingTime) return -1
+            if (a.bookingTime && !b.bookingTime) return 1
+            if (!a.bookingTime && !b.bookingTime) {
+              // Compare timestamps by converting to milliseconds
+              return a.createdAt.toMillis() - b.createdAt.toMillis()
+            }
+            // Compare timestamps by converting to milliseconds
+            return a.bookingTime.toMillis() - b.bookingTime.toMillis()
+          })
+          setRequests(requestDocs)
         },
         error => {
           console.error('Error fetching tutor requests:', error)
@@ -134,9 +149,7 @@ const CourseContextProvider = ({ children }) => {
           where('tuteeId', '==', auth.currentUser.uid)
         ),
         snapshot => {
-          setrequests(
-            snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-          )
+          setRequests(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })))
         },
         error => {
           console.error('Error fetching student requests:', error)
@@ -158,72 +171,65 @@ const CourseContextProvider = ({ children }) => {
   const loadNewerRequests = async () => {
     if (!isTutor) return
     if (!lastVisibleRequest) {
-      console.warn('No more requests to load');
-      return;
+      console.warn('No more requests to load')
+      return
     }
 
     try {
       const newerRequestsQuery = query(
         collection(db, 'requests'),
-        orderBy('createdAt', 'asc'),
+        orderBy('createdAt', 'desc'),
         startAfter(lastVisibleRequest),
         limit(25)
-      );
+      )
 
-      const snapshot = await getDocs(newerRequestsQuery);
+      const snapshot = await getDocs(newerRequestsQuery)
 
       if (!snapshot.empty) {
         // Convert snapshot to array of request objects
         const newerRequests = snapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data()
-        }));
+          ...doc.data(),
+        }))
 
         // Update state by appending older requests
-        setrequests(currentRequests => [
-          ...currentRequests, 
-          ...newerRequests
-        ]);
+        setRequests(currentRequests => [...currentRequests, ...newerRequests])
 
         // Update the last visible document for next pagination
-        setLastVisibleRequest(snapshot.docs[snapshot.docs.length - 1]);
+        setLastVisibleRequest(snapshot.docs[snapshot.docs.length - 1])
       }
     } catch (error) {
-      console.error('Error loading older requests:', error);
+      console.error('Error loading older requests:', error)
     }
   }
 
   /**
    * Accept a course request by creating a new course and deleting the request.
+   * Uses a server-side function to handle display names and chat initialization.
    *
-   * @param {Object} request - The request to accept
+   * @param {Object} requestData - The request to accept
    * @returns {Promise<void>} Promise that resolves when the request is accepted
    */
-  const acceptRequest = async request => {
+  const acceptRequest = async requestData => {
     if (!isTutor) return
     setIsAcceptPending(true)
     try {
-      // Run the operations as a transaction
-      await runTransaction(db, async transaction => {
-        // exclude request.id from the request object
-        const { id, createdAt, ...request } = request
-
-        // Create a new course document with the request data
-        transaction.set(doc(collection(db, 'courses')), {
-          ...request,
-          tutorId: auth.currentUser.uid,
-          requestedAt: createdAt,
-          createdAt: serverTimestamp(),
-        })
-
-        // Delete the request document
-        transaction.delete(doc(db, 'requests', request.id))
+      // Call the server-side function to accept the request
+      const acceptCourseRequest = httpsCallable(functions, 'acceptCourseRequest')
+      
+      // Call the function with the request ID
+      const result = await acceptCourseRequest({
+        requestId: requestData.id
       })
+      
+      console.log('Request accepted successfully:', result.data)
       alert('Request accepted successfully!')
     } catch (error) {
-      alert('Error accepting request:', error);
+      console.error('Error accepting request:', error)
+      alert(`Error accepting request: ${error.message}`)
+    } finally {
+      setIsAcceptPending(false)
     }
-    setIsAcceptPending(false)
   }
 
   /**
@@ -234,6 +240,15 @@ const CourseContextProvider = ({ children }) => {
    */
   const requestCourse = async courseForm => {
     try {
+      if (!courseForm.subject || !courseForm.topic)
+        throw new Error('Subject and topic are required')
+
+      // convert courseForm's bookingTime string into firebase timestamp
+      if (courseForm.bookingTime) {
+        courseForm.bookingTime = stringToFirestamp(courseForm.bookingTime)
+        if(!courseForm.bookingTime) throw new Error('Invalid booking time')
+      }
+
       if (
         requests.some(
           course =>
@@ -241,7 +256,10 @@ const CourseContextProvider = ({ children }) => {
             course.topic === courseForm.topic
         )
       )
-        throw new Error('Course already requested')
+        throw new Error(
+          `Course already requested with subject: ${courseForm.subject} and topic: ${courseForm.topic}`
+        )
+
       setIsRequestPending(true)
       await addDoc(collection(db, 'requests'), {
         tuteeId: auth.currentUser.uid,
