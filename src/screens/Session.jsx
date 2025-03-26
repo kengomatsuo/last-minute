@@ -2,10 +2,18 @@ import { useState, useEffect, useRef, useCallback, useContext } from 'react'
 import { useLocation } from 'react-router-dom'
 import { NAVBAR_HEIGHT } from '../constants/visualConstants'
 import { CustomButton, CustomCard, CustomInput } from '../components'
-import { collection, onSnapshot, orderBy, query, addDoc, serverTimestamp } from 'firebase/firestore'
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  addDoc,
+  serverTimestamp,
+} from 'firebase/firestore'
 import { db } from '../../firebaseConfig'
 import { useConsoleLog } from '../hooks'
 import { UserContext } from '../contexts/UserContext'
+import { ScreenContext } from '../contexts/ScreenContext'
 
 /**
  * Video call session component that handles WebRTC connections and chat.
@@ -14,6 +22,7 @@ import { UserContext } from '../contexts/UserContext'
  */
 const Session = () => {
   const { user } = useContext(UserContext)
+  const { isSmallScreen } = useContext(ScreenContext)
   const [localStream, setLocalStream] = useState(null)
   const [remoteStream, setRemoteStream] = useState(null)
   const [chatMessages, setChatMessages] = useState([])
@@ -144,7 +153,7 @@ const Session = () => {
     const formData = new FormData(formRef.current)
     const data = Object.fromEntries(formData.entries())
     const messageText = data.message
-    
+
     // cancel if the messageText is only whitespace (newlines, spaces, )
     if (!messageText.trim()) {
       return
@@ -170,21 +179,24 @@ const Session = () => {
       <div className='flex-1 flex'>
         <div className='flex-1 flex flex-col'>
           <div className='flex-1 flex flex-row'>
-            <div className='flex-1 bg-black'>
-              {localStream && (
-                <video
-                  autoPlay
-                  playsInline
-                  muted
-                  ref={videoElem => {
-                    if (videoElem) {
-                      videoElem.srcObject = localStream
-                    }
-                  }}
-                  style={{ width: '300px', margin: '10px' }}
-                />
-              )}
-            </div>
+            {!isSmallScreen && (
+              <div className='flex-1 bg-black'>
+                {localStream && (
+                  <video
+                    autoPlay
+                    playsInline
+                    muted
+                    ref={videoElem => {
+                      if (videoElem) {
+                        videoElem.srcObject = localStream
+                      }
+                    }}
+                    style={{ width: '300px', margin: '10px' }}
+                  />
+                )}
+              </div>
+            )}
+
             <div className='flex-1 bg-red-500'>
               {remoteStream && (
                 <video
