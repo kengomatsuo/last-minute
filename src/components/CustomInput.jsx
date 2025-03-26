@@ -425,7 +425,7 @@ const CustomInput = ({
       ? 'fill-primary'
       : 'fill-input-icon'
   } 
-    ${inputClassName} mt-0.5 flex flex-1 bg-white border-2 border-primary/50 transition-all rounded p-2 focus:outline-none focus:ring-2 focus:ring-primary font-medium`
+    ${inputClassName} mt-0.5 flex flex-1 bg-white border-2 border-primary/50 transition-all rounded focus:outline-none focus:ring-2 focus:ring-primary font-medium`
 
   // console.log("type:", type)
 
@@ -468,7 +468,7 @@ const CustomInput = ({
             onChange={handleChange}
             onBlur={handleBlur}
             className={`${
-              !image ? commonClassName : 'flex-1'
+              !image ? commonClassName : 'flex-1 p-2'
             } resize-none min-h-[70px]`}
             ref={ref}
           />
@@ -483,7 +483,7 @@ const CustomInput = ({
             onKeyDown={handleKeyDown}
             disabled={props.disabled}
             placeholder={props.placeholder}
-            className={!image ? commonClassName : 'flex-1'}
+            className={!image ? commonClassName : 'flex-1  p-2'}
             min={props.min}
             max={props.max}
             autoComplete={type === 'suggest' ? 'off' : props.autoComplete}
@@ -550,9 +550,9 @@ const CustomInput = ({
                   display: 'flex',
                   alignItems: 'center',
                   marginBottom: 10,
-                  color: item.complete ? '#22c55e' : '#99a1af',
+                  color: errorMessage && !isFocused ? 'var(--color-error)' : item.complete ? '#22c55e' : '#99a1af',
                 }}
-                className='font-normal'
+                className='font-normal transition-all'
               >
                 <span
                   style={{

@@ -70,7 +70,10 @@ const Auth = () => {
     if (requirements.every(req => req.complete)) {
       setPasswordSuccess(true)
       setPasswordRequirementsFiltered([])
-    } else setPasswordSuccess(false)
+    } else {
+      setPasswordSuccess(false)
+      throw new Error('Invalid password')
+    }
   }
 
   const validateRetypePassword = passwordRetyped => {
@@ -329,7 +332,7 @@ const Auth = () => {
                   </Link>
                   {width >= 700 && (
                     <div className='inline-flex items-center'>
-                      {'Don\'t have an account?'}
+                      {"Don't have an account?"}
                       <CustomInteractive
                         onClick={() => setAction('register')}
                         className='font-semibold !p-1 ml-2 w-min !text-primary'
@@ -377,7 +380,7 @@ const Auth = () => {
 
                   {width < 700 && (
                     <p style={{ textAlign: width < 450 ? 'center' : '' }}>
-                      {'Don\'t have an account?'}
+                      {"Don't have an account?"}
                       <button
                         onClick={() => setAction('register')}
                         className='ml-2 font-semibold'
