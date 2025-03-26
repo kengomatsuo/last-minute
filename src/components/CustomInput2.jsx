@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import { useDebounce } from '../hooks'
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { movementTransition } from '../constants/visualConstants'
+import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
 
 import Eye from '../assets/icons/openEye.svg?react'
 import EyeOff from '../assets/icons/closeEye.svg?react'
@@ -153,7 +153,7 @@ const CustomInput2 = ({
             initial={{ height: 0, opacity: 0, marginTop: 0 }}
             animate={{ height: 'auto', opacity: 1, marginTop: 4 }}
             exit={{ height: 0, opacity: 0, marginTop: 0 }}
-            transition={movementTransition}
+            transition={MOVEMENT_TRANSITION}
           >
             <motion.p
               className='text-red-500'
