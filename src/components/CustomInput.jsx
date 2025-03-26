@@ -558,7 +558,7 @@ const CustomInput = ({
       )}
 
       <AnimatePresence>
-        {!requirements && errorMessage && (!filteredOptions.length || !isFocused) && (
+        {!requirements.length && errorMessage && (!filteredOptions.length || !isFocused) && (
           <motion.div
             initial={{ height: 0, opacity: 0, marginTop: 0 }}
             animate={{ height: 'auto', opacity: 1, marginTop: 4 }}
