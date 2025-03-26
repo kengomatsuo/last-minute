@@ -5,6 +5,7 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
+  sendEmailVerification,
 } from 'firebase/auth' // Import Firebase auth functions
 import { auth } from '../../firebaseConfig'
 
@@ -37,17 +38,32 @@ const UserContextProvider = ({ children }) => {
 
     return () => unsubscribe()
   }, [])
-
   /**
    * Signs up a new user.
    * @param {{ email: string; password: string }} userDetails
    * @returns {Promise<void>}
    */
+  const sendEmail = async (targetUser) => {
+    try {
+      // Send email verification
+      await sendEmailVerification(targetUser)
+      console.log('Verification email sent to:', targetUser?.email)
+  
+    } catch (error) {
+      console.error('Sign up error:', error)
+    }
+  }
+
   const signUp = async ({ email, password }) => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password)
+      const userCredentials = await createUserWithEmailAndPassword(auth, email, password)
+      const user = userCredentials.user
+
+      if (user?.emailVerified === false) {
+        sendEmail(user)
+      }
+
       await waitForUserUpdate()
-      console.log('Signed up successfully!')
     } catch (error) {
       console.error('Error signing up:', error)
     }
@@ -60,7 +76,15 @@ const UserContextProvider = ({ children }) => {
    */
   const signIn = async ({ email, password }) => {
     try {
-      await signInWithEmailAndPassword(auth, email, password)
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      const user = userCredential.user
+
+      if (!user?.emailVerified) {
+        sendEmail(user)
+        await auth.signOut()
+        return
+      }
+
       await waitForUserUpdate()
     } catch (error) {
       console.error('Error signing in:', error)

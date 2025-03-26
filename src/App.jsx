@@ -66,23 +66,13 @@ function App() {
                     path='/'
                     element={user ? <Dashboard /> : <Landing />}
                   />
-
-                  {user ? (
-                    <>
-                      <Route path='/booking' element={<Booking />} />
-                      <Route path='/session' element={<Session />} />
-                      <Route path='/history' element={<History />} />
-                      <Route path='/settings' element={<Settings />} />
-                      <Route path='/landing' element={<Landing />} />
-                      <Route path='/contact' element={<Contact />} />
-                    </>
-                  ) : (
-                    <>
-                      <Route path='/auth' element={<Auth />} />
-                      <Route path='/contact' element={<Contact />} />
-                    </>
-                  )}
-
+                  <Route path='/booking' element={<Booking />} />
+                  <Route path='/session' element={<Session />} />
+                  <Route path='/history' element={<History />} />
+                  <Route path='/settings' element={<Settings />} />
+                  <Route path='/landing' element={<Landing />} />
+                  <Route path='/contact' element={<Contact />} />
+                  <Route path='/auth' element={<Auth />} />
                   <Route path='*' element={<Error404 />} />
                 </Routes>
               </motion.div>
