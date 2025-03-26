@@ -4,16 +4,21 @@ import { NAVBAR_HEIGHT } from '../constants/visualConstants'
 import { CustomButton, CustomCard, CustomInteractive } from '../components'
 import { firestampToString } from '../utils/conversions'
 
+/**
+ * Requests component that displays a list of course requests.
+ * 
+ * @returns {JSX.Element} The rendered Requests component
+ */
 const Requests = () => {
   const { requests, acceptRequest } = useContext(CourseContext)
-  console.log(requests)
+  
   return (
     <div className='w-screen flex flex-col items-center justify-center'>
       <CustomCard
         header='Requests'
-        className='w-[min(48rem,11/12*100%)] p-[min(3rem,4%)]'
+        className='w-[min(48rem,11/12*100%)] overflow-hidden max-h-2/3 p-[min(3rem,4%)]'
       >
-        <div className='divide-y divide-primary'>
+        <div className='divide-y flex flex-col divide-primary overflow-y-auto max-h-1/2'>
           {requests.map(course => (
             <div
               key={course.id}

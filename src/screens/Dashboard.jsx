@@ -13,7 +13,10 @@ const Dashboard = () => {
       >
         <div className='divide-y divide-primary'>
           {courses.map(course => (
-            <div className='flex w-full gap-2 items-center py-2 px-4'>
+            <div
+              key={course.id}
+              className='flex w-full gap-2 items-center py-2 px-4'
+            >
               <div className='flex-1 text-left'>
                 <p className='font-bold text-xl'>{course.subject}</p>
                 <p className='font-semibold'>{course.topic}</p>
@@ -29,7 +32,9 @@ const Dashboard = () => {
                 <CustomButton className='w-full' onClick={() => null}>
                   Chat
                 </CustomButton>{' '}
-                <Link to={{pathname: '/session', search: `?course=${course.id}`}} >
+                <Link
+                  to={{ pathname: '/session', search: `?course=${course.id}` }}
+                >
                   <CustomButton className='w-full' onClick={() => null} filled>
                     Start Session
                   </CustomButton>

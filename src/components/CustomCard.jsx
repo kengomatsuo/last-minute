@@ -22,7 +22,7 @@ const CustomCard = ({ className, header, onClick, children }) => {
       onClick={onClick}
     >
       <div className='text-2xl font-bold pb-2'>{header}</div>
-      <div>{children}</div>
+      <div className='flex-1'>{children}</div>
     </div>
   )
 }
