@@ -46,6 +46,8 @@ import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
  * is selected
  * @param {boolean} [props.forceSuggestions] - When true, requires selection from
  * available options for suggest inputs
+ * @param {Array<string>} [props.requirements] - Additional requirements for the
+ * input field
  */
 const CustomInput = ({
   label = '',
@@ -60,6 +62,7 @@ const CustomInput = ({
   type,
   value = '',
   forceSuggestions = false,
+  requirements = [],
   autoSave = false,
   saveDelay = 1000,
   ref,
@@ -414,7 +417,13 @@ const CustomInput = ({
   }
 
   // Common styling for both input and textarea
-  const commonClassName = `${errorMessage && !isFocused ? '!border-error !fill-error' : isFocused ? 'fill-primary' :'fill-input-icon'} 
+  const commonClassName = `${
+    errorMessage && !isFocused
+      ? '!border-error !fill-error'
+      : isFocused
+      ? 'fill-primary'
+      : 'fill-input-icon'
+  } 
     ${inputClassName} mt-0.5 flex flex-1 bg-white border-2 border-primary/50 transition-all rounded p-2 focus:outline-none focus:ring-2 focus:ring-primary font-medium`
 
   // console.log("type:", type)
@@ -438,7 +447,15 @@ const CustomInput = ({
     >
       {label}
       {props.required && label && '*'}
-      <div className={`${image ? commonClassName + ' !pl-1 ' + (isFocused && inputClassName ? '!border-b-3' : '') : ''} w-full items-center flex flex-row`}>
+      <div
+        className={`${
+          image
+            ? commonClassName +
+              ' !pl-1 ' +
+              (isFocused && inputClassName ? '!border-b-3' : '')
+            : ''
+        } w-full items-center flex flex-row`}
+      >
         {image}
         {multiline ? (
           <textarea
@@ -449,7 +466,9 @@ const CustomInput = ({
             rows={multiline === true ? 3 : multiline}
             onChange={handleChange}
             onBlur={handleBlur}
-            className={`${!image ? commonClassName : 'flex-1'} resize-none min-h-[70px]`}
+            className={`${
+              !image ? commonClassName : 'flex-1'
+            } resize-none min-h-[70px]`}
             ref={ref}
           />
         ) : (
@@ -506,8 +525,39 @@ const CustomInput = ({
         </AnimatePresence>
       ) : null}
 
+      {requirements && type !== 'suggest' && (
+        <ul style={{ listStyle: 'none', paddingTop: 10, maxWidth: 400 }}>
+          {requirements.map((item, index) => (
+            <li
+              key={index}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                marginBottom: 10,
+                color: item.complete ? '#22c55e' : '#99a1af',
+              }}
+              className='font-normal'
+            >
+              <span
+                style={{
+                  width: 20,
+                  marginRight: 10,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 16,
+                }}
+              >
+                {item.complete ? '✔' : '●'}
+              </span>
+              {item.text}
+            </li>
+          ))}
+        </ul>
+      )}
+
       <AnimatePresence>
-        {errorMessage && (!filteredOptions.length || !isFocused) && (
+        {!requirements && errorMessage && (!filteredOptions.length || !isFocused) && (
           <motion.div
             initial={{ height: 0, opacity: 0, marginTop: 0 }}
             animate={{ height: 'auto', opacity: 1, marginTop: 4 }}

@@ -29,11 +29,20 @@ const Auth = () => {
   // location state is used to determine the action (signin or register)
   const [action, setAction] = useState(location.state?.action || 'signin')
 
-  const handleInputChange = (password) => {
+  const [passwordRequirements, setPasswordRequirements] = useState([
+    {complete: false, text: 'At least 8 characters'},
+    {complete: false, text: 'At least 1 uppercase letter'},
+    {complete: false, text: 'At least 1 lowercase letter'},
+    {complete: false, text: 'At least 1 number'},
+  ])
+
+  const handleInputChange = password => {
     if (RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})').test(password)) {
       setPasswordSuccess(true)
-    }
-    else throw new Error('Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number')
+    } else
+      throw new Error(
+        'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number'
+      )
   }
 
   const handleSignin = async () => {
@@ -135,8 +144,9 @@ const Auth = () => {
                       inputClassName={inputClassName}
                       image={<PasswordIcon width={24} height={24} />}
                       placeholder='Password'
-                      validateFunction={(e) => handleInputChange(e)}
+                      validateFunction={e => handleInputChange(e)}
                       type='password'
+                      requirements={passwordRequirements}
                       required
                     />
                     {passwordSuccess && (
