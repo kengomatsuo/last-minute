@@ -30,19 +30,18 @@ const Auth = () => {
   const [action, setAction] = useState(location.state?.action || 'signin')
 
   const [passwordRequirements, setPasswordRequirements] = useState([
-    {complete: false, text: 'At least 8 characters'},
-    {complete: false, text: 'At least 1 uppercase letter'},
-    {complete: false, text: 'At least 1 lowercase letter'},
-    {complete: false, text: 'At least 1 number'},
+    {complete: false, text: 'At least 8 characters', regEx: '.{8,}'},
+    {complete: false, text: 'At least 1 uppercase letter', regEx: '(?=.*[A-Z])'},
+    {complete: false, text: 'At least 1 lowercase letter', regEx: '(?=.*[a-z])'},
+    {complete: false, text: 'At least 1 number', regEx: '(?=.*[0-9])'},
   ])
 
   const handleInputChange = password => {
-    if (RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})').test(password)) {
-      setPasswordSuccess(true)
-    } else
-      throw new Error(
-        'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number'
-      )
+    let requirements = [...passwordRequirements]
+    requirements.forEach(req => {
+      req.complete = new RegExp(req.regEx).test(password)
+    })
+    setPasswordRequirements(requirements)
   }
 
   const handleSignin = async () => {

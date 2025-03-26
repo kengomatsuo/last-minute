@@ -241,6 +241,7 @@ const CustomInput = ({
     // First check if field is required but empty
     if (props.required && (!value || value.trim() === '')) {
       setErrorMessage('This field is required')
+      validateFunction && validateFunction('')
       return false
     }
 
