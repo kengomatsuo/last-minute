@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import { CourseContext } from '../contexts/CourseContext'
 import { NAVBAR_HEIGHT } from '../constants/visualConstants'
 import { CustomButton, CustomCard, CustomInteractive } from '../components'
+import { firestampToString } from '../utils/conversions'
 
 const Requests = () => {
   const { requests, acceptRequest } = useContext(CourseContext)
@@ -14,7 +15,10 @@ const Requests = () => {
       >
         <div className='divide-y divide-primary'>
           {requests.map(course => (
-            <div className='flex w-full gap-2 items-center py-2 px-4'>
+            <div
+              key={course.id}
+              className='flex w-full gap-2 items-center py-2 px-4'
+            >
               <div className='flex-1 text-left'>
                 <p className='font-bold text-xl'>{course.subject}</p>
                 <p className='font-semibold'>{course.topic}</p>
@@ -25,8 +29,18 @@ const Requests = () => {
                 >
                   {course.details || 'No description'}
                 </p>
+                <p>
+                  {course.bookingTime
+                    ? firestampToString(course.bookingTime)
+                    : `Ordered at: ${firestampToString(course.createdAt)}`}
+                </p>
               </div>
-              <CustomButton className='ml-auto' onClick={() => acceptRequest(course)}>Accept</CustomButton>
+              <CustomButton
+                className='ml-auto'
+                onClick={() => acceptRequest(course)}
+              >
+                Accept
+              </CustomButton>
             </div>
           ))}
         </div>

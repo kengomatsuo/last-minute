@@ -9,6 +9,7 @@ import {
   query,
   runTransaction,
   serverTimestamp,
+  Timestamp,
   where,
 } from 'firebase/firestore'
 import { createContext, useEffect, useState, useContext } from 'react'
@@ -16,6 +17,7 @@ import { auth, db } from '../../firebaseConfig'
 import PropTypes from 'prop-types'
 import { useConsoleLog } from '../hooks'
 import { UserContext } from './UserContext'
+import { stringToFirestamp } from '../utils/conversions'
 
 /**
  * @typedef {Object} CourseContextType
@@ -106,6 +108,16 @@ const CourseContextProvider = ({ children }) => {
             setLastVisibleRequest(snapshot.docs[snapshot.docs.length - 1])
           }
 
+          requestDocs.sort((a, b) => {
+            if (!a.bookingTime && b.bookingTime) return -1
+            if (a.bookingTime && !b.bookingTime) return 1
+            if (!a.bookingTime && !b.bookingTime) {
+              // Compare timestamps by converting to milliseconds
+              return a.createdAt.toMillis() - b.createdAt.toMillis()
+            }
+            // Compare timestamps by converting to milliseconds
+            return a.bookingTime.toMillis() - b.bookingTime.toMillis()
+          })
           setrequests(requestDocs)
         },
         error => {
@@ -228,6 +240,15 @@ const CourseContextProvider = ({ children }) => {
    */
   const requestCourse = async courseForm => {
     try {
+      if (!courseForm.subject || !courseForm.topic)
+        throw new Error('Subject and topic are required')
+
+      // convert courseForm's bookingTime string into firebase timestamp
+      if (courseForm.bookingTime) {
+        courseForm.bookingTime = stringToFirestamp(courseForm.bookingTime)
+        if(!courseForm.bookingTime) throw new Error('Invalid booking time')
+      }
+
       if (
         requests.some(
           course =>
@@ -238,6 +259,7 @@ const CourseContextProvider = ({ children }) => {
         throw new Error(
           `Course already requested with subject: ${courseForm.subject} and topic: ${courseForm.topic}`
         )
+
       setIsRequestPending(true)
       await addDoc(collection(db, 'requests'), {
         tuteeId: auth.currentUser.uid,

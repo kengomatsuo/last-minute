@@ -1,4 +1,4 @@
-import { use, useRef, useState } from 'react'
+import { use, useRef } from 'react'
 import { CustomCard, CustomButton, CustomInput } from '../components'
 import { CourseContext } from '../contexts/CourseContext'
 import { ScreenContext } from '../contexts/ScreenContext'
@@ -8,12 +8,15 @@ import { useConsoleLog, useLocalStorage } from '../hooks'
 const Booking = () => {
   const { isSmallScreen } = use(ScreenContext)
   const { requestCourse, isRequestPending } = use(CourseContext)
-  const [isInstantBooking, setIsInstantBooking] = useLocalStorage('BookingDraft_Instant', true)
-  const formRef = useRef()
-  const topicRef = useRef()
-  const subjectRef = useRef()
-  const detailsRef = useRef()
-  const dateTimeRef = useRef()
+  const [isInstantBooking, setIsInstantBooking] = useLocalStorage(
+    'BookingDraft_Instant',
+    true
+  )
+  const formRef = useRef(null)
+  const topicRef = useRef(null)
+  const subjectRef = useRef(null)
+  const detailsRef = useRef(null)
+  const dateTimeRef = useRef(null)
   useConsoleLog('isInstantBooking', isInstantBooking)
 
   const subjectOptions = [
@@ -36,18 +39,22 @@ const Booking = () => {
     isValid = (await subjectRef.current.validate()) && isValid
     isValid = (await detailsRef.current.validate()) && isValid
 
-    isValid = !dateTimeRef || ((await dateTimeRef.current.validate()) && isValid)
+    if (dateTimeRef.current) {
+      isValid = (await dateTimeRef.current.validate()) && isValid
+    }
 
     if (!isValid) return
 
     const formData = new FormData(formRef.current)
     const data = Object.fromEntries(formData.entries())
+
     console.log('Submitting:', data)
     try {
       await requestCourse(data)
       topicRef.current.reset()
       subjectRef.current.reset()
       detailsRef.current.reset()
+      dateTimeRef.current.reset()
       setIsInstantBooking(true)
     } catch (error) {
       alert(`Error requesting course: ${error.message}`)
@@ -155,27 +162,33 @@ const Booking = () => {
                   autoSave='BookingDraft_Details'
                   className='text-ellipsis'
                 />
-                  <CustomInput
-                    ref={dateTimeRef}
-                    // min format: 'YYYY-MM-DDTHH:MM'
-                    // max format: 'YYYY-MM-DDTHH:MM'
-                    min={new Date().toISOString().slice(0, 16)}
-                    max={new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16)}
-                    step={900}
-                    // validate function, throw error if invalid
-                    validateFunction={value => {
-                      console.log("Checking",value)
-                      if (new Date(value) < Date.now()) throw new Error('Date and time must be in the future')
-                      if (new Date(value) > Date.now() + 14 * 24 * 60 * 60 * 1000) throw new Error('Date and time must be within the next 14 days')
-                    }}
-                    name='bookingTime'
-                    label='Date and Time'
-                    type='datetime-local'
-                    disabled={isRequestPending}
-                    required
-                    autoSave='BookingDraft_DateTime'
-                    className='flex-1'
-                  />
+                <CustomInput
+                  ref={dateTimeRef}
+                  // min format: 'YYYY-MM-DDTHH:MM'
+                  // max format: 'YYYY-MM-DDTHH:MM'
+                  min={new Date().toISOString().slice(0, 16)}
+                  max={new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
+                    .toISOString()
+                    .slice(0, 16)}
+                  step={900}
+                  // validate function, throw error if invalid
+                  validateFunction={value => {
+                    console.log('Checking', value)
+                    if (new Date(value) < Date.now())
+                      throw new Error('Date and time must be in the future')
+                    if (new Date(value) > Date.now() + 14 * 24 * 60 * 60 * 1000)
+                      throw new Error(
+                        'Date and time must be within the next 14 days'
+                      )
+                  }}
+                  name='bookingTime'
+                  label='Date and Time'
+                  type='datetime-local'
+                  disabled={isRequestPending}
+                  required
+                  autoSave='BookingDraft_DateTime'
+                  className='flex-1'
+                />
                 <CustomButton type='submit' filled>
                   Book
                 </CustomButton>
