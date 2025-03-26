@@ -152,10 +152,10 @@ const Session = () => {
     e.preventDefault()
     const formData = new FormData(formRef.current)
     const data = Object.fromEntries(formData.entries())
-    const messageText = data.message
+    const messageText = data.message.trim()
 
     // cancel if the messageText is only whitespace (newlines, spaces, )
-    if (!messageText.trim()) {
+    if (!messageText) {
       return
     }
 
