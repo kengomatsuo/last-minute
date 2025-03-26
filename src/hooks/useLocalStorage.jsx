@@ -1,8 +1,18 @@
 import { useEffect, useState } from 'react'
 
 const getSavedValue = (key, initialValue) => {
-  const savedValue = JSON.parse(localStorage.getItem(key))
-  if (savedValue) return savedValue
+  // Check if the item exists in localStorage first
+  const item = localStorage.getItem(key)
+  
+  // Only parse the item if it exists
+  if (item !== null) {
+    try {
+      return JSON.parse(item)
+    } catch (error) {
+      console.error(`Error parsing localStorage item ${key}:`, error)
+      // Fall through to return initialValue
+    }
+  }
 
   if (initialValue instanceof Function) return initialValue()
   return initialValue

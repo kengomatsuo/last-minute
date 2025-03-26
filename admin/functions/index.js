@@ -256,3 +256,118 @@ exports.getUserClaims = onCall(
   }
 )
 
+/**
+ * Accept a course request, adding display names and initializing chat
+ *
+ * @param {Object} data - The function payload
+ * @param {string} data.requestId - ID of the request to accept
+ * @returns {Object} - Status message and course details
+ */
+exports.acceptCourseRequest = onCall(
+  {
+    enforceAppCheck: false,
+    cors: true,
+  },
+  async (request) => {
+    const { requestId } = request.data
+    const auth = getAuth()
+    const db = getFirestore()
+
+    // Check if the caller is authenticated
+    if (!request.auth) {
+      throw new HttpsError(
+        'unauthenticated',
+        'The function must be called while authenticated.'
+      )
+    }
+
+    // Check if the requester has tutor privileges
+    const { uid } = request.auth
+    const tutorRecord = await auth.getUser(uid)
+    const tutorCustomClaims = tutorRecord.customClaims || {}
+
+    if (!tutorCustomClaims.isTutor) {
+      throw new HttpsError(
+        'permission-denied',
+        'Only tutors can accept course requests.'
+      )
+    }
+
+    try {
+      const result = await db.runTransaction(async (transaction) => {
+        // Get the request document
+        const requestRef = db.collection('requests').doc(requestId)
+        const requestDoc = await transaction.get(requestRef)
+        
+        if (!requestDoc.exists) {
+          throw new HttpsError(
+            'not-found',
+            'The requested course request does not exist.'
+          )
+        }
+        
+        const requestData = requestDoc.data()
+        
+        // Get tutor and tutee display names
+        const tuteeRecord = await auth.getUser(requestData.tuteeId)
+        const tutorDisplayName = tutorRecord.displayName || 'Unknown Tutor'
+        const tuteeDisplayName = tuteeRecord.displayName || 'Unknown Student'
+        
+        // Create a new course document
+        const courseRef = db.collection('courses').doc()
+        
+        // Prepare course data with display names
+        const courseData = {
+          ...requestData,
+          tutorId: uid,
+          tutorDisplayName,
+          tuteeDisplayName,
+          requestedAt: requestData.createdAt,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        }
+        
+        // Set the course document
+        transaction.set(courseRef, courseData)
+        
+        // Create an initial chat message in the subcollection
+        const welcomeMessage = {
+          senderId: 'system',
+          text: 'Course request accepted! You can now chat here.',
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        }
+        
+        transaction.set(
+          courseRef.collection('chat').doc(),
+          welcomeMessage
+        )
+        
+        // Delete the request document
+        transaction.delete(requestRef)
+        
+        return {
+          courseId: courseRef.id,
+          courseData
+        }
+      })
+
+      // Return success result
+      return {
+        status: 'success',
+        message: 'Successfully accepted course request',
+        course: {
+          id: result.courseId,
+          ...result.courseData,
+        },
+      }
+    } catch (error) {
+      console.error('Error accepting course request:', error)
+      throw new HttpsError(
+        'internal',
+        `Failed to accept course request: ${error.message}`
+      )
+    }
+  }
+)
+
+
+
