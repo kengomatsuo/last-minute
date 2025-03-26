@@ -22,6 +22,8 @@ const CustomButton = ({
   disabled = false,
   className,
   children,
+  onMouseEnter = () => {},
+  onMouseLeave = () => {},
   type = 'button',
 }) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -35,9 +37,11 @@ const CustomButton = ({
 
   return (
     <button
-    formNoValidate
+      formNoValidate
       type={type}
       onClick={handleClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       className={`${
         isLoading ? 'pointer-events-none' : ''
       } ${className} px-2.5 py-1 truncate transition-all ${
@@ -56,7 +60,7 @@ const CustomButton = ({
       <div
         className={`${
           disabled ? 'pointer-events-none' : ''
-        } transition-transform active:scale-[97%] active:opacity-75 flex gap-2 justify-center`}
+        } transition-transform active:scale-[97%] active:opacity-75 flex gap-2 justify-center items-center`}
       >
         {children}
       </div>

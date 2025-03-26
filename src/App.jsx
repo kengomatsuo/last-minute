@@ -92,27 +92,13 @@ function App() {
                       )
                     }
                   />
-
-                  {user ? (
-                    <Route element={<AuthenticatedLayout />}>
-                      {user.claims?.isTutor ? (
-                        <Route path='/requests' element={<Requests />}/>
-                      ) : (
-                        <Route path='/booking' element={<Booking />} />
-                      )}
-                      <Route path='/session' element={<Session />} />
-                      <Route path='/history' element={<History />} />
-                      <Route path='/settings' element={<Settings />} />
-                      <Route path='/landing' element={<Landing />} />
-                      <Route path='/contact' element={<Contact />} />
-                    </Route>
-                  ) : (
-                    <>
-                      <Route path='/auth' element={<Auth />} />
-                      <Route path='/contact' element={<Contact />} />
-                    </>
-                  )}
-
+                  <Route path='/booking' element={<Booking />} />
+                  <Route path='/session' element={<Session />} />
+                  <Route path='/history' element={<History />} />
+                  <Route path='/settings' element={<Settings />} />
+                  <Route path='/landing' element={<Landing />} />
+                  <Route path='/contact' element={<Contact />} />
+                  <Route path='/auth' element={<Auth />} />
                   <Route path='*' element={<Error404 />} />
                 </Routes>
               </motion.div>
