@@ -526,53 +526,71 @@ const CustomInput = ({
         </AnimatePresence>
       ) : null}
 
-      {requirements && type !== 'suggest' && (
-        <ul style={{ listStyle: 'none', paddingTop: 10, maxWidth: 400 }}>
-          {requirements.map((item, index) => (
-            <li
-              key={index}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                marginBottom: 10,
-                color: item.complete ? '#22c55e' : '#99a1af',
-              }}
-              className='font-normal'
-            >
-              <span
-                style={{
-                  width: 20,
-                  marginRight: 10,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 16,
-                }}
-              >
-                {item.complete ? '✔' : '●'}
-              </span>
-              {item.text}
-            </li>
-          ))}
-        </ul>
-      )}
-
       <AnimatePresence>
-        {!requirements.length && errorMessage && (!filteredOptions.length || !isFocused) && (
-          <motion.div
+        {requirements.length !== 0 && type !== 'suggest' && (
+          <motion.ul
             initial={{ height: 0, opacity: 0, marginTop: 0 }}
-            animate={{ height: 'auto', opacity: 1, marginTop: 4 }}
+            animate={{
+              height: 32 * requirements.length,
+              opacity: 1,
+              marginTop: 4,
+            }}
             exit={{
               height: 0,
               opacity: 0,
-              marginTop: 0,
-              transition: { duration: 0.15 },
+              marginTop: -10, // How does this work???
             }}
             transition={MOVEMENT_TRANSITION}
+            style={{ listStyle: 'none', paddingTop: 10, maxWidth: 400 }}
           >
-            <motion.p className='text-error'>{errorMessage}</motion.p>
-          </motion.div>
+            {requirements.map((item, index) => (
+              <li
+                key={index}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginBottom: 10,
+                  color: item.complete ? '#22c55e' : '#99a1af',
+                }}
+                className='font-normal'
+              >
+                <span
+                  style={{
+                    width: 20,
+                    marginRight: 10,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 16,
+                  }}
+                >
+                  {item.complete ? '✔' : '●'}
+                </span>
+                {item.text}
+              </li>
+            ))}
+          </motion.ul>
         )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {!requirements.length &&
+          errorMessage &&
+          (!filteredOptions.length || !isFocused) && (
+            <motion.div
+              initial={{ height: 0, opacity: 0, marginTop: 0 }}
+              animate={{ height: 4, opacity: 1, marginTop: 4 }}
+              exit={{
+                height: 0,
+                opacity: 0,
+                marginTop: 0,
+                transition: { duration: 0.15 },
+              }}
+              transition={MOVEMENT_TRANSITION}
+            >
+              <motion.p className='text-error'>{errorMessage}</motion.p>
+            </motion.div>
+          )}
       </AnimatePresence>
     </motion.label>
   )
@@ -660,6 +678,8 @@ CustomInput.propTypes = {
     'url',
     'photo',
   ]),
+  min: PropTypes.string,
+  max: PropTypes.string,
   autoFocus: PropTypes.bool,
   validateFunction: PropTypes.func,
   errorMessage: PropTypes.string,

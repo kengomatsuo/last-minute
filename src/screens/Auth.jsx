@@ -1,4 +1,4 @@
-import { use, useContext, useState } from 'react'
+import { useContext, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { CustomButton, CustomInput, CustomInteractive } from '../components'
 import { UserContext } from '../contexts/UserContext'
@@ -15,48 +15,137 @@ import { NAVBAR_HEIGHT } from '../constants/visualConstants'
 const Auth = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { signIn, signUp } = use(UserContext)
+  const { signIn, signUp } = useContext(UserContext)
   const { dimensions } = useContext(ScreenContext)
-  const { width } = dimensions
-
-  const inputClassName =
-    'border-x-0 pl-0 gap-2 border-t-0 !border-b-2 rounded-none font-medium'
-
   const hasError = false
   const [hover, setHover] = useState(false)
   const [passwordSuccess, setPasswordSuccess] = useState(false)
-
-  // location state is used to determine the action (signin or register)
   const [action, setAction] = useState(location.state?.action || 'signin')
+  const passwordRequirements = [
+    { complete: false, text: 'At least 8 characters', regEx: '.{8,}' },
+    {
+      complete: false,
+      text: 'At least 1 uppercase letter',
+      regEx: '(?=.*[A-Z])',
+    },
+    {
+      complete: false,
+      text: 'At least 1 lowercase letter',
+      regEx: '(?=.*[a-z])',
+    },
+    { complete: false, text: 'At least 1 number', regEx: '(?=.*[0-9])' },
+  ]
+  const [passwordRequirementsFiltered, setPasswordRequirementsFiltered] =
+    useState([
+      { complete: false, text: 'At least 8 characters', regEx: '.{8,}' },
+      {
+        complete: false,
+        text: 'At least 1 uppercase letter',
+        regEx: '(?=.*[A-Z])',
+      },
+      {
+        complete: false,
+        text: 'At least 1 lowercase letter',
+        regEx: '(?=.*[a-z])',
+      },
+      { complete: false, text: 'At least 1 number', regEx: '(?=.*[0-9])' },
+    ])
 
-  const [passwordRequirements, setPasswordRequirements] = useState([
-    {complete: false, text: 'At least 8 characters', regEx: '.{8,}'},
-    {complete: false, text: 'At least 1 uppercase letter', regEx: '(?=.*[A-Z])'},
-    {complete: false, text: 'At least 1 lowercase letter', regEx: '(?=.*[a-z])'},
-    {complete: false, text: 'At least 1 number', regEx: '(?=.*[0-9])'},
-  ])
+  const formRef = useRef(null)
+  const emailRef = useRef(null)
+  const passwordRef = useRef(null)
+  const nameRef = useRef(null)
+  const retypePasswordRef = useRef(null)
 
-  const handleInputChange = password => {
+  const inputClassName =
+    'border-x-0 pl-0 gap-2 border-t-0 !border-b-2 rounded-none font-medium'
+  const { width } = dimensions
+
+  const validatePassword = password => {
     let requirements = [...passwordRequirements]
     requirements.forEach(req => {
       req.complete = new RegExp(req.regEx).test(password)
     })
-    setPasswordRequirements(requirements)
-    setPasswordSuccess(requirements.every(req => req.complete))
+    setPasswordRequirementsFiltered(requirements)
+    if (requirements.every(req => req.complete)) {
+      setPasswordSuccess(true)
+      setPasswordRequirementsFiltered([])
+    } else setPasswordSuccess(false)
   }
 
-  const handleSignin = async () => {
-    await signIn({ email: 'admin@admin.com', password: 'admin123' }).then(
-      () => {
-        navigate('/')
+  const validateRetypePassword = passwordRetyped => {
+    const formData = new FormData(formRef.current)
+    const password = formData.get('password')
+
+    if (passwordRetyped !== password) {
+      throw new Error('Passwords do not match')
+    }
+  }
+
+  const validateEmail = email => {
+    const emailRegEx = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
+    if (!emailRegEx.test(email)) {
+      throw new Error('Invalid email')
+    }
+  }
+
+  const handleSignin = async e => {
+    e.preventDefault()
+
+    try {
+      let isValid = true
+      isValid =
+        emailRef.current && (await emailRef.current.validate()) && isValid
+      isValid =
+        passwordRef.current && (await passwordRef.current.validate()) && isValid
+
+      if (!isValid) {
+        console.error('Invalid form')
+        return
       }
-    )
+
+      const formData = new FormData(formRef.current)
+      const data = Object.fromEntries(formData.entries())
+
+      await signIn(data).then(() => {
+        navigate('/')
+      })
+    } catch (error) {
+      console.error('Error signing in:', error.message)
+    }
   }
 
-  const handleSignup = async () => {
-    await signUp({ username: '', email: '', password: '' }).then(() => {
-      navigate('/')
-    })
+  const handleSignup = async e => {
+    e.preventDefault()
+
+    try {
+      let isValid = true
+      isValid = nameRef.current && (await nameRef.current.validate()) && isValid
+      isValid =
+        emailRef.current && (await emailRef.current.validate()) && isValid
+      isValid =
+        passwordRef.current && (await passwordRef.current.validate()) && isValid
+      isValid =
+        retypePasswordRef.current &&
+        (await retypePasswordRef.current.validate()) &&
+        isValid
+
+      if (!isValid) {
+        console.error('Invalid form')
+        return
+      }
+
+      const formData = new FormData(formRef.current)
+      const data = Object.fromEntries(formData.entries())
+
+      console.log('Submitting:', data)
+
+      await signUp(data).then(() => {
+        navigate('/')
+      })
+    } catch (error) {
+      console.error('Error signing up:', error.message)
+    }
   }
 
   return (
@@ -76,7 +165,7 @@ const Auth = () => {
             height: width >= 1050 ? 750 : 'auto',
             background: 'white',
           }}
-          className='flex flex-row rounded-[30px] max-w-[1200px] justify-between'
+          className='flex flex-row rounded-[30px] max-w-[1200px] max-h-[95%] overflow-hidden justify-between'
         >
           {action === 'register' ? (
             <>
@@ -101,7 +190,7 @@ const Auth = () => {
                       </CustomInteractive>
                     </Link>
                     {/* {width >= 500 && ( */}
-                    <p className='inline-flex items-center'>
+                    <div className='inline-flex items-center'>
                       {'Already a member?'}
                       <CustomInteractive
                         onClick={() => setAction('signin')}
@@ -109,7 +198,7 @@ const Auth = () => {
                       >
                         Sign In
                       </CustomInteractive>
-                    </p>
+                    </div>
                     {/* )} */}
                   </div>
 
@@ -123,72 +212,83 @@ const Auth = () => {
                     </div>
                   </div>
 
-                  <div
+                  <form
+                    ref={formRef}
+                    onSubmit={e => handleSignup(e)}
                     className={`${
                       passwordSuccess ? 'mt-6' : 'mt-12'
                     } flex flex-col gap-5`}
                   >
                     <CustomInput
+                      name='displayName'
                       inputClassName={inputClassName}
                       image={<UserIcon width={24} height={24} />}
                       placeholder='Name'
                       required
+                      ref={nameRef}
                     />
                     <CustomInput
+                      name='email'
                       inputClassName={inputClassName}
                       image={<EmailIcon width={24} height={24} />}
                       placeholder='Email'
+                      validateFunction={e => validateEmail(e)}
                       required
+                      ref={emailRef}
                     />
                     <CustomInput
+                      name='password'
                       inputClassName={inputClassName}
                       image={<PasswordIcon width={24} height={24} />}
                       placeholder='Password'
-                      validateFunction={e => handleInputChange(e)}
+                      validateFunction={e => validatePassword(e)}
                       type='password'
-                      requirements={passwordRequirements}
+                      requirements={passwordRequirementsFiltered}
                       required
+                      ref={passwordRef}
                     />
                     {passwordSuccess && (
                       <CustomInput
+                        name='retypePassword'
                         inputClassName={inputClassName}
                         image={<PasswordIcon width={24} height={24} />}
                         placeholder='Re-Type Password'
+                        validateFunction={e => validateRetypePassword(e)}
                         type='password'
                         required
+                        ref={retypePasswordRef}
                       />
                     )}
-                  </div>
-                </div>
-
-                <CustomButton
-                  onClick={() => handleSignup()}
-                  filled={true}
-                  className='w-[14rem]'
-                >
-                  <div className='flex items-center gap-4'>
-                    <p>Sign Up</p>
-                    <div
-                      className='p-2 rounded-full'
-                      style={{
-                        backgroundColor: hover
-                          ? 'transparent'
-                          : 'var(--color-primary-low-opacity)',
-                      }}
+                    <CustomButton
+                      type='submit'
+                      filled={true}
+                      className='w-[14rem] mt-4'
                     >
-                      <ArrowRightIcon
-                        style={{
-                          width: 24,
-                          height: 24,
-                        }}
-                        fill='white'
-                      />
-                    </div>
-                  </div>
-                </CustomButton>
+                      <div className='flex items-center gap-4'>
+                        <p>Sign Up</p>
+                        <div
+                          className='p-2 rounded-full'
+                          style={{
+                            backgroundColor: hover
+                              ? 'transparent'
+                              : 'var(--color-primary-low-opacity)',
+                          }}
+                        >
+                          <ArrowRightIcon
+                            style={{
+                              width: 24,
+                              height: 24,
+                            }}
+                            fill='white'
+                          />
+                        </div>
+                      </div>
+                    </CustomButton>
+                  </form>
+                </div>
               </div>
               {width >= 1050 && (
-                <div style={{ flex: 4 }}>
+                <div className='flex-4'>
                   <SignInDecoration />
                 </div>
               )}
@@ -196,12 +296,12 @@ const Auth = () => {
           ) : (
             <>
               {width >= 1050 && (
-                <div style={{ flex: 4 }}>
+                <div className='flex-4'>
                   <SignInDecoration style={{ transform: 'scaleX(-1)' }} />
                 </div>
               )}
               <div
-                className={`flex-6 py-[4rem] ${
+                className={`w-full flex flex-col py-[4rem] ${
                   width < 500
                     ? 'px-[2rem]'
                     : width < 1200
@@ -228,15 +328,15 @@ const Auth = () => {
                     </CustomInteractive>
                   </Link>
                   {width >= 700 && (
-                    <p className='inline-flex items-center'>
-                      {"Don't have an account?"}
+                    <div className='inline-flex items-center'>
+                      {'Don\'t have an account?'}
                       <CustomInteractive
                         onClick={() => setAction('register')}
                         className='font-semibold !p-1 ml-2 w-min !text-primary'
                       >
                         Sign Up
                       </CustomInteractive>
-                    </p>
+                    </div>
                   )}
                 </div>
 
@@ -251,24 +351,33 @@ const Auth = () => {
                   <Logo width={80} height={80} />
                 </div>
 
-                <div className={'mt-12 mb-24 flex flex-col gap-6'}>
+                <form
+                  ref={formRef}
+                  onSubmit={e => handleSignin(e)}
+                  className={'mt-12 flex flex-col gap-6'}
+                >
                   <CustomInput
+                    name='email'
                     inputClassName={inputClassName}
                     image={<EmailIcon width={24} height={24} />}
                     placeholder='Email'
+                    validateFunction={e => validateEmail(e)}
                     required
+                    ref={emailRef}
                   />
                   <CustomInput
+                    name='password'
                     inputClassName={inputClassName}
                     image={<PasswordIcon width={24} height={24} />}
                     placeholder='Password'
                     type='password'
                     required
+                    ref={passwordRef}
                   />
 
                   {width < 700 && (
                     <p style={{ textAlign: width < 450 ? 'center' : '' }}>
-                      {"Don't have an account?"}
+                      {'Don\'t have an account?'}
                       <button
                         onClick={() => setAction('register')}
                         className='ml-2 font-semibold'
@@ -278,35 +387,35 @@ const Auth = () => {
                       </button>
                     </p>
                   )}
-                </div>
-
-                <CustomButton
-                  onClick={() => handleSignin()}
-                  filled={true}
-                  className='w-[14rem]'
-                  onMouseEnter={() => setHover(true)}
-                  onMouseLeave={() => setHover(false)}
-                >
-                  <div className='flex items-center gap-4'>
-                    <p>Sign In</p>
-                    <div
-                      className='p-2 rounded-full'
-                      style={{
-                        backgroundColor: hover
-                          ? 'transparent'
-                          : 'var(--color-primary-low-opacity)',
-                      }}
-                    >
-                      <ArrowRightIcon
+                  <CustomButton
+                    type='submit'
+                    onClick={() => handleSignin()}
+                    filled={true}
+                    className='w-[14rem] mt-12'
+                    onMouseEnter={() => setHover(true)}
+                    onMouseLeave={() => setHover(false)}
+                  >
+                    <div className='flex items-center gap-4'>
+                      <p>Sign In</p>
+                      <div
+                        className='p-2 rounded-full'
                         style={{
-                          width: 24,
-                          height: 24,
+                          backgroundColor: hover
+                            ? 'transparent'
+                            : 'var(--color-primary-low-opacity)',
                         }}
-                        fill='white'
-                      />
+                      >
+                        <ArrowRightIcon
+                          style={{
+                            width: 24,
+                            height: 24,
+                          }}
+                          fill='white'
+                        />
+                      </div>
                     </div>
-                  </div>
-                </CustomButton>
+                  </CustomButton>
+                </form>
               </div>
             </>
           )}
