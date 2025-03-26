@@ -1,10 +1,10 @@
 import { use, useContext, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { CustomButton, CustomInput } from '../components'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { CustomButton, CustomInput, CustomInteractive } from '../components'
 import { UserContext } from '../contexts/UserContext'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ScreenContext } from '../contexts/ScreenContext'
-import ArrowRightIcon from '../assets/icons/angle-small-right.svg?react'
+import ArrowRightIcon from '../assets/icons/arrow-small-right.svg?react'
 import EmailIcon from '../assets/icons/mailbox.svg?react'
 import UserIcon from '../assets/icons/user.svg?react'
 import PasswordIcon from '../assets/icons/lock.svg?react'
@@ -18,15 +18,23 @@ const Auth = () => {
   const { signIn, signUp } = use(UserContext)
   const { dimensions } = useContext(ScreenContext)
   const { width } = dimensions
+
+  const inputClassName =
+    'border-x-0 pl-0 gap-2 border-t-0 !border-b-2 rounded-none font-medium'
+
   const hasError = false
   const [hover, setHover] = useState(false)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [passwordSuccess, setPasswordSuccess] = useState(false)
-  const handleInputChange = null
 
   // location state is used to determine the action (signin or register)
   const [action, setAction] = useState(location.state?.action || 'signin')
+
+  const handleInputChange = (password) => {
+    if (RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})').test(password)) {
+      setPasswordSuccess(true)
+    }
+    else throw new Error('Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number')
+  }
 
   const handleSignin = async () => {
     await signIn({ email: 'admin@admin.com', password: 'admin123' }).then(
@@ -43,7 +51,10 @@ const Auth = () => {
   }
 
   return (
-    <div className='flex flex-col flex-1 items-center justify-center' style={{ paddingTop: NAVBAR_HEIGHT }}>
+    <div
+      className='flex flex-col flex-1 items-center justify-center'
+      style={{ paddingTop: NAVBAR_HEIGHT }}
+    >
       <AnimatePresence mode='wait'>
         <motion.div
           key={action}
@@ -71,19 +82,24 @@ const Auth = () => {
                       hasError ? 'pb-[3rem]' : 'pb-[4rem]'
                     }`}
                   >
-                    <button onClick={() => navigate('/')}>
-                      <ArrowRightIcon width={24} height={24}/>
-                    </button>
+                    <Link to='/'>
+                      <CustomInteractive className='!p-1 aspect-square items-center flex'>
+                        <ArrowRightIcon
+                          width={36}
+                          height={36}
+                          className='rotate-180'
+                        />
+                      </CustomInteractive>
+                    </Link>
                     {/* {width >= 500 && ( */}
-                    <p>
-                      Already a member?
-                      <button
+                    <p className='inline-flex items-center'>
+                      {'Already a member?'}
+                      <CustomInteractive
                         onClick={() => setAction('signin')}
-                        className='ml-2 font-semibold'
-                        style={{ color: 'var(--color-primary)' }}
+                        className='font-semibold !p-1 ml-2 w-min !text-primary'
                       >
                         Sign In
-                      </button>
+                      </CustomInteractive>
                     </p>
                     {/* )} */}
                   </div>
@@ -104,23 +120,32 @@ const Auth = () => {
                     } flex flex-col gap-5`}
                   >
                     <CustomInput
+                      inputClassName={inputClassName}
                       image={<UserIcon width={24} height={24} />}
                       placeholder='Name'
+                      required
                     />
                     <CustomInput
+                      inputClassName={inputClassName}
                       image={<EmailIcon width={24} height={24} />}
                       placeholder='Email'
+                      required
                     />
                     <CustomInput
+                      inputClassName={inputClassName}
                       image={<PasswordIcon width={24} height={24} />}
                       placeholder='Password'
+                      validateFunction={(e) => handleInputChange(e)}
                       type='password'
+                      required
                     />
                     {passwordSuccess && (
                       <CustomInput
+                        inputClassName={inputClassName}
                         image={<PasswordIcon width={24} height={24} />}
                         placeholder='Re-Type Password'
                         type='password'
+                        required
                       />
                     )}
                   </div>
@@ -143,11 +168,10 @@ const Auth = () => {
                     >
                       <ArrowRightIcon
                         style={{
-                          transform: 'rotate(180deg)',
-                          width: 20,
-                          height: 20,
+                          width: 24,
+                          height: 24,
                         }}
-                        color='white'
+                        fill='white'
                       />
                     </div>
                   </div>
@@ -155,7 +179,7 @@ const Auth = () => {
               </div>
               {width >= 1050 && (
                 <div style={{ flex: 4 }}>
-                  <SignInDecoration/>
+                  <SignInDecoration />
                 </div>
               )}
             </>
@@ -184,19 +208,24 @@ const Auth = () => {
                       : 'pb-[5rem]'
                   }`}
                 >
-                  <button onClick={() => navigate('/')}>
-                    <ArrowRightIcon width={24} height={24} className="rotate-180" />
-                  </button>
+                  <Link to='/'>
+                    <CustomInteractive className='!p-1 aspect-square items-center flex'>
+                      <ArrowRightIcon
+                        width={36}
+                        height={36}
+                        className='rotate-180'
+                      />
+                    </CustomInteractive>
+                  </Link>
                   {width >= 700 && (
-                    <p>
-                      Don&apos;t have an account?
-                      <button
+                    <p className='inline-flex items-center'>
+                      {"Don't have an account?"}
+                      <CustomInteractive
                         onClick={() => setAction('register')}
-                        className='ml-2 font-semibold'
-                        style={{ color: 'var(--color-primary)' }}
+                        className='font-semibold !p-1 ml-2 w-min !text-primary'
                       >
                         Sign Up
-                      </button>
+                      </CustomInteractive>
                     </p>
                   )}
                 </div>
@@ -214,20 +243,22 @@ const Auth = () => {
 
                 <div className={'mt-12 mb-24 flex flex-col gap-6'}>
                   <CustomInput
+                    inputClassName={inputClassName}
                     image={<EmailIcon width={24} height={24} />}
                     placeholder='Email'
-                    onChange={e => setEmail(e.target.value)}
+                    required
                   />
                   <CustomInput
+                    inputClassName={inputClassName}
                     image={<PasswordIcon width={24} height={24} />}
                     placeholder='Password'
                     type='password'
-                    onChange={e => handleInputChange(e.target.value)}
+                    required
                   />
 
                   {width < 700 && (
                     <p style={{ textAlign: width < 450 ? 'center' : '' }}>
-                      Don&apos;t have an account?
+                      {"Don't have an account?"}
                       <button
                         onClick={() => setAction('register')}
                         className='ml-2 font-semibold'
@@ -258,8 +289,8 @@ const Auth = () => {
                     >
                       <ArrowRightIcon
                         style={{
-                          width: 20,
-                          height: 20,
+                          width: 24,
+                          height: 24,
                         }}
                         fill='white'
                       />
