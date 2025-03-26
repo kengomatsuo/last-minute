@@ -54,7 +54,7 @@ const Booking = () => {
       topicRef.current.reset()
       subjectRef.current.reset()
       detailsRef.current.reset()
-      dateTimeRef.current.reset()
+      dateTimeRef.current?.reset()
       setIsInstantBooking(true)
     } catch (error) {
       alert(`Error requesting course: ${error.message}`)
