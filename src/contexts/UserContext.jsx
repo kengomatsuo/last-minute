@@ -13,6 +13,7 @@ import { httpsCallable } from 'firebase/functions'
 import { doc, setDoc } from 'firebase/firestore'
 import Auth from '../screens/Auth'
 import { AnimatePresence } from 'framer-motion'
+import { ScreenContextProvider } from './ScreenContext'
 
 /**
  * @typedef {Object} UserContextType
@@ -197,7 +198,13 @@ const UserContextProvider = ({ children }) => {
         closeAuthModal,
       }}
     >
-        <AnimatePresence>{isAuthModalOpen && <Auth initialAction={initialAction} />}</AnimatePresence>
+        <AnimatePresence>
+          {isAuthModalOpen && (
+            <ScreenContextProvider>
+              <Auth initialAction={initialAction} />
+            </ScreenContextProvider>
+          )}
+        </AnimatePresence>
         {children}
     </UserContext.Provider>
   )
