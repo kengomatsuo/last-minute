@@ -3,7 +3,6 @@
 ## 📝 Guidelines for Writing Pull Request Descriptions
 
 ### 1. 🏷️ Provide a Clear and Descriptive Title
-- **Limit**: 50 characters or less
 - **Style**: Capitalize the first letter
 - **Format**: `<Type>: <Short description>` (e.g., `Feature:`, `Fix:`, `Refactor:`)
 - **Example**: `Feature: Add user authentication system`
