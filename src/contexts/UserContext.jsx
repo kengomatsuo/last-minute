@@ -154,13 +154,9 @@ const UserContextProvider = ({ children }) => {
       console.log('User is not verified. Starting verification interval.')
       setIsAuthModalOpen(true)
       startVerificationChecking()
-    } else if (user && user.emailVerified) {
-      // console.log('Userrrr', user, user.emailVerified)
-      clearVerificationInterval()
-      setIsAuthModalOpen(false)
     }
 
-    // console.log('User:', user)
+    console.log('User:', user)
     // console.log('Verified:', user && user.emailVerified)
 
     // Clean up the interval when component unmounts

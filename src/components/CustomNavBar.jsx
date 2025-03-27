@@ -20,12 +20,10 @@ import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
  * @returns {JSX.Element} The rendered navigation bar
  */
 const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
-  const { user, openAuthModal, closeAuthModal } = use(UserContext)
+  const { user, openAuthModal } = use(UserContext)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const { isSmallScreen } = use(ScreenContext)
-
-  const navigate = useNavigate()
 
   const handleSignOut = async () => {
     await signOut(auth)
@@ -194,7 +192,6 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
 
                       <CustomButton
                         filled
-                        className='flex-1'
                         onClick={() => {
                           setIsMenuOpen(false)
                           user ? handleSignOut() : openAuthModal()
@@ -202,6 +199,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                       >
                         {user ? 'Sign out' : 'Sign in / Register'}
                       </CustomButton>
+
 
                     <p className='text-lg font-semibold mr-3 mt-6 mb-2'>
                       Navigation

@@ -50,10 +50,10 @@ const CustomButton = ({
         disabled || isLoading
           ? 'opacity-50 !cursor-not-allowed !hover:border-primary'
           : filled
-          ? 'hover:bg-filled-button-hover hover:border-filled-button-hover active:bg-filled-button-active  active:ring-primary active:ring focus:!ring-background-secondary'
-          : 'hover:bg-interactive-hover hover:border-filled-button-hover active:bg-interactive-active  active:ring-primary active:ring focus:ring-primary'
+          ? 'hover:bg-filled-button-hover hover:border-filled-button-hover active:bg-filled-button-active  active:ring-primary active:ring focus-visible:!ring-background-secondary'
+          : 'hover:bg-interactive-hover hover:border-filled-button-hover active:bg-interactive-active  active:ring-primary active:ring focus-visible::ring-primary'
       } border-2 min-w-fit border-primary text-center box-border rounded-md font-semibold text-lg cursor-pointer
-       focus:outline-none focus:ring-2 relative`}
+       focus:outline-none focus-visible:ring-2 relative`}
     >
       <div
         className={`${disabled ? 'pointer-events-none' : ''} ${

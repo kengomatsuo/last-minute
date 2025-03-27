@@ -20,8 +20,15 @@ import { ScreenContext } from '../contexts/ScreenContext'
  * @returns {JSX.Element} The rendered authentication modal
  */
 const Auth = ({ initialAction }) => {
-  const { user, signIn, signUp, signOut, closeAuthModal, isCheckingEmailVerification, isAuthLoading } =
-    useContext(UserContext)
+  const {
+    user,
+    signIn,
+    signUp,
+    signOut,
+    closeAuthModal,
+    isCheckingEmailVerification,
+    isAuthLoading,
+  } = useContext(UserContext)
   const { isSmallScreen } = useContext(ScreenContext)
   useConsoleLog('issmall', isSmallScreen)
   const [passwordSuccess, setPasswordSuccess] = useState(false)
@@ -201,10 +208,18 @@ const Auth = ({ initialAction }) => {
               className='p-[min(3rem,6%)] w-full flex flex-col h-full'
             >
               <CustomInteractive
-                className='!p-1 !size-min mr-auto aspect-square items-center flex'
+                className='!p-1 !pr-4 !size-min items-center flex'
+                loading={isAuthLoading}
                 onClick={() => signOut()}
               >
-                <ArrowRightIcon width={36} height={36} className='rotate-180' />
+                <div className='flex items-center gap-2'>
+                  <ArrowRightIcon
+                    width={36}
+                    height={36}
+                    className='rotate-180'
+                  />
+                  Sign Out
+                </div>
               </CustomInteractive>
               <div className='flex flex-1 h-full flex-col justify-center items-center'>
                 <div className='flex flex-col items-center justify-center gap-4 text-center max-w-md'>
@@ -249,26 +264,29 @@ const Auth = ({ initialAction }) => {
               >
                 <div className={'flex items-center justify-between'}>
                   <CustomInteractive
-                    className='!p-1 !size-min aspect-square items-center flex'
+                    className='!p-1 !pr-4 !size-min items-center flex'
                     onClick={() => closeAuthModal()}
                   >
-                    <ArrowRightIcon
-                      width={36}
-                      height={36}
-                      className='rotate-180'
-                    />
+                    <div className='flex items-center gap-2'>
+                      <ArrowRightIcon
+                        width={36}
+                        height={36}
+                        className='rotate-180'
+                      />
+                      Back
+                    </div>
                   </CustomInteractive>
-                  {/* {width >= 500 && ( */}
-                  <div className='inline-flex items-center'>
-                    {'Already a member?'}
-                    <CustomInteractive
-                      onClick={() => setAction('signin')}
-                      className='font-semibold !p-1 ml-2 w-min !text-primary'
-                    >
-                      Sign In
-                    </CustomInteractive>
-                  </div>
-                  {/* )} */}
+                  {!isSmallScreen && (
+                    <div className='inline-flex items-center'>
+                      {'Already a member?'}
+                      <CustomInteractive
+                        onClick={() => setAction('signin')}
+                        className='font-semibold !p-1 ml-2 w-min !text-primary'
+                      >
+                        Sign In
+                      </CustomInteractive>
+                    </div>
+                  )}
                 </div>
                 <div className='flex flex-col justify-center flex-1'>
                   <div className='flex justify-between items-center'>
@@ -335,6 +353,18 @@ const Auth = ({ initialAction }) => {
                         ref={retypePasswordRef}
                       />
                     )}
+
+                    {isSmallScreen && (
+                      <div className='inline-flex items-center text-nowrap'>
+                        Already a member?
+                        <CustomInteractive
+                          onClick={() => setAction('register')}
+                          className='font-semibold !p-1 ml-2 w-min !text-primary'
+                        >
+                          Sign In
+                        </CustomInteractive>
+                      </div>
+                    )}
                     <CustomButton
                       type='submit'
                       loading={isAuthLoading}
@@ -383,14 +413,17 @@ const Auth = ({ initialAction }) => {
               >
                 <div className={'flex items-center justify-between'}>
                   <CustomInteractive
-                    className='!p-1 !size-min aspect-square items-center flex'
+                    className='!p-1 !pr-4 !size-min items-center flex'
                     onClick={() => closeAuthModal()}
                   >
-                    <ArrowRightIcon
-                      width={36}
-                      height={36}
-                      className='rotate-180'
-                    />
+                    <div className='flex items-center gap-2'>
+                      <ArrowRightIcon
+                        width={36}
+                        height={36}
+                        className='rotate-180'
+                      />
+                      Back
+                    </div>
                   </CustomInteractive>
                   {!isSmallScreen && (
                     <div className='inline-flex items-center text-nowrap'>
