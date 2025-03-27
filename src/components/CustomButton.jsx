@@ -15,6 +15,7 @@ import { useState } from 'react'
  * @param {string} props.className - Custom class name for additional styling
  * @param {React.ReactNode} props.children - Button content, typically text or an icon
  * @param {'button' | 'submit' | 'reset'} props.type - The type of the button (e.g., "button", "submit", "reset")
+ * @param {boolean} props.loading - Whether the button is in a loading state
  */
 const CustomButton = ({
   filled = false,
@@ -63,13 +64,25 @@ const CustomButton = ({
       </div>
       {loading && (
         // TODO: make this into a separate component
-        <div className="absolute inset-0 flex items-center justify-center">
-        <div className="flex space-x-1">
-          <span className={`w-2 h-2 rounded-full animate-bounce [animation-delay:0s] ${filled ? 'bg-white' : 'bg-primary'}`}></span>
-          <span className={`w-2 h-2 rounded-full animate-bounce [animation-delay:0.2s] ${filled ? 'bg-white' : 'bg-primary'}`}></span>
-          <span className={`w-2 h-2 rounded-full animate-bounce [animation-delay:0.4s] ${filled ? 'bg-white' : 'bg-primary'}`}></span>
+        <div className='absolute inset-0 flex items-center justify-center'>
+          <div className='flex space-x-1'>
+            <span
+              className={`w-2 h-2 rounded-full animate-bounce [animation-delay:0s] ${
+                filled ? 'bg-white' : 'bg-primary'
+              }`}
+            ></span>
+            <span
+              className={`w-2 h-2 rounded-full animate-bounce [animation-delay:0.2s] ${
+                filled ? 'bg-white' : 'bg-primary'
+              }`}
+            ></span>
+            <span
+              className={`w-2 h-2 rounded-full animate-bounce [animation-delay:0.4s] ${
+                filled ? 'bg-white' : 'bg-primary'
+              }`}
+            ></span>
+          </div>
         </div>
-      </div>
       )}
     </button>
   )
@@ -114,6 +127,12 @@ CustomButton.propTypes = {
    * @type {string}
    */
   type: PropTypes.string,
+  /**
+   * Whether the button is in a loading state.
+   * If true, the button will show a loading animation.
+   * @type {boolean}
+   */
+  loading: PropTypes.bool,
 }
 
 export default CustomButton

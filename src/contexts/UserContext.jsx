@@ -16,6 +16,7 @@ import { doc, setDoc } from 'firebase/firestore'
 import Auth from '../screens/Auth'
 import { AnimatePresence } from 'framer-motion'
 import { ScreenContextProvider } from './ScreenContext'
+import { th } from 'framer-motion/client'
 
 /**
  * @typedef {Object} UserContextType
@@ -179,7 +180,7 @@ const UserContextProvider = ({ children }) => {
       console.log('Signed up successfully!')
       await sendEmailVerification(auth.currentUser)
     } catch (error) {
-      console.error('Error signing up:', error)
+      throw error
     }
     setIsAuthLoading(false)
   }
@@ -198,7 +199,7 @@ const UserContextProvider = ({ children }) => {
         await sendEmailVerification(auth.currentUser)
       }
     } catch (error) {
-      console.error('Error signing in:', error)
+      throw error
     }
     setIsAuthLoading(false)
   }
@@ -213,7 +214,7 @@ const UserContextProvider = ({ children }) => {
       clearVerificationInterval()
       await firebaseSignOut(auth)
     } catch (error) {
-      console.error('Error signing out:', error)
+      throw error
     }
     setIsAuthLoading(false)
   }

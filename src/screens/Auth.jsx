@@ -128,6 +128,7 @@ const Auth = ({ initialAction }) => {
 
       await signIn(data)
     } catch (error) {
+      alert(error.message)
       console.error('Error signing in:', error.message)
     }
   }
@@ -159,6 +160,7 @@ const Auth = ({ initialAction }) => {
 
       await signUp(data)
     } catch (error) {
+      alert(error.message)
       console.error('Error signing up:', error.message)
     }
   }
@@ -290,6 +292,7 @@ const Auth = ({ initialAction }) => {
                       inputClassName={inputClassName}
                       image={<UserIcon width={24} height={24} />}
                       placeholder='Name'
+                      disabled={isAuthLoading}
                       validateFunction={e => {
                         if (e.length < 3)
                           throw new Error('Name must be at least 3 characters')
@@ -302,6 +305,7 @@ const Auth = ({ initialAction }) => {
                       inputClassName={inputClassName}
                       image={<EmailIcon width={24} height={24} />}
                       placeholder='Email'
+                      disabled={isAuthLoading}
                       validateFunction={e => validateEmail(e)}
                       required
                       ref={emailRef}
@@ -311,6 +315,7 @@ const Auth = ({ initialAction }) => {
                       inputClassName={inputClassName}
                       image={<PasswordIcon width={24} height={24} />}
                       placeholder='Password'
+                      disabled={isAuthLoading}
                       validateFunction={e => validatePassword(e)}
                       type='password'
                       requirements={passwordRequirementsFiltered}
@@ -323,6 +328,7 @@ const Auth = ({ initialAction }) => {
                         inputClassName={inputClassName}
                         image={<PasswordIcon width={24} height={24} />}
                         placeholder='Re-Type Password'
+                        disabled={isAuthLoading}
                         validateFunction={e => validateRetypePassword(e)}
                         type='password'
                         required
@@ -420,6 +426,7 @@ const Auth = ({ initialAction }) => {
                       inputClassName={inputClassName}
                       image={<EmailIcon width={24} height={24} />}
                       placeholder='Email'
+                      disabled={isAuthLoading}
                       validateFunction={e => validateEmail(e)}
                       required
                       ref={emailRef}
@@ -429,6 +436,7 @@ const Auth = ({ initialAction }) => {
                       inputClassName={inputClassName}
                       image={<PasswordIcon width={24} height={24} />}
                       placeholder='Password'
+                      disabled={isAuthLoading}
                       type='password'
                       required
                       ref={passwordRef}
