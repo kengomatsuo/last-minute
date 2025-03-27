@@ -1,317 +1,534 @@
-import { use, useEffect, useMemo, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { CustomButton, CustomInput, CustomInput2 } from '../components'
+import { useContext, useRef, useState, useEffect } from 'react'
+import { CustomButton, CustomInput, CustomInteractive } from '../components'
 import { UserContext } from '../contexts/UserContext'
-import { ScreenContext } from '../contexts/ScreenContext'
-import { NAVBAR_HEIGHT } from '../constants/visualConstants'
-
-import SignInDecoration from '../assets/icons/signInDecoration'
-import ArrowLeft from '../assets/icons/arrowLeft'
-import User from '../assets/icons/user.svg?react'
-import Email from '../assets/icons/email'
-import Password from '../assets/icons/password.svg?react'
-import Logo from '../assets/icons/logo.svg?react'
-import Error from '../assets/icons/error'
-import { isEmpty, set } from 'lodash'
 import { AnimatePresence, motion } from 'framer-motion'
-import Popup from '../components/PopUp'
+import ArrowRightIcon from '../assets/icons/arrow-small-right.svg?react'
+import EmailIcon from '../assets/icons/mailbox.svg?react'
+import EmailUpIcon from '../assets/icons/mailbox-flag-up.svg?react'
+import UserIcon from '../assets/icons/user.svg?react'
+import PasswordIcon from '../assets/icons/lock.svg?react'
+import Logo from '../assets/icons/logo.svg?react'
+import SignInDecoration from '../assets/icons/signInDecoration.svg?react'
+import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
+import PropTypes from 'prop-types'
+import { useConsoleLog } from '../hooks'
+import { ScreenContext } from '../contexts/ScreenContext'
 
-const Auth = () => {
-  const navigate = useNavigate()
-  const location = useLocation()
+/**
+ * Authentication component that handles sign in and registration
+ *
+ * @returns {JSX.Element} The rendered authentication modal
+ */
+const Auth = ({ initialAction }) => {
+  const {
+    user,
+    signIn,
+    signUp,
+    signOut,
+    closeAuthModal,
+    isCheckingEmailVerification,
+    isAuthLoading,
+  } = useContext(UserContext)
+  const { isSmallScreen } = useContext(ScreenContext)
+  useConsoleLog('issmall', isSmallScreen)
+  const [passwordSuccess, setPasswordSuccess] = useState(false)
+  const [isModalMounted, setIsModalMounted] = useState(false)
+  const [action, setAction] = useState(initialAction || 'register')
 
-  const { isSmallScreen, dimensions } = use(ScreenContext)
-  const { width, height } = dimensions
-  const { user, signIn, signUp } = use(UserContext)
-
-  const [hover, setHover] = useState(false)
-  const [showPopup, setShowPopup] = useState(false)
-  const [popupContent, setPopupContent] = useState(<></>)
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [retypePassword, setRetypePassword] = useState('')
-  const [errorMessage, setErrorMessage] = useState({
-    name: '',
-    email: '',
-    retypePassword: '',
-  })
-  const [requirementsPassword, setRequirementsPassword] = useState([
-    { text: 'Least 8 characters', complete: false },
-    { text: 'Least one number (0–9) or a symbol', complete: false },
-    { text: 'Lowercase (a–z) and uppercase (A–Z)', complete: false },
-  ])
-
-  const passwordSuccess = useMemo(() => requirementsPassword.filter(item => item.complete === true).length === 3, [requirementsPassword, password])
-  const hasError = useMemo(() => !isEmpty(errorMessage?.name) || !isEmpty(errorMessage?.email) || !isEmpty(errorMessage?.retypePassword) ? true : false, [errorMessage])
-
-  // location state is used to determine the action (signin or register)
-  const [action, setAction] = useState(location.state?.action || 'signin')
-
+  // Track modal mount state to prevent child animations on modal entry/exit
   useEffect(() => {
-    if (action === 'signin') {
-      setErrorMessage({
-        name: '',
-        email: '',
-        retypePassword: '',
-      })
-      setName('')
-      setEmail('')
-      setPassword('')
-      setRetypePassword('')
-      handleInputChange(password)
-    } else if (action === 'register') {
-      setName('')
-      setPassword('')
-    }
-  }, [action])
+    setIsModalMounted(true)
+    return () => setIsModalMounted(false)
+  }, [])
 
-  useEffect(() => {
-    if (!isEmpty(user)) {
-      if (!user?.emailVerified) {
-        setShowPopup(true)
-        setPopupContent(
-          <div className='flex flex-col items-center justify-center pt-4'>
-            <Email width={100} height={100} color={'rgba(173, 169, 145)'} />
-            <h2 className='font-semibold text-center text-lg text-primary mt-6'>Email Verification has been sent to {isEmpty(user?.email) ? 'your email' : user?.email}!</h2>
-            <p className='font-extralight text-sm mt-3'>Please verify your email before signing in...</p>
-          </div>
-        )
-        setAction('signin')
-      } else {
-        navigate('/')
-      }
-    }
-  }, [user])
-  
-  const handleSignUp = async () => {
-    let validated = passwordSuccess
-    const newErrors = { name: '', email: '', retypePassword: '' }
+  const passwordRequirements = [
+    { complete: false, text: 'At least 8 characters', regEx: '.{8,}' },
+    {
+      complete: false,
+      text: 'At least 1 uppercase letter',
+      regEx: '(?=.*[A-Z])',
+    },
+    {
+      complete: false,
+      text: 'At least 1 lowercase letter',
+      regEx: '(?=.*[a-z])',
+    },
+    { complete: false, text: 'At least 1 number', regEx: '(?=.*[0-9])' },
+  ]
+  const [passwordRequirementsFiltered, setPasswordRequirementsFiltered] =
+    useState([])
 
-    if (isEmpty(name)) {
-      newErrors.name = 'Name is required'
-      validated = false
-    } else if (name.length < 2) {
-      newErrors.name = 'Name must be at least 2 characters'
-      validated = false
+  const formRef = useRef(null)
+  const emailRef = useRef(null)
+  const passwordRef = useRef(null)
+  const nameRef = useRef(null)
+  const retypePasswordRef = useRef(null)
+
+  const inputClassName =
+    'border-x-0 pl-0 gap-2 border-t-0 !border-b-2 rounded-none font-medium'
+
+  const validatePassword = password => {
+    let requirements = [...passwordRequirements]
+    requirements.forEach(req => {
+      req.complete = new RegExp(req.regEx).test(password)
+    })
+    setPasswordRequirementsFiltered(requirements)
+    if (requirements.every(req => req.complete)) {
+      setPasswordSuccess(true)
+      setPasswordRequirementsFiltered([])
     } else {
-      newErrors.name = ''
+      setPasswordSuccess(false)
+      throw new Error('Invalid password')
     }
-
-    if (isEmpty(email)) {
-      newErrors.email = 'Email is required'
-      validated = false
-    } else if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) === false) {
-      newErrors.email = 'Email is invalid'
-      validated = false
-    } else {
-      newErrors.email = ''
-    }
-
-    if (retypePassword !== password && passwordSuccess) {
-      newErrors.retypePassword = 'Passwords do not match'
-      validated = false
-    } else {
-      newErrors.retypePassword = ''
-    }
-    setErrorMessage(newErrors)
-
-    if (validated) {
-      const response = await signUp({ username: name, email: email, password: password })
-
-      if (response === 'Email already in use') {
-        setShowPopup(true)
-        setPopupContent(
-          <div className='flex flex-col items-center justify-center pt-4'>
-            <Error width={100} height={100} color={'rgba(173, 169, 145)'} />
-            <h2 className='font-semibold text-center text-lg text-primary mt-6'>Oops! {response}!</h2>
-            <p className='font-extralight text-sm mt-3'>Try signing in instead...</p>
-          </div>
-        )
-      }
-    }
-
-    return
   }
 
-  const handleSignIn = async () => {
-    await signIn({ email: email, password: password })
+  const validateRetypePassword = passwordRetyped => {
+    const formData = new FormData(formRef.current)
+    const password = formData.get('password')
+
+    if (passwordRetyped !== password) {
+      throw new Error('Passwords do not match')
+    }
   }
 
-  const handleInputChange = (value) => {
-    const updatedRequirements = [
-      {
-        text: 'Least 8 characters',
-        complete: value.length >= 8
-      },
-      {
-        text: 'Least one number (0–9) or a symbol',
-        complete: /[\d\W]/.test(value)
-      },
-      {
-        text: 'Lowercase (a–z) and uppercase (A–Z)',
-        complete: /[a-z]/.test(value) && /[A-Z]/.test(value)
+  const validateEmail = email => {
+    try {
+      const emailRegEx = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
+      if (!emailRegEx.test(email)) {
+        throw new Error('Invalid email')
       }
-    ]
-    setPassword(value)
-    setRequirementsPassword(updatedRequirements)
+    } catch (error) {
+      console.error('Invalid email:', error.message)
+    }
   }
+
+  const handleSignin = async e => {
+    e?.preventDefault()
+
+    try {
+      let isValid = true
+      isValid =
+        emailRef.current && (await emailRef.current.validate()) && isValid
+      isValid =
+        passwordRef.current && (await passwordRef.current.validate()) && isValid
+
+      if (!isValid) {
+        console.error('Invalid form')
+        return
+      }
+
+      const formData = new FormData(formRef.current)
+      const data = Object.fromEntries(formData.entries())
+
+      await signIn(data)
+    } catch (error) {
+      alert(error.message)
+      console.error('Error signing in:', error.message)
+    }
+  }
+
+  const handleSignup = async e => {
+    e.preventDefault()
+
+    try {
+      let isValid = true
+      isValid = nameRef.current && (await nameRef.current.validate()) && isValid
+      isValid =
+        emailRef.current && (await emailRef.current.validate()) && isValid
+      isValid =
+        passwordRef.current && (await passwordRef.current.validate()) && isValid
+      isValid =
+        retypePasswordRef.current &&
+        (await retypePasswordRef.current.validate()) &&
+        isValid
+
+      if (!isValid) {
+        console.error('Invalid form')
+        return
+      }
+
+      const formData = new FormData(formRef.current)
+      const data = Object.fromEntries(formData.entries())
+
+      console.log('Submitting:', data)
+
+      await signUp(data)
+    } catch (error) {
+      alert(error.message)
+      console.error('Error signing up:', error.message)
+    }
+  }
+
+  // Determine if children should animate based on modal state
+  const shouldAnimateChildren = isModalMounted
+
+  if (user?.emailVerified) closeAuthModal()
 
   return (
-    <div className={`flex flex-col flex-1 items-center justify-center`} style={{ paddingTop: NAVBAR_HEIGHT }}>
-
-      {showPopup && (
-        <Popup onClose={() => setShowPopup(false)}>
-          {popupContent}
-        </Popup>
-      )}
-
-      <AnimatePresence mode='wait'>
-        <motion.div
-          key={action}
-          initial={{ opacity: 0, x: action === 'signin' ? -100 : 100 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: action === 'signin' ? 100 : -100 }}
-          transition={{ duration: 0.5 }}
-          style={{ width: width * 0.85, height: width >= 1050 ? 750 : 'auto', background: 'white' }}
-          className='flex flex-row rounded-[30px] max-w-[1200px] justify-between'
-        >
-          {action === 'register' ? (
-            <>
-              <div className={`${width < 500 ? 'px-[2rem] py-[1rem]' : 'px-[6rem] py-[3rem]'} justify-between flex flex-col w-[40rem] flex-6`}>
-                <div className={`flex-1`}>
-                  <div className={`flex items-center justify-between ${hasError ? 'pb-[3rem]' : 'pb-[4rem]'}`}>
-                    <button onClick={() => navigate('/')}><ArrowLeft /></button>
-                    {/* {width >= 500 && ( */}
-                      <p>Already a member?<button onClick={() => setAction('signin')} className='ml-2 font-semibold' style={{ color: 'var(--color-primary)' }}>Sign In</button></p>
-                    {/* )} */}
-                  </div>
-                  
-                  <div className='flex justify-between items-center'>
-                    <div>
-                      <h1 className='pb-1'>Sign Up</h1>
-                      <h3 className='text-gray-400'>Secure your grades with <b className='italic'>Last Minute</b></h3>
-                    </div>
-                  </div>
-
-                  <div className={`${passwordSuccess ? 'mt-6' : 'mt-12'} flex flex-col gap-5`}
-                  >
-                      <CustomInput2 
-                        image={<User width={24} height={24} />} 
-                        placeholder='Name'
-                        onChange={e => setName(e.target.value)} 
-                        errorMessage={errorMessage?.name}
-                      />
-                      <CustomInput2 
-                        image={<Email width={24} height={24} />} 
-                        placeholder='Email' 
-                        onChange={e => setEmail(e.target.value)}
-                        errorMessage={errorMessage?.email}
-                      />
-                      <CustomInput2 
-                        image={<Password width={24} height={24} />} 
-                        placeholder='Password' 
-                        type='password'
-                        requirements={requirementsPassword}
-                        onChange={e => handleInputChange(e.target.value)}
-                      />
-                      {passwordSuccess && (
-                        <CustomInput2 
-                          image={<Password width={24} height={24} />} 
-                          placeholder='Re-Type Password' 
-                          type='password'
-                          onChange={e => setRetypePassword(e.target.value)}
-                          errorMessage={errorMessage?.retypePassword}
-                        />
-                      )}
-                  </div>
+    <div className='fixed overflow-y-scroll scrollbar-hide py-4 z-20 flex w-screen h-screen text-primary-text justify-center items-center'>
+      <motion.div
+        className='fixed z-20 top-0 left-0 w-screen h-screen bg-background-secondary/30'
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, backdropFilter: 'blur(4px)' }}
+        onClick={() => closeAuthModal()}
+        exit={{
+          opacity: 0,
+          transition: { delay: 0.3, duration: 0.3 },
+        }}
+      />
+      <motion.div
+        key={'auth-modal'}
+        initial={{ y: '150%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '150%' }}
+        transition={MOVEMENT_TRANSITION}
+        className={`flex z-30 ${isSmallScreen ? 'w-[min(48rem,100%)]' : 'w-[min(75rem,11/12*100%)]'} bg-white ${
+          action === 'register' ? 'flex-row' : 'flex-row-reverse'
+        } my-auto rounded-4xl max-w-[75rem] h-[45rem] overflow-clip justify-between`}
+      >
+        <AnimatePresence>
+          {user && !user.emailVerified ? (
+            <motion.div
+              initial={shouldAnimateChildren ? { scale: '150%' } : false}
+              animate={{ scale: '100%' }}
+              transition={MOVEMENT_TRANSITION}
+              className='p-[min(3rem,6%)] w-full flex flex-col h-full'
+            >
+              <CustomInteractive
+                className='!p-1 !pr-4 !size-min items-center flex'
+                loading={isAuthLoading}
+                onClick={() => signOut()}
+              >
+                <div className='flex items-center gap-2'>
+                  <ArrowRightIcon
+                    width={36}
+                    height={36}
+                    className='rotate-180'
+                  />
+                  Sign Out
                 </div>
-
-                <CustomButton 
-                  onClick={() => handleSignUp()}
-                  filled={true}
-                  className='w-[14rem]'
-                  onMouseEnter={() => setHover(true)}
-                  onMouseLeave={() => setHover(false)}
-                >
-                  <div className='flex items-center gap-4'>
-                    <p>Sign Up</p>
-                    <div className='p-2 rounded-full' style={{ backgroundColor: hover ? 'transparent' : 'var(--color-primary-low-opacity)'}}>
-                      <ArrowLeft style={{ transform: 'rotate(180deg)', width: 20, height: 20 }} color='white' />
-                    </div>
-                  </div>
-                </CustomButton>
+              </CustomInteractive>
+              <div className='flex flex-1 h-full flex-col justify-center items-center'>
+                <div className='flex flex-col items-center justify-center gap-4 text-center max-w-md'>
+                  <motion.div
+                    animate={{
+                      rotate: [0, -7, 7, -7, 7, 0], // Wiggle pattern
+                    }}
+                    transition={{
+                      duration: 2.5,
+                      times: [0, 0.05, 0.1, 0.15, 0.2, 0.25],
+                      ease: 'easeInOut',
+                      repeat: Infinity,
+                      repeatDelay: 0.75, // 1 second pause between animations
+                    }}
+                  >
+                    <EmailUpIcon
+                      width={160}
+                      height={160}
+                      className='fill-primary'
+                    />
+                  </motion.div>
+                  <motion.div className='flex flex-col gap-2'>
+                    <h2 className='text-primary font-semibold gap-4 flex w-full text-xl'>
+                      A verification email has been sent to {user.email}.
+                    </h2>
+                    <p>Please verify your email address to continue.</p>
+                  </motion.div>
+                </div>
               </div>
-              {width >= 1050 && 
-                <div style={{ flex: 4 }}>
-                  <SignInDecoration />
-                </div>
-              } 
-            </>
-            ) : (
-              <>
-                {width >= 1050 && 
-                  <div style={{ flex: 4 }}>
-                    <SignInDecoration style={{ transform: 'scaleX(-1)' }} />
-                  </div>
+            </motion.div>
+          ) : user ? (
+            <></>
+          ) : action === 'register' ? (
+            <>
+              <motion.div
+                key={'register'}
+                initial={shouldAnimateChildren ? { x: '100%' } : false}
+                animate={{ x: 0 }}
+                exit={shouldAnimateChildren ? { x: '100%' } : false}
+                transition={MOVEMENT_TRANSITION}
+                className={
+                  'p-[min(3rem,6%)] justify-between min-w-fit flex flex-col flex-6'
                 }
-                <div className={`flex-6 py-[4rem] ${width < 500 ? 'px-[2rem]' : width < 1200 ? 'px-[4rem]' : 'px-[8rem]'}`}>
-                  <div className={`flex items-center justify-between ${hasError ? 'pb-[3rem]' : passwordSuccess ? 'pb-[4rem]' : 'pb-[5rem]'}`}>
-                    <button onClick={() => navigate('/')}><ArrowLeft /></button>
-                    {width >= 700 && (
-                      <p>Don't have an account?<button onClick={() => setAction('register')} className='ml-2 font-semibold' style={{ color: 'var(--color-primary)' }}>Sign Up</button></p>
-                    )}
-                  </div>
-                  
-                  <div className='flex justify-between items-center'>
-                    <div>
-                      <h1 className='pb-1'>Sign In</h1>
-                      <h3 className='text-gray-400'>Secure your grades with <b className='italic'>Last Minute</b></h3>
-                    </div>
-                    <Logo width={80} height={80} />
-                  </div>
-
-                  <div className={`mt-12 mb-24 flex flex-col gap-6`}
+              >
+                <div className={'flex items-center justify-between'}>
+                  <CustomInteractive
+                    className='!p-1 !pr-4 !size-min items-center flex'
+                    onClick={() => closeAuthModal()}
                   >
-                      <CustomInput2 
-                        image={<Email width={24} height={24} />} 
-                        placeholder='Email' 
-                        onChange={e => setEmail(e.target.value)}
+                    <div className='flex items-center gap-2'>
+                      <ArrowRightIcon
+                        width={36}
+                        height={36}
+                        className='rotate-180'
                       />
-                      <CustomInput2 
-                        image={<Password width={24} height={24} />} 
-                        placeholder='Password' 
-                        type='password'
-                        onChange={e => handleInputChange(e.target.value)}
-                      />
-
-                      {width < 700 && (
-                        <p style={{ textAlign: width < 450 ? 'center' : '' }}>Don't have an account?<button onClick={() => setAction('register')} className='ml-2 font-semibold' style={{ color: 'var(--color-primary)' }}>Sign Up</button></p>
-                      )}
-                  </div>
-
-                  <CustomButton 
-                    onClick={() => handleSignIn()}
-                    filled={true}
-                    className='w-[14rem]'
-                    onMouseEnter={() => setHover(true)}
-                    onMouseLeave={() => setHover(false)}
-                  >
-                    <div className='flex items-center gap-4'>
-                      <p>Sign In</p>
-                      <div className='p-2 rounded-full' style={{ backgroundColor: hover ? 'transparent' : 'var(--color-primary-low-opacity)'}}>
-                        <ArrowLeft style={{ transform: 'rotate(180deg)', width: 20, height: 20 }} color='white' />
-                      </div>
+                      Back
                     </div>
-                  </CustomButton>
+                  </CustomInteractive>
+                  {!isSmallScreen && (
+                    <div className='inline-flex items-center'>
+                      {'Already a member?'}
+                      <CustomInteractive
+                        onClick={() => setAction('signin')}
+                        className='font-semibold !p-1 ml-2 w-min !text-primary'
+                      >
+                        Sign In
+                      </CustomInteractive>
+                    </div>
+                  )}
                 </div>
-              </>
-            ) 
-          }
-        </motion.div>
-      </AnimatePresence>
+                <div className='flex flex-col justify-center flex-1'>
+                  <div
+                    className={`${
+                      isSmallScreen ? 'flex-col' : 'flex-row-reverse'
+                    } flex justify-between items-start`}
+                  >
+                    <Logo width={80} height={80} />
+                    <div>
+                      <h1 className='pb-1 text-primary-text'>Sign Up</h1>
+                      <h3 className='text-gray-400 text-nowrap'>
+                        Secure your grades with{' '}
+                        <b className='italic'>Last Minute</b>
+                      </h3>
+                    </div>
+                  </div>
+
+                  <form
+                    ref={formRef}
+                    onSubmit={e => handleSignup(e)}
+                    className={'mt-10 flex flex-col gap-5'}
+                  >
+                    <CustomInput
+                      name='displayName'
+                      inputClassName={inputClassName}
+                      image={<UserIcon width={24} height={24} />}
+                      placeholder='Name'
+                      disabled={isAuthLoading}
+                      validateFunction={e => {
+                        if (e.length < 3)
+                          throw new Error('Name must be at least 3 characters')
+                      }}
+                      required
+                      ref={nameRef}
+                    />
+                    <CustomInput
+                      name='email'
+                      inputClassName={inputClassName}
+                      image={<EmailIcon width={24} height={24} />}
+                      placeholder='Email'
+                      disabled={isAuthLoading}
+                      validateFunction={e => validateEmail(e)}
+                      required
+                      ref={emailRef}
+                    />
+                    <CustomInput
+                      name='password'
+                      inputClassName={inputClassName}
+                      image={<PasswordIcon width={24} height={24} />}
+                      placeholder='Password'
+                      disabled={isAuthLoading}
+                      validateFunction={e => validatePassword(e)}
+                      type='password'
+                      requirements={passwordRequirementsFiltered}
+                      required
+                      ref={passwordRef}
+                    />
+                    {passwordSuccess && (
+                      <CustomInput
+                        name='retypePassword'
+                        inputClassName={inputClassName}
+                        image={<PasswordIcon width={24} height={24} />}
+                        placeholder='Re-Type Password'
+                        disabled={isAuthLoading}
+                        validateFunction={e => validateRetypePassword(e)}
+                        type='password'
+                        required
+                        ref={retypePasswordRef}
+                      />
+                    )}
+
+                    {isSmallScreen && (
+                      <div className='inline-flex items-center text-nowrap'>
+                        Already a member?
+                        <CustomInteractive
+                          onClick={() => setAction('signin')}
+                          className='font-semibold !p-1 ml-2 w-min !text-primary'
+                        >
+                          Sign In
+                        </CustomInteractive>
+                      </div>
+                    )}
+                    <CustomButton
+                      type='submit'
+                      loading={isAuthLoading}
+                      filled={true}
+                      className='w-[14rem] mt-2'
+                    >
+                      <div className='flex items-center gap-4'>
+                        <p>Sign Up</p>
+                        <div className='p-2 rounded-full'>
+                          <ArrowRightIcon
+                            style={{
+                              width: 24,
+                              height: 24,
+                            }}
+                            fill='white'
+                          />
+                        </div>
+                      </div>
+                    </CustomButton>
+                  </form>
+                </div>
+              </motion.div>
+              {!isSmallScreen && (
+                <motion.div
+                  key={'register-decoration'}
+                  initial={
+                    shouldAnimateChildren ? { x: '100%', scale: '150%' } : false
+                  }
+                  animate={{ x: 0, scale: '100%' }}
+                  transition={MOVEMENT_TRANSITION}
+                  className='flex-4'
+                >
+                  <SignInDecoration />
+                </motion.div>
+              )}
+            </>
+          ) : (
+            <>
+              <motion.div
+                key={'signin'}
+                initial={shouldAnimateChildren ? { x: '-100%' } : false}
+                animate={{ x: 0 }}
+                exit={shouldAnimateChildren ? { x: '-100%' } : false}
+                transition={MOVEMENT_TRANSITION}
+                className='w-full flex flex-col min-w-fit p-[min(3rem,6%)]'
+              >
+                <div className={'flex items-center justify-between'}>
+                  <CustomInteractive
+                    className='!p-1 !pr-4 !size-min items-center flex'
+                    onClick={() => closeAuthModal()}
+                  >
+                    <div className='flex items-center gap-2'>
+                      <ArrowRightIcon
+                        width={36}
+                        height={36}
+                        className='rotate-180'
+                      />
+                      Back
+                    </div>
+                  </CustomInteractive>
+                  {!isSmallScreen && (
+                    <div className='inline-flex items-center text-nowrap'>
+                      Don&apos;t have an account?
+                      <CustomInteractive
+                        onClick={() => setAction('register')}
+                        className='font-semibold !p-1 !size-min ml-2 w-min !text-primary'
+                      >
+                        Sign Up
+                      </CustomInteractive>
+                    </div>
+                  )}
+                </div>
+                <div className='flex flex-col justify-center flex-1'>
+                  <div
+                    className={`${
+                      isSmallScreen ? 'flex-col' : 'flex-row-reverse'
+                    } flex justify-between items-start`}
+                  >
+                    <Logo width={80} height={80} />
+                    <div>
+                      <h1 className='pb-1 text-primary-text'>Sign In</h1>
+                      <h3 className='text-gray-400 text-nowrap'>
+                        Secure your grades with{' '}
+                        <b className='italic'>Last Minute</b>
+                      </h3>
+                    </div>
+                  </div>
+
+                  <form
+                    ref={formRef}
+                    onSubmit={e => handleSignin(e)}
+                    className={'mt-10 flex flex-col gap-6'}
+                  >
+                    <CustomInput
+                      name='email'
+                      inputClassName={inputClassName}
+                      image={<EmailIcon width={24} height={24} />}
+                      placeholder='Email'
+                      disabled={isAuthLoading}
+                      validateFunction={e => validateEmail(e)}
+                      required
+                      ref={emailRef}
+                    />
+                    <CustomInput
+                      name='password'
+                      inputClassName={inputClassName}
+                      image={<PasswordIcon width={24} height={24} />}
+                      placeholder='Password'
+                      disabled={isAuthLoading}
+                      type='password'
+                      required
+                      ref={passwordRef}
+                    />
+
+                    {isSmallScreen && (
+                      <div className='inline-flex items-center text-nowrap'>
+                        Don&apos;t have an account?
+                        <CustomInteractive
+                          onClick={() => setAction('register')}
+                          className='font-semibold !p-1 ml-2 w-min !text-primary'
+                        >
+                          Sign Up
+                        </CustomInteractive>
+                      </div>
+                    )}
+                    <CustomButton
+                      type='submit'
+                      filled={true}
+                      loading={isAuthLoading}
+                      className='w-[14rem] mt-2'
+                    >
+                      <div className='flex items-center gap-4'>
+                        <p>Sign In</p>
+                        <div className='p-2 rounded-full'>
+                          <ArrowRightIcon
+                            style={{
+                              width: 24,
+                              height: 24,
+                            }}
+                            fill='white'
+                          />
+                        </div>
+                      </div>
+                    </CustomButton>
+                  </form>
+                </div>
+              </motion.div>
+              {!isSmallScreen && (
+                <motion.div
+                  key={'signin-decoration'}
+                  initial={
+                    shouldAnimateChildren
+                      ? { x: '-100%', scale: '150%' }
+                      : false
+                  }
+                  animate={{ x: 0, scale: '100%' }}
+                  transition={MOVEMENT_TRANSITION}
+                  className='flex-4'
+                >
+                  <SignInDecoration style={{ transform: 'scaleX(-1)' }} />
+                </motion.div>
+              )}
+            </>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </div>
   )
+}
+Auth.propTypes = {
+  initialAction: PropTypes.oneOf(['register', 'signin']),
 }
 
 export default Auth

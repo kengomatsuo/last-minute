@@ -3,7 +3,6 @@
 ## 📝 Guidelines for Writing Pull Request Descriptions
 
 ### 1. 🏷️ Provide a Clear and Descriptive Title
-- **Limit**: 50 characters or less
 - **Style**: Capitalize the first letter
 - **Format**: `<Type>: <Short description>` (e.g., `Feature:`, `Fix:`, `Refactor:`)
 - **Example**: `Feature: Add user authentication system`
@@ -54,13 +53,7 @@
     📌 Related to #456
     ```
 
-### 4. Include Screenshots or GIFs (if applicable)
-- **Example**:
-    ```
-    ![Login Form](url-to-screenshot)
-    ```
-
-### 5. Testing Instructions
+### 4. Testing Instructions
 - **Detail**: Steps to test the changes
 - **Example**:
     ```
@@ -69,7 +62,7 @@
     3. Verify that the user is redirected to the dashboard
     ```
 
-### 6. Additional Notes
+### 5. Additional Notes
 - **Include**: Any additional information that reviewers should be aware of
 - **Example**:
     ```

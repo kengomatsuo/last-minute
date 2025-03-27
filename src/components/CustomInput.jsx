@@ -12,6 +12,7 @@ import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
  *
  * @param {Object} props - Component props
  * @param {string} [props.label] - The label for the input field
+ * @param {React.ReactNode} [props.image] - An image to display next to the input
  * @param {string} props.name - The name of the input field
  * @param {'text' | 'password' | 'email' | 'number' | 'tel' | 'url' | 'search' |
  * 'date' | 'datetime-local' | 'month' | 'week' | 'time' | 'color' | 'suggest' | 'display'}
@@ -22,6 +23,7 @@ import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
  * @param {string} [props.value] - The current value of the input field
  * @param {boolean} [props.required] - Whether the input field is required
  * @param {string} [props.className] - Additional CSS classes for the input field
+ * @param {string} [props.inputClassName] - Additional CSS classes for the input
  * @param {boolean} [props.disabled] - Whether the input field is disabled
  * @param {boolean} [props.autoFocus] - Whether the input field should be focused
  * on mount
@@ -44,11 +46,15 @@ import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
  * is selected
  * @param {boolean} [props.forceSuggestions] - When true, requires selection from
  * available options for suggest inputs
+ * @param {Array<string>} [props.requirements] - Additional requirements for the
+ * input field
  */
 const CustomInput = ({
   label = '',
+  image = null,
   onChange = () => {},
-  className,
+  className = '',
+  inputClassName = '',
   validateFunction,
   multiline = false,
   options = [],
@@ -56,6 +62,7 @@ const CustomInput = ({
   type,
   value = '',
   forceSuggestions = false,
+  requirements = [],
   autoSave = false,
   saveDelay = 1000,
   ref,
@@ -234,6 +241,7 @@ const CustomInput = ({
     // First check if field is required but empty
     if (props.required && (!value || value.trim() === '')) {
       setErrorMessage('This field is required')
+      validateFunction && validateFunction('')
       return false
     }
 
@@ -410,14 +418,27 @@ const CustomInput = ({
   }
 
   // Common styling for both input and textarea
-  const commonClassName = `${errorMessage && !isFocused ? '!border-error' : ''} 
-      mt-0.5 flex bg-white border-2 border-primary/50 transition-all rounded p-2 focus:outline-none focus:ring-2 focus:ring-primary font-medium`
+  const commonClassName = `${
+    errorMessage && !isFocused
+      ? '!border-error !fill-error'
+      : isFocused
+      ? 'fill-primary'
+      : 'fill-input-icon'
+  } 
+    ${inputClassName ? inputClassName : 'p-2'} mt-0.5 flex flex-1 bg-white border-2 border-primary/50 transition-all rounded focus:outline-none focus:ring-2 focus:ring-primary font-medium`
 
-      // console.log("type:", type)
+  // console.log("type:", type)
 
-      // console.log("savedValue:", savedValue)
+  // console.log("savedValue:", savedValue)
   if (type === 'display')
-    return <input className={`${className} pointer-events-none`} type='text' name={props.name} value={savedValue} />
+    return (
+      <input
+        className={`${className} pointer-events-none`}
+        type='text'
+        name={props.name}
+        value={savedValue}
+      />
+    )
   return (
     <motion.label
       className={`${className} w-full flex flex-col text-sm font-semibold relative`}
@@ -426,38 +447,51 @@ const CustomInput = ({
       ref={inputContainerRef}
     >
       {label}
-      {props.required && '*'}
-
-      {multiline ? (
-        <textarea
-          {...props}
-          value={inputValue}
-          name={props.name}
-          disabled={props.disabled}
-          rows={multiline === true ? 3 : multiline}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          className={`${commonClassName} resize-none min-h-[70px]`}
-          ref={ref}
-        />
-      ) : (
-        <input
-          name={props.name}
-          value={inputValue}
-          type={type === 'suggest' ? 'text' : type}
-          onChange={handleChange}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          disabled={props.disabled}
-          placeholder={props.placeholder}
-          className={commonClassName}
-          min={props.min}
-          max={props.max}
-          autoComplete={type === 'suggest' ? 'off' : props.autoComplete}
-          ref={ref}
-        />
-      )}
+      {props.required && label && '*'}
+      <div
+        className={`${
+          image
+            ? commonClassName +
+              ' !pl-1 ' +
+              (isFocused && inputClassName ? '!border-b-3' : '')
+            : ''
+        } w-full items-center flex flex-row`}
+      >
+        {image}
+        {multiline ? (
+          <textarea
+            {...props}
+            value={inputValue}
+            name={props.name}
+            disabled={props.disabled}
+            rows={multiline === true ? 3 : multiline}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={`${
+              !image ? commonClassName : 'flex-1 p-2'
+            } resize-none min-h-[70px]`}
+            ref={ref}
+          />
+        ) : (
+          <input
+            name={props.name}
+            value={inputValue}
+            type={type === 'suggest' ? 'text' : type}
+            onChange={handleChange}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            disabled={props.disabled}
+            placeholder={props.placeholder}
+            className={!image ? commonClassName : 'flex-1  p-2'}
+            min={props.min}
+            max={props.max}
+            autoComplete={type === 'suggest' ? 'off' : props.autoComplete}
+            ref={ref}
+            autoFocus={props.autoFocus}
+          />
+        )}
+      </div>
 
       {type === 'suggest' ? (
         <AnimatePresence>
@@ -494,21 +528,70 @@ const CustomInput = ({
       ) : null}
 
       <AnimatePresence>
-        {errorMessage && (!filteredOptions.length || !isFocused) && (
-          <motion.div
+        {requirements.length !== 0 && type !== 'suggest' && (
+          <motion.ul
             initial={{ height: 0, opacity: 0, marginTop: 0 }}
-            animate={{ height: 'auto', opacity: 1, marginTop: 4 }}
+            animate={{
+              height: 32 * requirements.length,
+              opacity: 1,
+              marginTop: 4,
+            }}
             exit={{
               height: 0,
               opacity: 0,
-              marginTop: 0,
-              transition: { duration: 0.15 },
+              marginTop: -10, // How does this work???
             }}
             transition={MOVEMENT_TRANSITION}
+            style={{ listStyle: 'none', paddingTop: 10, maxWidth: 400 }}
           >
-            <motion.p className='text-error'>{errorMessage}</motion.p>
-          </motion.div>
+            {requirements.map((item, index) => (
+              <li
+                key={index}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginBottom: 4,
+                  color: errorMessage && !isFocused ? 'var(--color-error)' : item.complete ? '#22c55e' : '#99a1af',
+                }}
+                className='font-normal transition-all'
+              >
+                <span
+                  style={{
+                    width: 20,
+                    marginRight: 10,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 16,
+                  }}
+                >
+                  {item.complete ? '✔' : '●'}
+                </span>
+                {item.text}
+              </li>
+            ))}
+          </motion.ul>
         )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {!requirements.length &&
+          errorMessage &&
+          (!filteredOptions.length || !isFocused) && (
+            <motion.div
+              initial={{ height: 0, opacity: 0, marginTop: 0 }}
+              animate={{ height: 4, opacity: 1, marginTop: 4 }}
+              exit={{
+                height: 0,
+                opacity: 0,
+                marginTop: 0,
+                transition: { duration: 0.15 },
+              }}
+              transition={MOVEMENT_TRANSITION}
+            >
+              <motion.p className='text-error'>{errorMessage}</motion.p>
+            </motion.div>
+          )}
       </AnimatePresence>
     </motion.label>
   )
@@ -596,6 +679,8 @@ CustomInput.propTypes = {
     'url',
     'photo',
   ]),
+  min: PropTypes.string,
+  max: PropTypes.string,
   autoFocus: PropTypes.bool,
   validateFunction: PropTypes.func,
   errorMessage: PropTypes.string,
@@ -615,6 +700,15 @@ CustomInput.propTypes = {
     PropTypes.func,
     PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
   ]),
+  label: PropTypes.string,
+  image: PropTypes.node,
+  inputClassName: PropTypes.string,
+  requirements: PropTypes.arrayOf(
+    PropTypes.shape({
+      text: PropTypes.string.isRequired,
+      complete: PropTypes.bool.isRequired,
+    })
+  ),
 }
 
 export default CustomInput
