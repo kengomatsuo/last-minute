@@ -11,6 +11,8 @@ import { auth, db, functions } from '../../firebaseConfig'
 import { useConsoleLog } from '../hooks'
 import { httpsCallable } from 'firebase/functions'
 import { doc, setDoc } from 'firebase/firestore'
+import Auth from '../screens/Auth'
+import { AnimatePresence } from 'framer-motion'
 
 /**
  * @typedef {Object} UserContextType
@@ -42,6 +44,8 @@ const UserContext = createContext(defaultContext)
 
 const UserContextProvider = ({ children }) => {
   const [user, setUser] = useState(undefined)
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  const [initialAction, setInitialAction] = useState(null)
   useConsoleLog('user', user)
 
   useEffect(() => {
@@ -70,6 +74,11 @@ const UserContextProvider = ({ children }) => {
 
     return () => unsubscribe()
   }, [])
+
+  useEffect(() => {
+    setIsAuthModalOpen(user === null || user?.emailverified === false)
+    console.log('User:', user)
+  }, [user])
 
   /**
    * Signs up a new user.
@@ -147,7 +156,7 @@ const UserContextProvider = ({ children }) => {
    */
   const addTutor = async email => {
     try {
-      result = await setTutorClaim({ email, isTutor: true })
+      const result = await setTutorClaim({ email, isTutor: true })
       alert(result)
     } catch (error) {
       alert(error)
@@ -162,18 +171,34 @@ const UserContextProvider = ({ children }) => {
   const addAdmin = async email => {
     try {
       console.log(email)
-      result = await setAdminClaim({ email, isAdmin: true })
+      const result = await setAdminClaim({ email, isAdmin: true })
       alert(result)
     } catch (error) {
       alert(error)
     }
   }
 
+  const openAuthModal = (initialAction) => {
+    setInitialAction(initialAction)
+    setIsAuthModalOpen(true)}
+  const closeAuthModal = () => setIsAuthModalOpen(false)
+
   return (
     <UserContext.Provider
-      value={{ user, signUp, signIn, signOut, applyTutor, addTutor, addAdmin }}
+      value={{
+        user,
+        signUp,
+        signIn,
+        signOut,
+        applyTutor,
+        addTutor,
+        addAdmin,
+        openAuthModal,
+        closeAuthModal,
+      }}
     >
-      {children}
+        <AnimatePresence>{isAuthModalOpen && <Auth initialAction={initialAction} />}</AnimatePresence>
+        {children}
     </UserContext.Provider>
   )
 }

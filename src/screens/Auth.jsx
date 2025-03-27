@@ -1,9 +1,7 @@
 import { useContext, useRef, useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
 import { CustomButton, CustomInput, CustomInteractive } from '../components'
 import { UserContext } from '../contexts/UserContext'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ScreenContext } from '../contexts/ScreenContext'
 import ArrowRightIcon from '../assets/icons/arrow-small-right.svg?react'
 import EmailIcon from '../assets/icons/mailbox.svg?react'
 import UserIcon from '../assets/icons/user.svg?react'
@@ -11,19 +9,22 @@ import PasswordIcon from '../assets/icons/lock.svg?react'
 import Logo from '../assets/icons/logo.svg?react'
 import SignInDecoration from '../assets/icons/signInDecoration.svg?react'
 import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
+import PropTypes from 'prop-types'
+import { useConsoleLog } from '../hooks'
+import { ScreenContext } from '../contexts/ScreenContext'
 
 /**
  * Authentication component that handles sign in and registration
  * 
  * @returns {JSX.Element} The rendered authentication modal
  */
-const Auth = () => {
-  const location = useLocation()
-  const { user, signIn, signUp } = useContext(UserContext)
+const Auth = ({initialAction}) => {
+  const { user, signIn, signUp, closeAuthModal } = useContext(UserContext)
   const { isSmallScreen } = useContext(ScreenContext)
+  useConsoleLog('issmall', isSmallScreen)
   const [passwordSuccess, setPasswordSuccess] = useState(false)
-  const [action, setAction] = useState(location.state?.action || 'signin')
   const [isModalMounted, setIsModalMounted] = useState(false)
+  const [action, setAction] = useState(initialAction || 'register')
   
   // Track modal mount state to prevent child animations on modal entry/exit
   useEffect(() => {
@@ -100,6 +101,7 @@ const Auth = () => {
       throw new Error('Invalid email')
     }}
     catch (error) {
+      console.error('Invalid email:', error.message)
     }
   }
 
@@ -162,8 +164,8 @@ const Auth = () => {
   const shouldAnimateChildren = isModalMounted
 
   return (
-    <div className='fixed overflow-y-scroll scrollbar-hide py-4 z-10 flex w-screen h-screen justify-center items-center'>
-      <AnimatePresence>
+    <div className='fixed overflow-y-scroll scrollbar-hide py-4 z-20 flex w-screen h-screen text-primary-text justify-center items-center'>
+      
         <motion.div
           className='fixed z-20 top-0 left-0 w-screen h-screen bg-background-secondary/30'
           initial={{ opacity: 0 }}
@@ -175,9 +177,9 @@ const Auth = () => {
         />
         <motion.div
           key={'auth-modal'}
-          initial={{ y: '100%' }}
+          initial={{ y: '150%' }}
           animate={{ y: 0 }}
-          exit={{ y: '100%' }}
+          exit={{ y: '150%' }}
           transition={MOVEMENT_TRANSITION}
           className={`flex z-30 w-[min(75rem,11/12*100%)] bg-white ${
             action === 'register' ? 'flex-row' : 'flex-row-reverse'
@@ -194,19 +196,18 @@ const Auth = () => {
                   exit={shouldAnimateChildren ? { x: '100%' } : false}
                   transition={MOVEMENT_TRANSITION}
                   className={
-                    'p-[min(3rem,6%)] justify-between min-w-fit flex flex-col w-[40rem] flex-6'
+                    'p-[min(3rem,6%)] justify-between min-w-fit flex flex-col flex-6'
                   }
                 >
                   <div className={'flex items-center justify-between'}>
-                    <Link to='/'>
-                      <CustomInteractive className='!p-1 aspect-square items-center flex'>
+                      <CustomInteractive className='!p-1 !size-min aspect-square items-center flex'
+                      onClick={() => closeAuthModal()}>
                         <ArrowRightIcon
                           width={36}
                           height={36}
                           className='rotate-180'
                         />
                       </CustomInteractive>
-                    </Link>
                     {/* {width >= 500 && ( */}
                     <div className='inline-flex items-center'>
                       {'Already a member?'}
@@ -222,12 +223,13 @@ const Auth = () => {
                   <div className='flex flex-col justify-center flex-1'>
                     <div className='flex justify-between items-center'>
                       <div>
-                        <h1 className='pb-1'>Sign Up</h1>
+                        <h1 className='pb-1 text-primary-text'>Sign Up</h1>
                         <h3 className='text-gray-400 text-nowrap'>
                           Secure your grades with{' '}
                           <b className='italic'>Last Minute</b>
                         </h3>
                       </div>
+                      <Logo width={80} height={80} />
                     </div>
 
                     <form
@@ -303,9 +305,8 @@ const Auth = () => {
                 {!isSmallScreen && (
                   <motion.div
                     key={'register-decoration'}
-                    initial={shouldAnimateChildren ? { x: '100%' } : false}
-                    animate={{ x: 0 }}
-                    exit={shouldAnimateChildren ? { x: '100%' } : false}
+                    initial={shouldAnimateChildren ? { x: '100%', scale: '120%' } : false}
+                    animate={{ x: 0, scale: '100%' }}
                     transition={MOVEMENT_TRANSITION}
                     className='flex-4'
                   >
@@ -324,21 +325,20 @@ const Auth = () => {
                   className='w-full flex flex-col min-w-fit p-[min(3rem,6%)]'
                 >
                   <div className={'flex items-center justify-between'}>
-                    <Link to='/'>
-                      <CustomInteractive className='!p-1 aspect-square items-center flex'>
+                      <CustomInteractive className='!p-1 !size-min aspect-square items-center flex'
+                      onClick={() => closeAuthModal()}>
                         <ArrowRightIcon
                           width={36}
                           height={36}
                           className='rotate-180'
                         />
                       </CustomInteractive>
-                    </Link>
                     {!isSmallScreen && (
                       <div className='inline-flex items-center text-nowrap'>
                         Don&apos;t have an account?
                         <CustomInteractive
                           onClick={() => setAction('register')}
-                          className='font-semibold !p-1 ml-2 w-min !text-primary'
+                          className='font-semibold !p-1 !size-min ml-2 w-min !text-primary'
                         >
                           Sign Up
                         </CustomInteractive>
@@ -417,9 +417,8 @@ const Auth = () => {
                 {!isSmallScreen && (
                   <motion.div
                     key={'signin-decoration'}
-                    initial={shouldAnimateChildren ? { x: '-100%' } : false}
-                    animate={{ x: 0 }}
-                    exit={shouldAnimateChildren ? { x: '-100%' } : false}
+                    initial={shouldAnimateChildren ? { x: '-100%', scale: '120%' } : false}
+                    animate={{ x: 0, scale: '100%' }}
                     transition={MOVEMENT_TRANSITION}
                     className='flex-4'
                   >
@@ -430,9 +429,11 @@ const Auth = () => {
             )}
           </AnimatePresence>
         </motion.div>
-      </AnimatePresence>
     </div>
   )
+}
+Auth.propTypes = {
+  initialAction: PropTypes.oneOf(['register', 'signin']),
 }
 
 export default Auth
