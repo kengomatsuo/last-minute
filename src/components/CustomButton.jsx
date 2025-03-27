@@ -22,11 +22,12 @@ const CustomButton = ({
   disabled = false,
   className,
   children,
+  loading = true,
   type = 'button',
 }) => {
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleClick = async (event) => {
+  const handleClick = async event => {
     if (disabled || isLoading) return
     setIsLoading(true)
     await onClick(event)
@@ -35,7 +36,7 @@ const CustomButton = ({
 
   return (
     <button
-    formNoValidate
+      formNoValidate
       type={type}
       onClick={handleClick}
       className={`${
@@ -51,15 +52,25 @@ const CustomButton = ({
           ? 'hover:bg-filled-button-hover hover:border-filled-button-hover active:bg-filled-button-active  active:ring-primary active:ring focus:!ring-background-secondary'
           : 'hover:bg-interactive-hover hover:border-filled-button-hover active:bg-interactive-active  active:ring-primary active:ring focus:ring-primary'
       } border-2 min-w-fit border-primary text-center box-border rounded-md font-semibold text-lg cursor-pointer
-       focus:outline-none focus:ring-2`}
+       focus:outline-none focus:ring-2 relative`}
     >
       <div
-        className={`${
-          disabled ? 'pointer-events-none' : ''
-        } transition-transform active:scale-[97%] active:opacity-75 flex gap-2 justify-center`}
+        className={`${disabled ? 'pointer-events-none' : ''} ${
+          loading ? 'opacity-0' : ''
+        } transition-transform active:scale-[97%] active:opacity-75 flex gap-2 justify-center items-center`}
       >
         {children}
       </div>
+      {loading && (
+        // TODO: make this into a separate component
+        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="flex space-x-1">
+          <span className={`w-2 h-2 rounded-full animate-bounce [animation-delay:0s] ${filled ? 'bg-white' : 'bg-primary'}`}></span>
+          <span className={`w-2 h-2 rounded-full animate-bounce [animation-delay:0.2s] ${filled ? 'bg-white' : 'bg-primary'}`}></span>
+          <span className={`w-2 h-2 rounded-full animate-bounce [animation-delay:0.4s] ${filled ? 'bg-white' : 'bg-primary'}`}></span>
+        </div>
+      </div>
+      )}
     </button>
   )
 }

@@ -56,6 +56,7 @@ const UserContextProvider = ({ children }) => {
   const [initialAction, setInitialAction] = useState(null)
   const [isCheckingEmailVerification, setIsCheckingEmailVerification] =
     useState(false)
+  const [isAuthLoading, setIsAuthLoading] = useState(false)
   const verificationIntervalRef = useRef(null)
   useConsoleLog('user', user)
 
@@ -172,6 +173,7 @@ const UserContextProvider = ({ children }) => {
    * @returns {Promise<void>}
    */
   const signUp = async ({ email, password }) => {
+    setIsAuthLoading(true)
     try {
       await createUserWithEmailAndPassword(auth, email, password)
       console.log('Signed up successfully!')
@@ -179,6 +181,7 @@ const UserContextProvider = ({ children }) => {
     } catch (error) {
       console.error('Error signing up:', error)
     }
+    setIsAuthLoading(false)
   }
 
   /**
@@ -187,6 +190,7 @@ const UserContextProvider = ({ children }) => {
    * @returns {Promise<void>}
    */
   const signIn = async ({ email, password }) => {
+    setIsAuthLoading(true)
     try {
       await signInWithEmailAndPassword(auth, email, password)
       console.log('Signed in successfully!')
@@ -196,6 +200,7 @@ const UserContextProvider = ({ children }) => {
     } catch (error) {
       console.error('Error signing in:', error)
     }
+    setIsAuthLoading(false)
   }
 
   /**
@@ -203,12 +208,14 @@ const UserContextProvider = ({ children }) => {
    * @returns {Promise<void>}
    */
   const signOut = async () => {
+    setIsAuthLoading(true)
     try {
       clearVerificationInterval()
       await firebaseSignOut(auth)
     } catch (error) {
       console.error('Error signing out:', error)
     }
+    setIsAuthLoading(false)
   }
 
   /**
@@ -285,6 +292,7 @@ const UserContextProvider = ({ children }) => {
     <UserContext.Provider
       value={{
         user,
+        isAuthLoading,
         isCheckingEmailVerification,
         signUp,
         signIn,

@@ -20,7 +20,7 @@ import { ScreenContext } from '../contexts/ScreenContext'
  * @returns {JSX.Element} The rendered authentication modal
  */
 const Auth = ({ initialAction }) => {
-  const { user, signIn, signUp, signOut, closeAuthModal, isCheckingEmailVerification } =
+  const { user, signIn, signUp, signOut, closeAuthModal, isCheckingEmailVerification, isAuthLoading } =
     useContext(UserContext)
   const { isSmallScreen } = useContext(ScreenContext)
   useConsoleLog('issmall', isSmallScreen)
@@ -331,6 +331,7 @@ const Auth = ({ initialAction }) => {
                     )}
                     <CustomButton
                       type='submit'
+                      loading={isAuthLoading}
                       filled={true}
                       className='w-[14rem] mt-4'
                     >
@@ -447,6 +448,7 @@ const Auth = ({ initialAction }) => {
                     <CustomButton
                       type='submit'
                       filled={true}
+                      loading={isAuthLoading}
                       className='w-[14rem] mt-12'
                     >
                       <div className='flex items-center gap-4'>
