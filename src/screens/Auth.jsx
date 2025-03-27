@@ -1,5 +1,5 @@
 import { useContext, useRef, useState, useEffect } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { CustomButton, CustomInput, CustomInteractive } from '../components'
 import { UserContext } from '../contexts/UserContext'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -18,9 +18,8 @@ import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
  * @returns {JSX.Element} The rendered authentication modal
  */
 const Auth = () => {
-  const navigate = useNavigate()
   const location = useLocation()
-  const { signIn, signUp } = useContext(UserContext)
+  const { user, signIn, signUp } = useContext(UserContext)
   const { isSmallScreen } = useContext(ScreenContext)
   const [passwordSuccess, setPasswordSuccess] = useState(false)
   const [action, setAction] = useState(location.state?.action || 'signin')
@@ -122,9 +121,7 @@ const Auth = () => {
       const formData = new FormData(formRef.current)
       const data = Object.fromEntries(formData.entries())
 
-      await signIn(data).then(() => {
-        navigate('/')
-      })
+      await signIn(data)
     } catch (error) {
       console.error('Error signing in:', error.message)
     }
@@ -155,9 +152,7 @@ const Auth = () => {
 
       console.log('Submitting:', data)
 
-      await signUp(data).then(() => {
-        navigate('/')
-      })
+      await signUp(data)
     } catch (error) {
       console.error('Error signing up:', error.message)
     }
@@ -189,7 +184,8 @@ const Auth = () => {
           } my-auto rounded-4xl max-w-[75rem] h-[45rem] overflow-clip justify-between`}
         >
           <AnimatePresence>
-            {action === 'register' ? (
+            { user && !user.emailVerified ? <p>oi</p> : 
+            action === 'register' ? (
               <>
                 <motion.div
                   key={'register'}
