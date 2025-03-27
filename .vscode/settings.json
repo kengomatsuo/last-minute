@@ -11,7 +11,7 @@
   ],
   "github.copilot.chat.pullRequestDescriptionGeneration.instructions": [
     {
-        "file": "copilot-pull-request-description-instructions.md"
+      "text": "Write clear, comprehensive PR descriptions following this structure:\n\n1. 🏷️ Title: Format as '<Type>: <Short description>' (e.g., 'Feature: Add user authentication')\n\n2. 📋 Detailed Description with these sections:\n   - 🔍 What: List all specific changes made with bullet points\n   - 🎯 Why: Explain the problem being solved\n   - 🛠️ How: Describe the technical approach\n   - 📦 New Code Elements: Document all new props, functions, hooks, and components with usage examples\n\nAvoid vague terms like 'enhanced' or 'improved'. Be specific and include measurable impacts when possible (e.g., \"reduced load time by 30%\").\n\nAlways include code examples for new components, hooks, or functions. Format these as:\n```jsx\n// Example usage\nconst { user, login } = useAuth();\n\n<ProtectedRoute>\n  <Dashboard />\n</ProtectedRoute>\n```\n\n🔗 Reference related issues with 'Fixes #123' or 'Related to #456' syntax.\n\n🧪 Include clear testing instructions with numbered steps.\n\n📝 Add any additional notes that reviewers should be aware of."
     }
   ],
   "editor.tabSize": 4,
