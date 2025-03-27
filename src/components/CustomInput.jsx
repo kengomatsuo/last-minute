@@ -550,7 +550,7 @@ const CustomInput = ({
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  marginBottom: 10,
+                  marginBottom: 4,
                   color: errorMessage && !isFocused ? 'var(--color-error)' : item.complete ? '#22c55e' : '#99a1af',
                 }}
                 className='font-normal transition-all'

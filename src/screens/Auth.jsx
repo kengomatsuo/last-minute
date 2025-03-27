@@ -195,12 +195,12 @@ const Auth = ({ initialAction }) => {
         animate={{ y: 0 }}
         exit={{ y: '150%' }}
         transition={MOVEMENT_TRANSITION}
-        className={`flex z-30 w-[min(75rem,11/12*100%)] bg-white ${
+        className={`flex z-30 ${isSmallScreen ? 'w-[min(48rem,100%)]' : 'w-[min(75rem,11/12*100%)]'} bg-white ${
           action === 'register' ? 'flex-row' : 'flex-row-reverse'
         } my-auto rounded-4xl max-w-[75rem] h-[45rem] overflow-clip justify-between`}
       >
         <AnimatePresence>
-          {user && isCheckingEmailVerification ? (
+          {user && !user.emailVerified ? (
             <motion.div
               initial={shouldAnimateChildren ? { scale: '150%' } : false}
               animate={{ scale: '100%' }}
@@ -250,6 +250,8 @@ const Auth = ({ initialAction }) => {
                 </div>
               </div>
             </motion.div>
+          ) : user ? (
+            <></>
           ) : action === 'register' ? (
             <>
               <motion.div
@@ -289,7 +291,12 @@ const Auth = ({ initialAction }) => {
                   )}
                 </div>
                 <div className='flex flex-col justify-center flex-1'>
-                  <div className='flex justify-between items-center'>
+                  <div
+                    className={`${
+                      isSmallScreen ? 'flex-col' : 'flex-row-reverse'
+                    } flex justify-between items-start`}
+                  >
+                    <Logo width={80} height={80} />
                     <div>
                       <h1 className='pb-1 text-primary-text'>Sign Up</h1>
                       <h3 className='text-gray-400 text-nowrap'>
@@ -297,7 +304,6 @@ const Auth = ({ initialAction }) => {
                         <b className='italic'>Last Minute</b>
                       </h3>
                     </div>
-                    <Logo width={80} height={80} />
                   </div>
 
                   <form
@@ -358,7 +364,7 @@ const Auth = ({ initialAction }) => {
                       <div className='inline-flex items-center text-nowrap'>
                         Already a member?
                         <CustomInteractive
-                          onClick={() => setAction('register')}
+                          onClick={() => setAction('signin')}
                           className='font-semibold !p-1 ml-2 w-min !text-primary'
                         >
                           Sign In
@@ -438,15 +444,17 @@ const Auth = ({ initialAction }) => {
                   )}
                 </div>
                 <div className='flex flex-col justify-center flex-1'>
-                  <div className='flex justify-between items-center text-nowrap'>
-                    <div>
-                      <h1 className='pb-1'>Sign In</h1>
-                      <h3 className='text-gray-400'>
-                        Secure your grades with{' '}
-                        <b className='italic'>Last Minute</b>
-                      </h3>
-                    </div>
+                  <div
+                    className={`${
+                      isSmallScreen ? 'flex-col' : 'flex-row-reverse'
+                    } flex justify-between items-start`}
+                  >
                     <Logo width={80} height={80} />
+                    <h1 className='pb-1'>Sign In</h1>
+                    <h3 className='text-gray-400'>
+                      Secure your grades with{' '}
+                      <b className='italic'>Last Minute</b>
+                    </h3>
                   </div>
 
                   <form

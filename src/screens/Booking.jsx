@@ -85,8 +85,10 @@ const Booking = () => {
             'Instant Booking'
           ) : (
             <div className='flex gap-2 items-center'>
-              <CustomInteractive className='!p-1 !size-min items-center justify-center flex aspect-square'
-              onClick={() => setIsInstantBooking(true)}>
+              <CustomInteractive
+                className='!p-1 !size-min items-center justify-center flex aspect-square'
+                onClick={() => setIsInstantBooking(true)}
+              >
                 <ArrowRightIcon width={32} height={32} className='rotate-180' />
               </CustomInteractive>
               <p>Schedule Booking</p>
@@ -137,7 +139,7 @@ const Booking = () => {
                 />
                 <div className='mt-4 w-full flex gap-2'>
                   <CustomButton
-                    disabled={isRequestPending}
+                    loading={isRequestPending}
                     className={isSmallScreen ? '' : 'flex-1'}
                     onClick={() => handleScheduleBooking()}
                   >
@@ -148,7 +150,7 @@ const Booking = () => {
                     )}
                   </CustomButton>
                   <CustomButton
-                    disabled={isRequestPending}
+                    loading={isRequestPending}
                     className='flex-1'
                     filled
                     type='submit'
@@ -202,7 +204,7 @@ const Booking = () => {
                   name='bookingTime'
                   label='Date and Time'
                   type='datetime-local'
-                  disabled={isRequestPending}
+                  loading={isRequestPending}
                   required
                   autoSave='BookingDraft_DateTime'
                   className='flex-1'

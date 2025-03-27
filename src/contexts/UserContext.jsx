@@ -54,7 +54,7 @@ const UserContextProvider = ({ children }) => {
   const [user, setUser] = useState(auth.currentUser || undefined)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   useConsoleLog('AuthModalOpen', isAuthModalOpen) // Debugging line
-  const [initialAction, setInitialAction] = useState(null)
+  const initialActionRef = useRef(null)
   const [isCheckingEmailVerification, setIsCheckingEmailVerification] =
     useState(false)
   const [isAuthLoading, setIsAuthLoading] = useState(false)
@@ -127,16 +127,17 @@ const UserContextProvider = ({ children }) => {
 
   useEffect(() => {
     // better listener to get custom claims
-    const unsubscribe = onIdTokenChanged(auth, async user => {
+    const unsubscribe = onIdTokenChanged(auth, async firebaseUser => {
       // console.log('User claims updated! New ID token:', user)
       // get custom claims
-      if (user) {
-        const token = await user.getIdTokenResult(true)
-        user.claims = token.claims
+      if (firebaseUser) {
+        const token = await firebaseUser.getIdTokenResult(true)
+        firebaseUser.claims = token.claims
       }
-      setUser(user)
+      if (firebaseUser !== user) setIsAuthLoading(false)
+      setUser(firebaseUser)
       // if user is not signed in, delete all the data from the local storage
-      if (!user) {
+      if (!firebaseUser) {
         localStorage.clear()
       }
     })
@@ -176,9 +177,9 @@ const UserContextProvider = ({ children }) => {
       console.log('Signed up successfully!')
       await sendEmailVerification(auth.currentUser)
     } catch (error) {
+      setIsAuthLoading(false)
       throw error
     }
-    setIsAuthLoading(false)
   }
 
   /**
@@ -195,9 +196,9 @@ const UserContextProvider = ({ children }) => {
         await sendEmailVerification(auth.currentUser)
       }
     } catch (error) {
+      setIsAuthLoading(false)
       throw error
     }
-    setIsAuthLoading(false)
   }
 
   /**
@@ -210,9 +211,9 @@ const UserContextProvider = ({ children }) => {
       clearVerificationInterval()
       await firebaseSignOut(auth)
     } catch (error) {
+      setIsAuthLoading(false)
       throw error
     }
-    setIsAuthLoading(false)
   }
 
   /**
@@ -273,12 +274,18 @@ const UserContextProvider = ({ children }) => {
     }
   }
 
-  const openAuthModal = initialAction => {
+  /**
+   * Opens the authentication modal with the specified initial action.
+   * 
+   * @param {string} action - The initial action for the auth modal
+   */
+  const openAuthModal = action => {
     if (!user || (user && !user.emailVerified)) {
-      setInitialAction(initialAction)
+      initialActionRef.current = action
       setIsAuthModalOpen(true)
     }
   }
+
   const closeAuthModal = () => {
     if (!user || (user && user.emailVerified)) {
       setIsAuthModalOpen(false)
@@ -304,7 +311,7 @@ const UserContextProvider = ({ children }) => {
       <AnimatePresence>
         {isAuthModalOpen && (
           <ScreenContextProvider>
-            <Auth initialAction={initialAction} />
+            <Auth initialAction={initialActionRef.current} />
           </ScreenContextProvider>
         )}
       </AnimatePresence>
