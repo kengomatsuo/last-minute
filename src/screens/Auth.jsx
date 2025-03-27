@@ -10,14 +10,13 @@ import UserIcon from '../assets/icons/user.svg?react'
 import PasswordIcon from '../assets/icons/lock.svg?react'
 import Logo from '../assets/icons/logo.svg?react'
 import SignInDecoration from '../assets/icons/signInDecoration.svg?react'
+import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
 
 const Auth = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { signIn, signUp } = useContext(UserContext)
-  const { dimensions, isSmallScreen } = useContext(ScreenContext)
-  const hasError = false
-  const [hover, setHover] = useState(false)
+  const { isSmallScreen } = useContext(ScreenContext)
   const [passwordSuccess, setPasswordSuccess] = useState(false)
   const [action, setAction] = useState(location.state?.action || 'signin')
   const passwordRequirements = [
@@ -58,7 +57,6 @@ const Auth = () => {
 
   const inputClassName =
     'border-x-0 pl-0 gap-2 border-t-0 !border-b-2 rounded-none font-medium'
-  const { width } = dimensions
 
   const validatePassword = password => {
     let requirements = [...passwordRequirements]
@@ -163,48 +161,50 @@ const Auth = () => {
           }}
         />
         <motion.div
-          key={action}
-          initial={{ opacity: 0, x: action === 'signin' ? -100 : 100 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: action === 'signin' ? 100 : -100 }}
-          transition={{ duration: 0.5 }}
-          className='flex z-30 w-[85%] bg-white flex-row my-auto rounded-4xl max-w-[75rem] h-[45rem] overflow-x-clip justify-between'
+          key={'auth'}
+          initial={{ y: '100%' }}
+          animate={{ y: 0 }}
+          exit={{ y: '100%' }}
+          transition={MOVEMENT_TRANSITION}
+          className={`flex z-30 w-[min(75rem,11/12*100%)] bg-white ${
+            action === 'register' ? 'flex-row' : 'flex-row-reverse'
+          } my-auto rounded-4xl max-w-[75rem] h-[45rem] overflow-x-clip justify-between`}
         >
           {action === 'register' ? (
             <>
-              <div
-                className={`${
-                  width < 500 ? 'px-[2rem] py-[1rem]' : 'px-[6rem] py-[3rem]'
-                } justify-between min-w-fit flex flex-col w-[40rem] flex-6`}
+              <motion.div
+                key={'register'}
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={MOVEMENT_TRANSITION}
+                className={
+                  'p-[min(3rem,6%)] justify-between min-w-fit flex flex-col w-[40rem] flex-6'
+                }
               >
-                <div className='flex-1'>
-                  <div
-                    className={`flex items-center justify-between ${
-                      hasError ? 'pb-[3rem]' : 'pb-[4rem]'
-                    }`}
-                  >
-                    <Link to='/'>
-                      <CustomInteractive className='!p-1 aspect-square items-center flex'>
-                        <ArrowRightIcon
-                          width={36}
-                          height={36}
-                          className='rotate-180'
-                        />
-                      </CustomInteractive>
-                    </Link>
-                    {/* {width >= 500 && ( */}
-                    <div className='inline-flex items-center'>
-                      {'Already a member?'}
-                      <CustomInteractive
-                        onClick={() => setAction('signin')}
-                        className='font-semibold !p-1 ml-2 w-min !text-primary'
-                      >
-                        Sign In
-                      </CustomInteractive>
-                    </div>
-                    {/* )} */}
+                <div className={'flex items-center justify-between'}>
+                  <Link to='/'>
+                    <CustomInteractive className='!p-1 aspect-square items-center flex'>
+                      <ArrowRightIcon
+                        width={36}
+                        height={36}
+                        className='rotate-180'
+                      />
+                    </CustomInteractive>
+                  </Link>
+                  {/* {width >= 500 && ( */}
+                  <div className='inline-flex items-center'>
+                    {'Already a member?'}
+                    <CustomInteractive
+                      onClick={() => setAction('signin')}
+                      className='font-semibold !p-1 ml-2 w-min !text-primary'
+                    >
+                      Sign In
+                    </CustomInteractive>
                   </div>
-
+                  {/* )} */}
+                </div>
+                <div className='flex flex-col justify-center flex-1'>
                   <div className='flex justify-between items-center'>
                     <div>
                       <h1 className='pb-1'>Sign Up</h1>
@@ -218,9 +218,7 @@ const Auth = () => {
                   <form
                     ref={formRef}
                     onSubmit={e => handleSignup(e)}
-                    className={`${
-                      passwordSuccess ? 'mt-6' : 'mt-12'
-                    } flex flex-col gap-5`}
+                    className={'mt-10 flex flex-col gap-5'}
                   >
                     <CustomInput
                       name='displayName'
@@ -273,14 +271,7 @@ const Auth = () => {
                     >
                       <div className='flex items-center gap-4'>
                         <p>Sign Up</p>
-                        <div
-                          className='p-2 rounded-full'
-                          style={{
-                            backgroundColor: hover
-                              ? 'transparent'
-                              : 'var(--color-primary-low-opacity)',
-                          }}
-                        >
+                        <div className='p-2 rounded-full'>
                           <ArrowRightIcon
                             style={{
                               width: 24,
@@ -293,34 +284,29 @@ const Auth = () => {
                     </CustomButton>
                   </form>
                 </div>
-              </div>
-              <div className='flex-4'>
-                <SignInDecoration />
-              </div>
+              </motion.div>
+              {!isSmallScreen && (
+                <motion.div
+                  key={'register-decoration'}
+                  initial={{ x: '100%' }}
+                  animate={{ x: 0 }}
+                  exit={{ x: '100%' }}
+                  transition={MOVEMENT_TRANSITION}
+                className='flex-4'>
+                  <SignInDecoration />
+                </motion.div>
+              )}
             </>
           ) : (
             <>
-              <div className='flex-4'>
-                <SignInDecoration style={{ transform: 'scaleX(-1)' }} />
-              </div>
-              <div
-                className={`w-full flex flex-col min-w-fit py-[4rem] ${
-                  width < 500
-                    ? 'px-[2rem]'
-                    : width < 1200
-                    ? 'px-[4rem]'
-                    : 'px-[8rem]'
-                }`}
-              >
-                <div
-                  className={`flex items-center justify-between ${
-                    hasError
-                      ? 'pb-[3rem]'
-                      : passwordSuccess
-                      ? 'pb-[4rem]'
-                      : 'pb-[5rem]'
-                  }`}
-                >
+              <motion.div 
+              key={'signin'}
+                initial={{ x: '-100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '-100%' }}
+                transition={MOVEMENT_TRANSITION}
+              className='w-full flex flex-col min-w-fit p-[min(3rem,6%)]'>
+                <div className={'flex items-center justify-between'}>
                   <Link to='/'>
                     <CustomInteractive className='!p-1 aspect-square items-center flex'>
                       <ArrowRightIcon
@@ -342,83 +328,86 @@ const Auth = () => {
                     </div>
                   )}
                 </div>
-
-                <div className='flex justify-between items-center text-nowrap'>
-                  <div>
-                    <h1 className='pb-1'>Sign In</h1>
-                    <h3 className='text-gray-400'>
-                      Secure your grades with{' '}
-                      <b className='italic'>Last Minute</b>
-                    </h3>
+                <div className='flex flex-col justify-center flex-1'>
+                  <div className='flex justify-between items-center text-nowrap'>
+                    <div>
+                      <h1 className='pb-1'>Sign In</h1>
+                      <h3 className='text-gray-400'>
+                        Secure your grades with{' '}
+                        <b className='italic'>Last Minute</b>
+                      </h3>
+                    </div>
+                    <Logo width={80} height={80} />
                   </div>
-                  <Logo width={80} height={80} />
-                </div>
 
-                <form
-                  ref={formRef}
-                  onSubmit={e => handleSignin(e)}
-                  className={'mt-12 flex flex-col gap-6'}
-                >
-                  <CustomInput
-                    name='email'
-                    inputClassName={inputClassName}
-                    image={<EmailIcon width={24} height={24} />}
-                    placeholder='Email'
-                    validateFunction={e => validateEmail(e)}
-                    required
-                    ref={emailRef}
-                  />
-                  <CustomInput
-                    name='password'
-                    inputClassName={inputClassName}
-                    image={<PasswordIcon width={24} height={24} />}
-                    placeholder='Password'
-                    type='password'
-                    required
-                    ref={passwordRef}
-                  />
-
-                  {isSmallScreen && (
-                    <div className='inline-flex items-center text-nowrap'>
-                      Don&apos;t have an account?
-                      <CustomInteractive
-                        onClick={() => setAction('register')}
-                        className='font-semibold !p-1 ml-2 w-min !text-primary'
-                      >
-                        Sign Up
-                      </CustomInteractive>
-                    </div>
-                  )}
-                  <CustomButton
-                    type='submit'
-                    onClick={() => handleSignin()}
-                    filled={true}
-                    className='w-[14rem] mt-12'
-                    onMouseEnter={() => setHover(true)}
-                    onMouseLeave={() => setHover(false)}
+                  <form
+                    ref={formRef}
+                    onSubmit={e => handleSignin(e)}
+                    className={'mt-10 flex flex-col gap-6'}
                   >
-                    <div className='flex items-center gap-4'>
-                      <p>Sign In</p>
-                      <div
-                        className='p-2 rounded-full'
-                        style={{
-                          backgroundColor: hover
-                            ? 'transparent'
-                            : 'var(--color-primary-low-opacity)',
-                        }}
-                      >
-                        <ArrowRightIcon
-                          style={{
-                            width: 24,
-                            height: 24,
-                          }}
-                          fill='white'
-                        />
+                    <CustomInput
+                      name='email'
+                      inputClassName={inputClassName}
+                      image={<EmailIcon width={24} height={24} />}
+                      placeholder='Email'
+                      validateFunction={e => validateEmail(e)}
+                      required
+                      ref={emailRef}
+                    />
+                    <CustomInput
+                      name='password'
+                      inputClassName={inputClassName}
+                      image={<PasswordIcon width={24} height={24} />}
+                      placeholder='Password'
+                      type='password'
+                      required
+                      ref={passwordRef}
+                    />
+
+                    {isSmallScreen && (
+                      <div className='inline-flex items-center text-nowrap'>
+                        Don&apos;t have an account?
+                        <CustomInteractive
+                          onClick={() => setAction('register')}
+                          className='font-semibold !p-1 ml-2 w-min !text-primary'
+                        >
+                          Sign Up
+                        </CustomInteractive>
                       </div>
-                    </div>
-                  </CustomButton>
-                </form>
-              </div>
+                    )}
+                    <CustomButton
+                      type='submit'
+                      onClick={() => handleSignin()}
+                      filled={true}
+                      className='w-[14rem] mt-12'
+                    >
+                      <div className='flex items-center gap-4'>
+                        <p>Sign In</p>
+                        <div className='p-2 rounded-full'>
+                          <ArrowRightIcon
+                            style={{
+                              width: 24,
+                              height: 24,
+                            }}
+                            fill='white'
+                          />
+                        </div>
+                      </div>
+                    </CustomButton>
+                  </form>
+                </div>
+              </motion.div>
+              {!isSmallScreen && (
+                <motion.div
+                  key={'signin-decoration'}
+                  initial={{ x: '-100%' }}
+                  animate={{ x: 0 }}
+                  exit={{ x: '-100%' }}
+                  transition={MOVEMENT_TRANSITION}
+                className='flex-4'>
+                  <SignInDecoration style={{ transform: 'scaleX(-1)' }} />
+                </motion.div>
+              )}
             </>
           )}
         </motion.div>

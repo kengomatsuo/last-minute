@@ -488,6 +488,7 @@ const CustomInput = ({
             max={props.max}
             autoComplete={type === 'suggest' ? 'off' : props.autoComplete}
             ref={ref}
+            autoFocus={props.autoFocus}
           />
         )}
       </div>
@@ -699,6 +700,15 @@ CustomInput.propTypes = {
     PropTypes.func,
     PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
   ]),
+  label: PropTypes.string,
+  image: PropTypes.node,
+  inputClassName: PropTypes.string,
+  requirements: PropTypes.arrayOf(
+    PropTypes.shape({
+      text: PropTypes.string.isRequired,
+      complete: PropTypes.bool.isRequired,
+    })
+  ),
 }
 
 export default CustomInput
