@@ -4,7 +4,7 @@ import CustomNavBar from './components/CustomNavBar'
 import Auth from './screens/Auth'
 import Error404 from './screens/Error404'
 import { ScreenContextProvider } from './contexts/ScreenContext'
-import { use, useRef } from 'react'
+import { useContext, useRef } from 'react'
 import { UserContext } from './contexts/UserContext'
 import { AnimatePresence, motion } from 'framer-motion'
 import Dashboard from './screens/Dashboard'
@@ -34,7 +34,7 @@ const AuthenticatedLayout = () => (
  * @returns {JSX.Element} The rendered application
  */
 function App() {
-  const { user } = use(UserContext)
+  const { user } = useContext(UserContext)
   const location = useLocation()
   const scrollContainerRef = useRef(null)
 

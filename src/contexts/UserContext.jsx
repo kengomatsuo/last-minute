@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
   onIdTokenChanged,
+  sendEmailVerification,
 } from 'firebase/auth'
 import { auth, db, functions } from '../../firebaseConfig'
 import { useConsoleLog } from '../hooks'
@@ -77,8 +78,9 @@ const UserContextProvider = ({ children }) => {
   }, [])
 
   useEffect(() => {
-    setIsAuthModalOpen(user === null || user?.emailverified === false)
+    if (user && user.emailVerified === false) setIsAuthModalOpen(true)
     console.log('User:', user)
+    console.log('Verified:', user && user.emailVerified)
   }, [user])
 
   /**
@@ -90,6 +92,7 @@ const UserContextProvider = ({ children }) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password)
       console.log('Signed up successfully!')
+      sendEmailVerification(auth.currentUser)
     } catch (error) {
       console.error('Error signing up:', error)
     }
@@ -103,6 +106,10 @@ const UserContextProvider = ({ children }) => {
   const signIn = async ({ email, password }) => {
     try {
       await signInWithEmailAndPassword(auth, email, password)
+      console.log('Signed in successfully!')
+      if (auth.currentUser.emailVerified === false) {
+        sendEmailVerification(auth.currentUser)
+      }
     } catch (error) {
       console.error('Error signing in:', error)
     }
@@ -179,10 +186,14 @@ const UserContextProvider = ({ children }) => {
     }
   }
 
-  const openAuthModal = (initialAction) => {
+  const openAuthModal = initialAction => {
     setInitialAction(initialAction)
-    setIsAuthModalOpen(true)}
-  const closeAuthModal = () => setIsAuthModalOpen(false)
+    setIsAuthModalOpen(true)
+  }
+  const closeAuthModal = () => {
+    // if ((user && user.emailVerified) || !user)
+    setIsAuthModalOpen(false)
+  }
 
   return (
     <UserContext.Provider
@@ -198,14 +209,14 @@ const UserContextProvider = ({ children }) => {
         closeAuthModal,
       }}
     >
-        <AnimatePresence>
-          {isAuthModalOpen && (
-            <ScreenContextProvider>
-              <Auth initialAction={initialAction} />
-            </ScreenContextProvider>
-          )}
-        </AnimatePresence>
-        {children}
+      <AnimatePresence>
+        {isAuthModalOpen && (
+          <ScreenContextProvider>
+            <Auth initialAction={initialAction} />
+          </ScreenContextProvider>
+        )}
+      </AnimatePresence>
+      {children}
     </UserContext.Provider>
   )
 }
