@@ -425,7 +425,7 @@ const CustomInput = ({
       ? 'fill-primary'
       : 'fill-input-icon'
   } 
-    ${inputClassName} mt-0.5 flex flex-1 bg-white border-2 border-primary/50 transition-all rounded focus:outline-none focus:ring-2 focus:ring-primary font-medium`
+    ${inputClassName ? inputClassName : 'p-2'} mt-0.5 flex flex-1 bg-white border-2 border-primary/50 transition-all rounded focus:outline-none focus:ring-2 focus:ring-primary font-medium`
 
   // console.log("type:", type)
 

@@ -16,6 +16,7 @@ import Contact from './screens/Contact'
 import History from './screens/History'
 import { CourseContextProvider } from './contexts/CourseContext'
 import Requests from './screens/Requests'
+import { MOVEMENT_TRANSITION } from './constants/visualConstants'
 
 /**
  * Layout component that wraps authenticated routes with CourseContextProvider
@@ -44,8 +45,10 @@ function App() {
         <motion.div
           key='loading'
           className='w-screen h-screen flex justify-center items-center text-primary-text'
-          animate={{ opacity: 1, transition: { duration: 1 } }}
-          exit={{ opacity: 0 }}
+          initial={{ opacity: 0, scale: 1.2, transition: { duration: 0.10 } }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.15 } }}
+          transition={MOVEMENT_TRANSITION}
         >
           <MainLoading />
         </motion.div>
@@ -53,9 +56,10 @@ function App() {
         <motion.div
           key='loaded'
           className='w-screen h-screen overflow-hidden flex-col flex text-primary-text'
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1, transition: { duration: 1 } }}
-          exit={{ opacity: 0 }}
+          initial={{ opacity: 0, scale: 1.2 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          transition={MOVEMENT_TRANSITION}
         >
           <ScreenContextProvider>
             <CustomNavBar scrollContainerRef={scrollContainerRef} />
@@ -63,16 +67,19 @@ function App() {
               <motion.div
                 key={location.pathname + (user ? '-auth' : '-guest')}
                 variants={{
-                  initial: { opacity: 0 },
+                  initial: { opacity: 0, scale: 1.2 },
                   animate: {
                     opacity: 1,
-                    transition: { duration: 0.5 },
+                    scale: 1,
+                    // transition: { duration: 0.3 },
                   },
                   exit: {
                     opacity: 0,
-                    transition: { duration: 0.3 },
+                    scale: 0.8,
+                    transition: { duration: 0.15 },
                   },
                 }}
+                transition={MOVEMENT_TRANSITION}
                 ref={scrollContainerRef}
                 initial='initial'
                 animate='animate'

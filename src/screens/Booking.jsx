@@ -1,8 +1,14 @@
 import { use, useRef } from 'react'
-import { CustomCard, CustomButton, CustomInput } from '../components'
+import {
+  CustomCard,
+  CustomButton,
+  CustomInput,
+  CustomInteractive,
+} from '../components'
 import { CourseContext } from '../contexts/CourseContext'
 import { ScreenContext } from '../contexts/ScreenContext'
 import CalendarIcon from '../assets/icons/calendar-clock.svg?react'
+import ArrowRightIcon from '../assets/icons/arrow-small-right.svg?react'
 import { useConsoleLog, useLocalStorage } from '../hooks'
 
 const Booking = () => {
@@ -74,7 +80,19 @@ const Booking = () => {
   return (
     <div className='flex flex-col w-full items-center justify-center'>
       <CustomCard
-        header={isInstantBooking ? 'Instant Booking' : 'Schedule Booking'}
+        header={
+          isInstantBooking ? (
+            'Instant Booking'
+          ) : (
+            <div className='flex gap-2 items-center'>
+              <CustomInteractive className='!p-1 !size-min items-center justify-center flex aspect-square'
+              onClick={() => setIsInstantBooking(true)}>
+                <ArrowRightIcon width={32} height={32} className='rotate-180' />
+              </CustomInteractive>
+              <p>Schedule Booking</p>
+            </div>
+          )
+        }
         className='w-[min(48rem,11/12*100%)] p-[min(3rem,4%)]'
       >
         <div className='gap-2 '>
@@ -85,7 +103,7 @@ const Booking = () => {
             ref={formRef}
           >
             {isInstantBooking ? (
-              <div className='flex flex-1 flex-col gap-2'>
+              <div className='flex flex-1 flex-col gap-4'>
                 <CustomInput
                   ref={topicRef}
                   name='topic'

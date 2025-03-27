@@ -20,7 +20,7 @@ import { ScreenContext } from '../contexts/ScreenContext'
  * @returns {JSX.Element} The rendered authentication modal
  */
 const Auth = ({ initialAction }) => {
-  const { user, signIn, signUp, signOut, closeAuthModal } =
+  const { user, signIn, signUp, signOut, closeAuthModal, isCheckingEmailVerification } =
     useContext(UserContext)
   const { isSmallScreen } = useContext(ScreenContext)
   useConsoleLog('issmall', isSmallScreen)
@@ -109,7 +109,7 @@ const Auth = ({ initialAction }) => {
   }
 
   const handleSignin = async e => {
-    e.preventDefault()
+    e?.preventDefault()
 
     try {
       let isValid = true
@@ -166,6 +166,8 @@ const Auth = ({ initialAction }) => {
   // Determine if children should animate based on modal state
   const shouldAnimateChildren = isModalMounted
 
+  if (user?.emailVerified) closeAuthModal()
+
   return (
     <div className='fixed overflow-y-scroll scrollbar-hide py-4 z-20 flex w-screen h-screen text-primary-text justify-center items-center'>
       <motion.div
@@ -189,7 +191,7 @@ const Auth = ({ initialAction }) => {
         } my-auto rounded-4xl max-w-[75rem] h-[45rem] overflow-clip justify-between`}
       >
         <AnimatePresence>
-          {user && !user.emailVerified ? (
+          {user && isCheckingEmailVerification ? (
             <motion.div
               initial={shouldAnimateChildren ? { scale: '150%' } : false}
               animate={{ scale: '100%' }}
@@ -222,8 +224,8 @@ const Auth = ({ initialAction }) => {
                       className='fill-primary'
                     />
                   </motion.div>
-                  <motion.div>
-                    <h2 className='text-primary font-semibold  gap-4 flex w-full text-xl'>
+                  <motion.div className='flex flex-col gap-2'>
+                    <h2 className='text-primary font-semibold gap-4 flex w-full text-xl'>
                       A verification email has been sent to {user.email}.
                     </h2>
                     <p>Please verify your email address to continue.</p>
@@ -444,7 +446,6 @@ const Auth = ({ initialAction }) => {
                     )}
                     <CustomButton
                       type='submit'
-                      onClick={() => handleSignin()}
                       filled={true}
                       className='w-[14rem] mt-12'
                     >
