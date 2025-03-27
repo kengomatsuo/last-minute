@@ -52,6 +52,7 @@ const UserContext = createContext(defaultContext)
 const UserContextProvider = ({ children }) => {
   const [user, setUser] = useState(auth.currentUser || undefined)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  useConsoleLog('AuthModalOpen', isAuthModalOpen) // Debugging line
   const [initialAction, setInitialAction] = useState(null)
   const [isCheckingEmailVerification, setIsCheckingEmailVerification] =
     useState(false)
@@ -275,7 +276,9 @@ const UserContextProvider = ({ children }) => {
     }
   }
   const closeAuthModal = () => {
-    if ((user && user.emailVerified) || !user) setIsAuthModalOpen(false)
+    if (!user || (user && user.emailVerified)) {
+      setIsAuthModalOpen(false)
+    }
   }
 
   return (
