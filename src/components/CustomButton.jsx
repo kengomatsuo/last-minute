@@ -22,7 +22,7 @@ const CustomButton = ({
   disabled = false,
   className,
   children,
-  loading = true,
+  loading = false,
   type = 'button',
 }) => {
   const [isLoading, setIsLoading] = useState(false)
