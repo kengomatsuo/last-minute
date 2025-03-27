@@ -4,7 +4,7 @@ import CustomNavBar from './components/CustomNavBar'
 import Auth from './screens/Auth'
 import Error404 from './screens/Error404'
 import { ScreenContextProvider } from './contexts/ScreenContext'
-import { use, useRef } from 'react'
+import { useContext, useRef } from 'react'
 import { UserContext } from './contexts/UserContext'
 import { AnimatePresence, motion } from 'framer-motion'
 import Dashboard from './screens/Dashboard'
@@ -16,6 +16,7 @@ import Contact from './screens/Contact'
 import History from './screens/History'
 import { CourseContextProvider } from './contexts/CourseContext'
 import Requests from './screens/Requests'
+import { MOVEMENT_TRANSITION } from './constants/visualConstants'
 
 /**
  * Layout component that wraps authenticated routes with CourseContextProvider
@@ -34,9 +35,11 @@ const AuthenticatedLayout = () => (
  * @returns {JSX.Element} The rendered application
  */
 function App() {
-  const { user } = use(UserContext)
+  const { user } = useContext(UserContext)
   const location = useLocation()
   const scrollContainerRef = useRef(null)
+
+  console.log(user)
 
   return (
     <AnimatePresence mode='wait'>
@@ -44,8 +47,10 @@ function App() {
         <motion.div
           key='loading'
           className='w-screen h-screen flex justify-center items-center text-primary-text'
-          animate={{ opacity: 1, transition: { duration: 1 } }}
-          exit={{ opacity: 0 }}
+          initial={{ opacity: 0, scale: 1.2, transition: { duration: 0.10 } }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.15 } }}
+          transition={MOVEMENT_TRANSITION}
         >
           <MainLoading />
         </motion.div>
@@ -53,9 +58,10 @@ function App() {
         <motion.div
           key='loaded'
           className='w-screen h-screen overflow-hidden flex-col flex text-primary-text'
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1, transition: { duration: 1 } }}
-          exit={{ opacity: 0 }}
+          initial={{ opacity: 0, scale: 1.2 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          transition={MOVEMENT_TRANSITION}
         >
           <ScreenContextProvider>
             <CustomNavBar scrollContainerRef={scrollContainerRef} />
@@ -63,16 +69,19 @@ function App() {
               <motion.div
                 key={location.pathname + (user ? '-auth' : '-guest')}
                 variants={{
-                  initial: { opacity: 0 },
+                  initial: { opacity: 0, scale: 1.2 },
                   animate: {
                     opacity: 1,
-                    transition: { duration: 0.5 },
+                    scale: 1,
+                    // transition: { duration: 0.3 },
                   },
                   exit: {
                     opacity: 0,
-                    transition: { duration: 0.3 },
+                    scale: 0.8,
+                    transition: { duration: 0.15 },
                   },
                 }}
+                transition={MOVEMENT_TRANSITION}
                 ref={scrollContainerRef}
                 initial='initial'
                 animate='animate'
@@ -92,13 +101,27 @@ function App() {
                       )
                     }
                   />
-                  <Route path='/booking' element={<Booking />} />
-                  <Route path='/session' element={<Session />} />
-                  <Route path='/history' element={<History />} />
-                  <Route path='/settings' element={<Settings />} />
-                  <Route path='/landing' element={<Landing />} />
-                  <Route path='/contact' element={<Contact />} />
-                  <Route path='/auth' element={<Auth />} />
+
+                  {user ? (
+                    <Route element={<AuthenticatedLayout />}>
+                      {user.claims?.isTutor ? (
+                        <Route path='/requests' element={<Requests />}/>
+                      ) : (
+                        <Route path='/booking' element={<Booking />} />
+                      )}
+                      <Route path='/session' element={<Session />} />
+                      <Route path='/history' element={<History />} />
+                      <Route path='/settings' element={<Settings />} />
+                      <Route path='/landing' element={<Landing />} />
+                      <Route path='/contact' element={<Contact />} />
+                    </Route>
+                  ) : (
+                    <>
+                      {/* <Route path='/auth' element={<Auth />} /> */}
+                      <Route path='/contact' element={<Contact />} />
+                    </>
+                  )}
+
                   <Route path='*' element={<Error404 />} />
                 </Routes>
               </motion.div>

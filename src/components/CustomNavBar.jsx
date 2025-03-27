@@ -20,18 +20,15 @@ import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
  * @returns {JSX.Element} The rendered navigation bar
  */
 const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
-  const { user } = use(UserContext)
+  const { user, openAuthModal } = use(UserContext)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const { isSmallScreen } = use(ScreenContext)
-
-  const navigate = useNavigate()
 
   const handleSignOut = async () => {
     await signOut(auth)
       .then(() => {
         console.log('Signed out successfully!')
-        navigate('/auth')
       })
       .catch(error => {
         console.error('Error signing out:', error)
@@ -125,202 +122,182 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
   }
 
   return (
-    <nav
-      className={`fixed h-[4.5rem] z-10 top-0 flex justify-between w-full py-4 px-6
+    <>
+      <nav
+        className={`fixed h-[4.5rem] z-10 top-0 flex justify-between w-full py-4 px-6
         border-b border-transparent transition-colors bg-background duration-300 ${
           isScrolled ? '!border-background-secondary/30' : ''
         }`}
-    >
-      <motion.div
-        className='flex items-center text-2xl justify-start max-md:flex-1'
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={MOVEMENT_TRANSITION}
       >
-        <NavLink
-          to={'/'}
-          className='font-semibold text-nowrap focus:ring-offset-2'
+        <motion.div
+          className='flex items-center text-2xl justify-start max-md:flex-1'
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={MOVEMENT_TRANSITION}
         >
-          Last Minute
-        </NavLink>
-      </motion.div>
-
-      {isSmallScreen ? (
-        <>
-          <CustomInteractive
-            className='w-min aspect-square flex !p-1.5 items-center justify-center'
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          <NavLink
+            to={'/'}
+            className='font-semibold text-nowrap focus:ring-offset-2'
           >
-            <SideBarIcon width={28} height={28} />
-          </CustomInteractive>
+            Last Minute
+          </NavLink>
+        </motion.div>
 
-          {/* Animate Presence for smooth entry and exit */}
-          <AnimatePresence mode='wait'>
-            {isMenuOpen && (
-              <>
-                <motion.div
-                  className='absolute z-20 top-0 left-0 w-screen h-screen bg-background-secondary/30'
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1, backdropFilter: 'blur(4px)' }}
-                  exit={{
-                    opacity: 0,
-                    transition: { delay: 0.3, duration: 0.3 },
-                  }}
-                  onClick={() => setIsMenuOpen(false)}
-                />
+        {isSmallScreen ? (
+          <>
+            <CustomInteractive
+              className='w-min aspect-square flex !p-1.5 items-center justify-center'
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <SideBarIcon width={28} height={28} />
+            </CustomInteractive>
 
-                <motion.div
-                  className='w-72 max-w-4/5 fixed z-30 top-0 text-end flex flex-col px-6 py-4 right-0 h-screen bg-background'
-                  initial={{
-                    x: '100%',
-                    boxShadow: '0px 0px 0px 0px rgba(0, 0, 0, 0)',
-                  }}
-                  animate={{
-                    x: 0,
-                    boxShadow: '3px 0px 10px 2px rgba(0, 0, 0, 0.1)',
-                  }}
-                  exit={{
-                    x: '100%',
-                    boxShadow: '0px 0px 0px 0px rgba(0, 0, 0, 0.1)',
-                  }}
-                  transition={MOVEMENT_TRANSITION}
-                >
-                  <CustomInteractive
-                    className='w-min aspect-square flex !p-1 items-center mb-2 justify-center ml-auto'
+            {/* Animate Presence for smooth entry and exit */}
+            <AnimatePresence mode='wait'>
+              {isMenuOpen && (
+                <>
+                  <motion.div
+                    className='absolute z-20 top-0 left-0 w-screen h-screen bg-background-secondary/30'
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1, backdropFilter: 'blur(4px)' }}
+                    exit={{
+                      opacity: 0,
+                      transition: { delay: 0.3, duration: 0.3 },
+                    }}
                     onClick={() => setIsMenuOpen(false)}
+                  />
+
+                  <motion.div
+                    className='w-72 max-w-4/5 fixed z-30 top-0 text-end flex flex-col px-6 py-4 right-0 h-screen bg-background'
+                    initial={{
+                      x: '100%',
+                      boxShadow: '0px 0px 0px 0px rgba(0, 0, 0, 0)',
+                    }}
+                    animate={{
+                      x: 0,
+                      boxShadow: '3px 0px 10px 2px rgba(0, 0, 0, 0.1)',
+                    }}
+                    exit={{
+                      x: '100%',
+                      boxShadow: '0px 0px 0px 0px rgba(0, 0, 0, 0.1)',
+                    }}
+                    transition={MOVEMENT_TRANSITION}
                   >
-                    <RightArrowIcon width={32} height={32} />
-                  </CustomInteractive>
-
-                  <NavLink to={'/auth'} className='flex'>
-                    <CustomButton
-                      filled
-                      className='flex-1'
-                      onClick={() => {
-                        setIsMenuOpen(false)
-                        handleSignOut()
-                      }}
+                    <CustomInteractive
+                      className='w-min aspect-square flex !p-1 items-center mb-2 justify-center ml-auto'
+                      onClick={() => setIsMenuOpen(false)}
                     >
-                      {user ? 'Sign out' : 'Sign in / Register'}
-                    </CustomButton>
-                  </NavLink>
+                      <RightArrowIcon width={32} height={32} />
+                    </CustomInteractive>
 
-                  <p className='text-lg font-semibold mr-3 mt-6 mb-2'>
-                    Navigation
-                  </p>
+                      <CustomButton
+                        filled
+                        onClick={() => {
+                          setIsMenuOpen(false)
+                          user ? handleSignOut() : openAuthModal()
+                        }}
+                      >
+                        {user ? 'Sign out' : 'Sign in / Register'}
+                      </CustomButton>
 
-                  {navigationPaths.map(navPath => (
+
+                    <p className='text-lg font-semibold mr-3 mt-6 mb-2'>
+                      Navigation
+                    </p>
+
+                    {navigationPaths.map(navPath => (
+                      <NavLink
+                        key={navPath.name}
+                        to={navPath.path}
+                        className={({ isActive }) =>
+                          isActive
+                            ? ' bg-background-secondary/50 rounded-md pointer-events-none'
+                            : undefined
+                        }
+                      >
+                        <CustomInteractive
+                          onClick={() => setIsMenuOpen(false)}
+                          className='py-2 flex justify-end text-right'
+                        >
+                          {navPath.name}
+                        </CustomInteractive>
+                      </NavLink>
+                    ))}
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+          </>
+        ) : (
+          <div className='text-lg font-medium items-center justify-end inline-flex top-0 py-0 gap-4'>
+            <AnimatePresence mode='wait'>
+              <motion.div
+                key={user ? 'user-nav' : 'guest-nav'}
+                className='inline-flex gap-2'
+                initial='hidden'
+                animate='visible'
+                exit='exit'
+                variants={authContainerVariants}
+              >
+                {navigationPaths.map((navPath, index) => (
+                  <motion.div
+                    key={navPath.name}
+                    custom={index}
+                    variants={navItemVariants}
+                  >
                     <NavLink
-                      key={navPath.name}
                       to={navPath.path}
                       className={({ isActive }) =>
                         isActive
-                          ? ' bg-background-secondary/50 rounded-md pointer-events-none'
+                          ? 'underline underline-offset-4 underline-primary pointer-events-none'
                           : undefined
                       }
                     >
-                      <CustomInteractive
-                        onClick={() => setIsMenuOpen(false)}
-                        className='py-2 flex justify-end text-right'
-                      >
-                        {navPath.name}
-                      </CustomInteractive>
+                      <CustomInteractive>{navPath.name}</CustomInteractive>
                     </NavLink>
-                  ))}
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>
-        </>
-      ) : (
-        <div className='text-lg font-medium items-center justify-end inline-flex top-0 py-0 gap-4'>
-          <AnimatePresence mode='wait'>
-            <motion.div
-              key={user ? 'user-nav' : 'guest-nav'}
-              className='inline-flex gap-2'
-              initial='hidden'
-              animate='visible'
-              exit='exit'
-              variants={authContainerVariants}
-            >
-              {navigationPaths.map((navPath, index) => (
-                <motion.div
-                  key={navPath.name}
-                  custom={index}
-                  variants={navItemVariants}
-                >
-                  <NavLink
-                    to={navPath.path}
-                    className={({ isActive }) =>
-                      isActive
-                        ? 'underline underline-offset-4 underline-primary pointer-events-none'
-                        : undefined
-                    }
-                  >
-                    <CustomInteractive>{navPath.name}</CustomInteractive>
-                  </NavLink>
-                </motion.div>
-              ))}
-            </motion.div>
-          </AnimatePresence>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </AnimatePresence>
 
-          <AnimatePresence mode='wait'>
-            {user ? (
-              <motion.div
-                key='user-auth'
-                className='flex gap-2 flex-row'
-                initial='hidden'
-                animate='visible'
-                exit='exit'
-                variants={authContainerVariants}
-              >
-                <motion.div variants={authButtonVariants}>
-                  <CustomButton onClick={() => handleSignOut()}>
-                    Sign out
-                  </CustomButton>
+            <AnimatePresence mode='wait'>
+              {user ? (
+                <motion.div
+                  key='user-auth'
+                  className='flex gap-2 flex-row'
+                  initial='hidden'
+                  animate='visible'
+                  exit='exit'
+                  variants={authContainerVariants}
+                >
+                  <motion.div variants={authButtonVariants}>
+                    <CustomButton onClick={() => handleSignOut()}>
+                      Sign out
+                    </CustomButton>
+                  </motion.div>
                 </motion.div>
-              </motion.div>
-            ) : (
-              <motion.div
-                key='guest-auth'
-                className='flex gap-2 flex-row'
-                initial='hidden'
-                animate='visible'
-                exit='exit'
-                variants={authContainerVariants}
-              >
-                <motion.div variants={authButtonVariants}>
-                  <NavLink
-                    to={{ pathname: '/auth' }}
-                    state={{ action: 'register' }}
-                    className={({ isActive }) =>
-                      `flex-1 flex transition-opacity ${
-                        isActive ? 'pointer-events-none opacity-50' : ''
-                      }`
-                    }
-                  >
-                    <CustomButton>Register</CustomButton>
-                  </NavLink>
+              ) : (
+                <motion.div
+                  key='guest-auth'
+                  className='flex gap-2 flex-row'
+                  initial='hidden'
+                  animate='visible'
+                  exit='exit'
+                  variants={authContainerVariants}
+                >
+                  <motion.div variants={authButtonVariants}>
+                      <CustomButton onClick={() => openAuthModal('register')}>Register</CustomButton>
+                  </motion.div>
+                  <motion.div variants={authButtonVariants}>
+                      <CustomButton onClick={() => openAuthModal('signin')} filled>Sign in</CustomButton>
+                  </motion.div>
                 </motion.div>
-                <motion.div variants={authButtonVariants}>
-                  <NavLink
-                    to={{ pathname: '/auth' }}
-                    state={{ action: 'signin' }}
-                    className={({ isActive }) =>
-                      `flex-1 flex transition-opacity ${
-                        isActive ? 'pointer-events-none opacity-50' : ''
-                      }`
-                    }
-                  >
-                    <CustomButton filled>Sign in</CustomButton>
-                  </NavLink>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      )}
-    </nav>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+      </nav>
+    </>
   )
 }
 
