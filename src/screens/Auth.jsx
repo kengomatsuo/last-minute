@@ -96,9 +96,11 @@ const Auth = () => {
   }
 
   const validateEmail = email => {
-    const emailRegEx = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
+    try {const emailRegEx = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
     if (!emailRegEx.test(email)) {
       throw new Error('Invalid email')
+    }}
+    catch (error) {
     }
   }
 
@@ -165,8 +167,8 @@ const Auth = () => {
   const shouldAnimateChildren = isModalMounted
 
   return (
-    <div className='fixed overflow-y-auto py-4 z-10 flex w-screen h-screen justify-center items-center'>
-      <AnimatePresence mode="wait">
+    <div className='fixed overflow-y-scroll scrollbar-hide py-4 z-10 flex w-screen h-screen justify-center items-center'>
+      <AnimatePresence>
         <motion.div
           className='fixed z-20 top-0 left-0 w-screen h-screen bg-background-secondary/30'
           initial={{ opacity: 0 }}
@@ -186,7 +188,7 @@ const Auth = () => {
             action === 'register' ? 'flex-row' : 'flex-row-reverse'
           } my-auto rounded-4xl max-w-[75rem] h-[45rem] overflow-clip justify-between`}
         >
-          <AnimatePresence mode="wait">
+          <AnimatePresence>
             {action === 'register' ? (
               <>
                 <motion.div

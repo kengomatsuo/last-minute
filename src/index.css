@@ -81,6 +81,15 @@ html::-webkit-scrollbar {
   display: none;
 }
 
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
 @theme {
   --color-primary: rgba(173, 169, 145);
   --color-background: rgba(252, 250, 241);
