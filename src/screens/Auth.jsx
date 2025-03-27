@@ -10,13 +10,12 @@ import UserIcon from '../assets/icons/user.svg?react'
 import PasswordIcon from '../assets/icons/lock.svg?react'
 import Logo from '../assets/icons/logo.svg?react'
 import SignInDecoration from '../assets/icons/signInDecoration.svg?react'
-import { NAVBAR_HEIGHT } from '../constants/visualConstants'
 
 const Auth = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { signIn, signUp } = useContext(UserContext)
-  const { dimensions } = useContext(ScreenContext)
+  const { dimensions, isSmallScreen } = useContext(ScreenContext)
   const hasError = false
   const [hover, setHover] = useState(false)
   const [passwordSuccess, setPasswordSuccess] = useState(false)
@@ -152,30 +151,31 @@ const Auth = () => {
   }
 
   return (
-    <div
-      className='flex flex-col flex-1 items-center justify-center'
-      style={{ paddingTop: NAVBAR_HEIGHT }}
-    >
+    <div className='fixed inset-0 overflow-y-auto py-4 z-10 flex w-screen h-screen justify-center items-center'>
       <AnimatePresence mode='wait'>
+        <motion.div
+          className='fixed z-20 top-0 left-0 w-screen h-screen bg-background-secondary/30'
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, backdropFilter: 'blur(4px)' }}
+          exit={{
+            opacity: 0,
+            transition: { delay: 0.3, duration: 0.3 },
+          }}
+        />
         <motion.div
           key={action}
           initial={{ opacity: 0, x: action === 'signin' ? -100 : 100 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: action === 'signin' ? 100 : -100 }}
           transition={{ duration: 0.5 }}
-          style={{
-            width: width * 0.85,
-            height: width >= 1050 ? 750 : 'auto',
-            background: 'white',
-          }}
-          className='flex flex-row rounded-[30px] max-w-[1200px] max-h-[95%] overflow-hidden justify-between'
+          className='flex z-30 w-[85%] bg-white flex-row my-auto rounded-4xl max-w-[75rem] h-[45rem] overflow-x-clip justify-between'
         >
           {action === 'register' ? (
             <>
               <div
                 className={`${
                   width < 500 ? 'px-[2rem] py-[1rem]' : 'px-[6rem] py-[3rem]'
-                } justify-between flex flex-col w-[40rem] flex-6`}
+                } justify-between min-w-fit flex flex-col w-[40rem] flex-6`}
               >
                 <div className='flex-1'>
                   <div
@@ -208,7 +208,7 @@ const Auth = () => {
                   <div className='flex justify-between items-center'>
                     <div>
                       <h1 className='pb-1'>Sign Up</h1>
-                      <h3 className='text-gray-400'>
+                      <h3 className='text-gray-400 text-nowrap'>
                         Secure your grades with{' '}
                         <b className='italic'>Last Minute</b>
                       </h3>
@@ -227,6 +227,10 @@ const Auth = () => {
                       inputClassName={inputClassName}
                       image={<UserIcon width={24} height={24} />}
                       placeholder='Name'
+                      validateFunction={e => {
+                        if (e.length < 3)
+                          throw new Error('Name must be at least 3 characters')
+                      }}
                       required
                       ref={nameRef}
                     />
@@ -290,21 +294,17 @@ const Auth = () => {
                   </form>
                 </div>
               </div>
-              {width >= 1050 && (
-                <div className='flex-4'>
-                  <SignInDecoration />
-                </div>
-              )}
+              <div className='flex-4'>
+                <SignInDecoration />
+              </div>
             </>
           ) : (
             <>
-              {width >= 1050 && (
-                <div className='flex-4'>
-                  <SignInDecoration style={{ transform: 'scaleX(-1)' }} />
-                </div>
-              )}
+              <div className='flex-4'>
+                <SignInDecoration style={{ transform: 'scaleX(-1)' }} />
+              </div>
               <div
-                className={`w-full flex flex-col py-[4rem] ${
+                className={`w-full flex flex-col min-w-fit py-[4rem] ${
                   width < 500
                     ? 'px-[2rem]'
                     : width < 1200
@@ -330,8 +330,8 @@ const Auth = () => {
                       />
                     </CustomInteractive>
                   </Link>
-                  {width >= 700 && (
-                    <div className='inline-flex items-center'>
+                  {!isSmallScreen && (
+                    <div className='inline-flex items-center text-nowrap'>
                       Don&apos;t have an account?
                       <CustomInteractive
                         onClick={() => setAction('register')}
@@ -343,7 +343,7 @@ const Auth = () => {
                   )}
                 </div>
 
-                <div className='flex justify-between items-center'>
+                <div className='flex justify-between items-center text-nowrap'>
                   <div>
                     <h1 className='pb-1'>Sign In</h1>
                     <h3 className='text-gray-400'>
@@ -378,17 +378,16 @@ const Auth = () => {
                     ref={passwordRef}
                   />
 
-                  {width < 700 && (
-                    <p style={{ textAlign: width < 450 ? 'center' : '' }}>
+                  {isSmallScreen && (
+                    <div className='inline-flex items-center text-nowrap'>
                       Don&apos;t have an account?
-                      <button
+                      <CustomInteractive
                         onClick={() => setAction('register')}
-                        className='ml-2 font-semibold'
-                        style={{ color: 'var(--color-primary)' }}
+                        className='font-semibold !p-1 ml-2 w-min !text-primary'
                       >
                         Sign Up
-                      </button>
-                    </p>
+                      </CustomInteractive>
+                    </div>
                   )}
                   <CustomButton
                     type='submit'
