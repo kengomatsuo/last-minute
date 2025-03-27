@@ -56,20 +56,7 @@ const Auth = ({ initialAction }) => {
     { complete: false, text: 'At least 1 number', regEx: '(?=.*[0-9])' },
   ]
   const [passwordRequirementsFiltered, setPasswordRequirementsFiltered] =
-    useState([
-      { complete: false, text: 'At least 8 characters', regEx: '.{8,}' },
-      {
-        complete: false,
-        text: 'At least 1 uppercase letter',
-        regEx: '(?=.*[A-Z])',
-      },
-      {
-        complete: false,
-        text: 'At least 1 lowercase letter',
-        regEx: '(?=.*[a-z])',
-      },
-      { complete: false, text: 'At least 1 number', regEx: '(?=.*[0-9])' },
-    ])
+    useState([])
 
   const formRef = useRef(null)
   const emailRef = useRef(null)
@@ -375,7 +362,7 @@ const Auth = ({ initialAction }) => {
                       type='submit'
                       loading={isAuthLoading}
                       filled={true}
-                      className='w-[14rem] mt-4'
+                      className='w-[14rem] mt-2'
                     >
                       <div className='flex items-center gap-4'>
                         <p>Sign Up</p>
@@ -498,7 +485,7 @@ const Auth = ({ initialAction }) => {
                       type='submit'
                       filled={true}
                       loading={isAuthLoading}
-                      className='w-[14rem] mt-12'
+                      className='w-[14rem] mt-2'
                     >
                       <div className='flex items-center gap-4'>
                         <p>Sign In</p>
