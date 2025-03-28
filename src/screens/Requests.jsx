@@ -15,6 +15,7 @@ const Requests = () => {
   return (
     <div className='w-screen flex flex-col items-center justify-center'>
       <CustomCard
+        scrolling
         header='Requests'
         className='w-[min(48rem,11/12*100%)] flex max-h-2/3 p-[min(3rem,4%)]'
       >

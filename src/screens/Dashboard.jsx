@@ -8,6 +8,7 @@ const Dashboard = () => {
   return (
     <div className='w-screen flex flex-col items-center justify-center'>
       <CustomCard
+        scrolling
         header='Courses'
         className='w-[min(48rem,11/12*100%)] p-[min(3rem,4%)]'
       >
