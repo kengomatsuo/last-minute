@@ -7,11 +7,13 @@ import PropTypes from 'prop-types'
  *
  * @param {Object} props - Component props
  * @param {string} props.className - Custom class name for additional styling
- * @param {string} props.header - Header content of the card
+ * @param {string | React.ReactNode} props.header - Header content of the card
+ * @param {React.ReactNode} props.footer - Footer content of the card
+ * @param {boolean} [props.scrolling=false] - Whether the card content should be scrollable
  * @param {Function} props.onClick - Function to run when the card is clicked
  * @param {React.ReactNode} props.children - Content of the card, typically text or other elements. Must be a `<div>` element.
  */
-const CustomCard = ({ className, header, onClick, children }) => {
+const CustomCard = ({ className, header, footer, scrolling = false, onClick, children }) => {
   return (
     <div
       className={`${className} ${
@@ -22,7 +24,8 @@ const CustomCard = ({ className, header, onClick, children }) => {
       onClick={onClick}
     >
       <div className='text-2xl font-bold pb-2'>{header}</div>
-      <div className='flex-1 overflow-y-auto'>{children}</div>
+      <div className={`${scrolling ? 'overflow-y-scroll scrollbar-hidden' : ''} flex-1`}>{children}</div>
+      <div>{footer}</div>
     </div>
   )
 }
@@ -37,9 +40,15 @@ CustomCard.propTypes = {
   /**
    * The header of the card.
    * This can be text, an icon, or any other React node.
-   * @type {string}
+   * @type {string | React.ReactNode}
    */
   header: PropTypes.string,
+  /**
+   * Whether the card content should be scrollable.
+   * This is useful for cards with a lot of content.
+   * @type {boolean}
+   */
+  scrolling: PropTypes.bool,
   /**
    * Function to run when the card is clicked.
    * @type {Function}
@@ -53,6 +62,12 @@ CustomCard.propTypes = {
    * @type {React.ReactNode}
    */
   children: PropTypes.node.isRequired,
+  /**
+   * The footer of the card.
+   * This can be text, an icon, or any other React node.
+   * @type {React.ReactNode}
+   */
+  footer: PropTypes.node,
 }
 
 export default CustomCard

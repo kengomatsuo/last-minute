@@ -29,7 +29,7 @@ const Auth = ({ initialAction }) => {
     isCheckingEmailVerification,
     isAuthLoading,
   } = useContext(UserContext)
-  const { isSmallScreen } = useContext(ScreenContext)
+  const { isSmallScreen, refreshIsSmallScreen } = useContext(ScreenContext)
   useConsoleLog('issmall', isSmallScreen)
   const [passwordSuccess, setPasswordSuccess] = useState(false)
   const [isModalMounted, setIsModalMounted] = useState(false)
@@ -165,6 +165,8 @@ const Auth = ({ initialAction }) => {
   if (user?.emailVerified) closeAuthModal()
 
   useEffect(() => {
+    // Refresh screen size on mount
+    refreshIsSmallScreen()
     const handleKeyDown = event => {
       if (event.key === 'Escape') {
         closeAuthModal()
@@ -178,7 +180,7 @@ const Auth = ({ initialAction }) => {
   }, [closeAuthModal])
 
   return (
-    <div className='fixed overflow-y-scroll scrollbar-hide py-4 z-20 flex w-screen h-screen text-primary-text justify-center items-center'>
+    <div className='fixed overflow-y-scroll scrollbar-hidden py-4 z-20 flex w-screen h-screen text-primary-text justify-center items-center'>
       <motion.div
         className='fixed z-20 top-0 left-0 w-screen h-screen bg-background-secondary/30'
         initial={{ opacity: 0 }}
@@ -195,7 +197,9 @@ const Auth = ({ initialAction }) => {
         animate={{ y: 0 }}
         exit={{ y: '150%' }}
         transition={MOVEMENT_TRANSITION}
-        className={`flex z-30 ${isSmallScreen ? 'w-[min(48rem,100%)]' : 'w-[min(75rem,11/12*100%)]'} bg-white ${
+        className={`flex z-30 ${
+          isSmallScreen ? 'w-[min(48rem,100%)]' : 'w-[min(75rem,11/12*100%)]'
+        } bg-white ${
           action === 'register' ? 'flex-row' : 'flex-row-reverse'
         } my-auto rounded-4xl max-w-[75rem] h-[45rem] overflow-clip justify-between`}
       >
@@ -252,8 +256,7 @@ const Auth = ({ initialAction }) => {
             </motion.div>
           ) : user ? (
             // TODO: Add a welcome message
-            <>
-            </>
+            <></>
           ) : action === 'register' ? (
             <>
               <motion.div
@@ -398,9 +401,7 @@ const Auth = ({ initialAction }) => {
               {!isSmallScreen && (
                 <motion.div
                   key={'register-decoration'}
-                  initial={
-                    shouldAnimateChildren ? { x: '100%', scale: '150%' } : false
-                  }
+                  initial={{ x: '100%', scale: '150%' }}
                   animate={{ x: 0, scale: '100%' }}
                   transition={MOVEMENT_TRANSITION}
                   className='flex-4'
@@ -523,11 +524,7 @@ const Auth = ({ initialAction }) => {
               {!isSmallScreen && (
                 <motion.div
                   key={'signin-decoration'}
-                  initial={
-                    shouldAnimateChildren
-                      ? { x: '-100%', scale: '150%' }
-                      : false
-                  }
+                  initial={{ x: '-100%', scale: '150%' }}
                   animate={{ x: 0, scale: '100%' }}
                   transition={MOVEMENT_TRANSITION}
                   className='flex-4'
