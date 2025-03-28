@@ -16,38 +16,38 @@ const Requests = () => {
     <div className='w-screen flex flex-col items-center justify-center'>
       <CustomCard
         header='Requests'
-        className='w-[min(48rem,11/12*100%)] overflow-hidden max-h-2/3 p-[min(3rem,4%)]'
+        className='w-[min(48rem,11/12*100%)] flex max-h-2/3 p-[min(3rem,4%)]'
       >
-        <div className='divide-y flex flex-col divide-primary overflow-y-auto max-h-1/2'>
-          {requests.map(course => (
-            <div
-              key={course.id}
-              className='flex w-full gap-2 items-center py-2 px-4'
-            >
-              <div className='flex-1 text-left'>
-                <p className='font-bold text-xl'>{course.subject}</p>
-                <p className='font-semibold'>{course.topic}</p>
-                <p
-                  className={`${
-                    !course.details ? 'italic opacity-75' : ''
-                  } truncate`}
-                >
-                  {course.details || 'No description'}
-                </p>
-                <p>
-                  {course.bookingTime
-                    ? firestampToString(course.bookingTime)
-                    : `Ordered at: ${firestampToString(course.createdAt)}`}
-                </p>
-              </div>
-              <CustomButton
-                className='ml-auto'
-                onClick={() => acceptRequest(course)}
+          <div className='divide-y flex-1 flex-col divide-primary'>
+            {requests.map(course => (
+              <div
+                key={course.id}
+                className='flex w-full gap-2 items-center py-2 px-4'
               >
-                Accept
-              </CustomButton>
-            </div>
-          ))}
+                <div className='flex-1 text-left'>
+                  <p className='font-bold text-xl'>{course.subject}</p>
+                  <p className='font-semibold'>{course.topic}</p>
+                  <p
+                    className={`${
+                      !course.details ? 'italic opacity-75' : ''
+                    } truncate`}
+                  >
+                    {course.details || 'No description'}
+                  </p>
+                  <p>
+                    {course.bookingTime
+                      ? firestampToString(course.bookingTime)
+                      : `Ordered at: ${firestampToString(course.createdAt)}`}
+                  </p>
+                </div>
+                <CustomButton
+                  className='ml-auto'
+                  onClick={() => acceptRequest(course)}
+                >
+                  Accept
+                </CustomButton>
+              </div>
+            ))}
         </div>
       </CustomCard>
     </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useContext } from 'react'
+import { useState, useEffect, useRef, useContext } from 'react'
 import { useLocation } from 'react-router-dom'
 import { NAVBAR_HEIGHT } from '../constants/visualConstants'
 import { CustomButton, CustomCard, CustomInput } from '../components'
@@ -14,107 +14,23 @@ import { db } from '../../firebaseConfig'
 import { useConsoleLog } from '../hooks'
 import { UserContext } from '../contexts/UserContext'
 import { ScreenContext } from '../contexts/ScreenContext'
+import VideoCall from '../components/VideoCall'
 
 /**
- * Video call session component that handles WebRTC connections and chat.
+ * Video & chat session component that handles real-time messaging.
  *
  * @returns {JSX.Element} The session component
  */
 const Session = () => {
   const { user } = useContext(UserContext)
   const { isSmallScreen } = useContext(ScreenContext)
-  const [localStream, setLocalStream] = useState(null)
-  const [remoteStream, setRemoteStream] = useState(null)
   const [chatMessages, setChatMessages] = useState([])
+  const [videoCallError, setVideoCallError] = useState(null)
   useConsoleLog('chatMessages', chatMessages)
-  const pcRef = useRef(null)
   const formRef = useRef(null)
   const messageRef = useRef(null)
   const { search } = useLocation()
   const courseId = new URLSearchParams(search).get('course')
-
-  /**
-   * Stops all tracks in the provided media stream.
-   *
-   * @param {MediaStream} stream - The media stream to stop
-   */
-  const stopMediaTracks = useCallback(stream => {
-    if (!stream) {
-      return
-    }
-
-    try {
-      stream.getTracks().forEach(track => {
-        track.stop()
-      })
-    } catch (error) {
-      console.error('Error stopping media tracks:', error)
-    }
-  }, [])
-
-  useEffect(() => {
-    // Configure ICE servers
-    const servers = {
-      iceServers: [
-        { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun2.l.google.com:19302' },
-      ],
-      iceCandidatePoolSize: 10,
-    }
-
-    // Initialize peer connection
-    pcRef.current = new RTCPeerConnection(servers)
-
-    // Initialize remote stream
-    const remote = new MediaStream()
-    setRemoteStream(remote)
-
-    // Handle incoming tracks
-    pcRef.current.ontrack = event => {
-      event.streams[0].getTracks().forEach(track => {
-        remote.addTrack(track)
-      })
-    }
-
-    // Cleanup function
-    return () => {
-      if (pcRef.current) {
-        pcRef.current.close()
-      }
-    }
-  }, [])
-
-  // Effect to clean up localStream when component unmounts or stream changes
-  useEffect(() => {
-    return () => {
-      stopMediaTracks(localStream)
-    }
-  }, [localStream, stopMediaTracks])
-
-  /**
-   * Initiates a video call by accessing media devices and adding tracks.
-   *
-   * @returns {Promise<void>}
-   */
-  const startCall = async () => {
-    try {
-      // Stop any existing streams before requesting new ones
-      stopMediaTracks(localStream)
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      })
-
-      setLocalStream(stream)
-
-      stream.getTracks().forEach(track => {
-        pcRef.current.addTrack(track, stream)
-      })
-    } catch (error) {
-      console.error('Error starting call:', error)
-    }
-  }
 
   // Set up listener for chat messages
   useEffect(() => {
@@ -145,14 +61,19 @@ const Session = () => {
     return () => unsubscribe()
   }, [courseId])
 
+  /**
+   * Handles sending a new chat message.
+   *
+   * @param {Event} e - Form submit event
+   * @returns {Promise<void>}
+   */
   const handleSendMessage = async e => {
-    // add a message to the chat subcollection
     e.preventDefault()
     const formData = new FormData(formRef.current)
     const data = Object.fromEntries(formData.entries())
     const messageText = data.message.trim()
 
-    // cancel if the messageText is only whitespace (newlines, spaces, )
+    // cancel if the messageText is only whitespace
     if (!messageText) {
       return
     }
@@ -169,6 +90,16 @@ const Session = () => {
     }
   }
 
+  /**
+   * Handles video call errors.
+   *
+   * @param {string} errorMessage - The error message
+   */
+  const handleVideoCallError = (errorMessage) => {
+    setVideoCallError(errorMessage)
+    console.error('Video call error:', errorMessage)
+  }
+
   return (
     <div
       style={{ paddingTop: NAVBAR_HEIGHT }}
@@ -176,42 +107,17 @@ const Session = () => {
     >
       <div className='flex-1 flex'>
         <div className='flex-1 flex flex-col'>
-          <div className='flex-1 flex flex-row'>
-            {!isSmallScreen && (
-              <div className='flex-1 bg-black'>
-                {localStream && (
-                  <video
-                    autoPlay
-                    playsInline
-                    muted
-                    ref={videoElem => {
-                      if (videoElem) {
-                        videoElem.srcObject = localStream
-                      }
-                    }}
-                    style={{ width: '300px', margin: '10px' }}
-                  />
-                )}
+          <div className='flex-1 flex justify-center items-center bg-gray-100'>
+            {videoCallError ? (
+              <div className='text-red-500 p-4 rounded bg-red-50'>
+                {videoCallError}
               </div>
+            ) : (
+              <VideoCall 
+                courseId={courseId} 
+                onError={handleVideoCallError} 
+              />
             )}
-
-            <div className='flex-1 bg-red-500'>
-              {remoteStream && (
-                <video
-                  autoPlay
-                  playsInline
-                  ref={videoElem => {
-                    if (videoElem) {
-                      videoElem.srcObject = remoteStream
-                    }
-                  }}
-                  style={{ width: '300px', margin: '10px' }}
-                />
-              )}
-            </div>
-          </div>
-          <div className='px-4 py-2'>
-            <CustomButton onClick={startCall}>Start calling</CustomButton>
           </div>
         </div>
       </div>
