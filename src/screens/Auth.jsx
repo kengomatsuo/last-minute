@@ -197,7 +197,9 @@ const Auth = ({ initialAction }) => {
         animate={{ y: 0 }}
         exit={{ y: '150%' }}
         transition={MOVEMENT_TRANSITION}
-        className={`flex z-30 ${isSmallScreen ? 'w-[min(48rem,100%)]' : 'w-[min(75rem,11/12*100%)]'} bg-white ${
+        className={`flex z-30 ${
+          isSmallScreen ? 'w-[min(48rem,100%)]' : 'w-[min(75rem,11/12*100%)]'
+        } bg-white ${
           action === 'register' ? 'flex-row' : 'flex-row-reverse'
         } my-auto rounded-4xl max-w-[75rem] h-[45rem] overflow-clip justify-between`}
       >
@@ -254,8 +256,7 @@ const Auth = ({ initialAction }) => {
             </motion.div>
           ) : user ? (
             // TODO: Add a welcome message
-            <>
-            </>
+            <></>
           ) : action === 'register' ? (
             <>
               <motion.div
@@ -400,9 +401,7 @@ const Auth = ({ initialAction }) => {
               {!isSmallScreen && (
                 <motion.div
                   key={'register-decoration'}
-                  initial={
-                    shouldAnimateChildren ? { x: '100%', scale: '150%' } : false
-                  }
+                  initial={{ x: '100%', scale: '150%' }}
                   animate={{ x: 0, scale: '100%' }}
                   transition={MOVEMENT_TRANSITION}
                   className='flex-4'
@@ -525,11 +524,7 @@ const Auth = ({ initialAction }) => {
               {!isSmallScreen && (
                 <motion.div
                   key={'signin-decoration'}
-                  initial={
-                    shouldAnimateChildren
-                      ? { x: '-100%', scale: '150%' }
-                      : false
-                  }
+                  initial={{ x: '-100%', scale: '150%' }}
                   animate={{ x: 0, scale: '100%' }}
                   transition={MOVEMENT_TRANSITION}
                   className='flex-4'
