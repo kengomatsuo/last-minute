@@ -253,7 +253,7 @@ const UserContextProvider = ({ children }) => {
   const addTutor = async email => {
     try {
       const result = await setTutorClaim({ email, isTutor: true })
-      alert(result)
+      alert(result.message)
     } catch (error) {
       alert(error)
     }
@@ -267,7 +267,7 @@ const UserContextProvider = ({ children }) => {
   const addAdmin = async email => {
     try {
       const result = await setAdminClaim({ email, isAdmin: true })
-      alert(result)
+      alert(result.message)
     } catch (error) {
       alert(error)
     }
