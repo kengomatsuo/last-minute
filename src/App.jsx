@@ -17,6 +17,7 @@ import History from './screens/History'
 import { CourseContextProvider } from './contexts/CourseContext'
 import Requests from './screens/Requests'
 import { MOVEMENT_TRANSITION } from './constants/visualConstants'
+import { useConsoleLog } from './hooks'
 
 /**
  * Layout component that wraps authenticated routes with CourseContextProvider
@@ -39,7 +40,7 @@ function App() {
   const location = useLocation()
   const scrollContainerRef = useRef(null)
 
-  console.log(user)
+  useConsoleLog('userinApp', user)
 
   return (
     <AnimatePresence mode='wait'>

@@ -65,7 +65,7 @@ const CustomButton = ({
       </div>
       {loading && (
         <div className='absolute inset-0 flex items-center justify-center'>
-          <LoadingDots dotsClassName={filled ? 'bg-background' : 'bg-primary'} />
+          <LoadingDots dotsClassName={filled ? 'h-2 w-2 bg-background' : 'h-2 w-2 bg-primary'} />
         </div>
       )}
     </button>
