@@ -8,6 +8,7 @@ import { useDebounce } from '../hooks'
  * @property {boolean} isSmallScreen - Whether the screen width is below the small screen threshold.
  * @property {{ width: number; height: number }} dimensions - The current screen dimensions.
  * @property {boolean} isOnline - Whether the user is currently online.
+ * @property {function} refreshIsSmallScreen - Function to refresh the isSmallScreen state.
  */
 
 const smallScreenThreshold = 52
@@ -61,10 +62,16 @@ const ScreenContextProvider = ({ children }) => {
     }
   }, [minWidth, debouncedSetDimensions])
 
+  const refreshIsSmallScreen = () => {
+    const width = window.innerWidth
+    setIsSmallScreen(width < minWidth)
+  }
+
   return (
     <ScreenContext.Provider
       value={{
         isSmallScreen,
+        refreshIsSmallScreen,
         dimensions,
         isOnline,
       }}

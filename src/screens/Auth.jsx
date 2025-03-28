@@ -29,7 +29,7 @@ const Auth = ({ initialAction }) => {
     isCheckingEmailVerification,
     isAuthLoading,
   } = useContext(UserContext)
-  const { isSmallScreen } = useContext(ScreenContext)
+  const { isSmallScreen, refreshIsSmallScreen } = useContext(ScreenContext)
   useConsoleLog('issmall', isSmallScreen)
   const [passwordSuccess, setPasswordSuccess] = useState(false)
   const [isModalMounted, setIsModalMounted] = useState(false)
@@ -165,6 +165,8 @@ const Auth = ({ initialAction }) => {
   if (user?.emailVerified) closeAuthModal()
 
   useEffect(() => {
+    // Refresh screen size on mount
+    refreshIsSmallScreen()
     const handleKeyDown = event => {
       if (event.key === 'Escape') {
         closeAuthModal()
