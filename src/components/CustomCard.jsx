@@ -23,7 +23,7 @@ const CustomCard = ({ className, header, scrolling = false, onClick, children })
       onClick={onClick}
     >
       <div className='text-2xl font-bold pb-2'>{header}</div>
-      <div className={`${scrolling ? 'overflow-auto' : ''} flex-1`}>{children}</div>
+      <div className={`${scrolling ? 'overflow-y-scroll scrollbar-hidden' : ''} flex-1`}>{children}</div>
     </div>
   )
 }

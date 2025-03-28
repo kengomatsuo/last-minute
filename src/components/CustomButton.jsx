@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
+import LoadingDots from './LoadingDots'
 
 /**
  * CustomButton component
@@ -63,25 +64,8 @@ const CustomButton = ({
         {children}
       </div>
       {loading && (
-        // TODO: make this into a separate component
         <div className='absolute inset-0 flex items-center justify-center'>
-          <div className='flex space-x-1'>
-            <span
-              className={`w-2 h-2 rounded-full animate-bounce [animation-delay:0s] ${
-                filled ? 'bg-white' : 'bg-primary'
-              }`}
-            ></span>
-            <span
-              className={`w-2 h-2 rounded-full animate-bounce [animation-delay:0.2s] ${
-                filled ? 'bg-white' : 'bg-primary'
-              }`}
-            ></span>
-            <span
-              className={`w-2 h-2 rounded-full animate-bounce [animation-delay:0.4s] ${
-                filled ? 'bg-white' : 'bg-primary'
-              }`}
-            ></span>
-          </div>
+          <LoadingDots color={filled ? 'white' : 'primary'} />
         </div>
       )}
     </button>

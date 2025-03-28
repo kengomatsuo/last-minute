@@ -178,7 +178,7 @@ const Auth = ({ initialAction }) => {
   }, [closeAuthModal])
 
   return (
-    <div className='fixed overflow-y-scroll scrollbar-hide py-4 z-20 flex w-screen h-screen text-primary-text justify-center items-center'>
+    <div className='fixed overflow-y-scroll scrollbar-hidden py-4 z-20 flex w-screen h-screen text-primary-text justify-center items-center'>
       <motion.div
         className='fixed z-20 top-0 left-0 w-screen h-screen bg-background-secondary/30'
         initial={{ opacity: 0 }}
