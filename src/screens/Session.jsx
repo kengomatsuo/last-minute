@@ -25,8 +25,6 @@ const Session = () => {
   const { user } = useContext(UserContext)
   const { isSmallScreen } = useContext(ScreenContext)
   const [chatMessages, setChatMessages] = useState([])
-  const [videoCallError, setVideoCallError] = useState(null)
-  useConsoleLog('chatMessages', chatMessages)
   const formRef = useRef(null)
   const messageRef = useRef(null)
   const { search } = useLocation()
@@ -90,16 +88,6 @@ const Session = () => {
     }
   }
 
-  /**
-   * Handles video call errors.
-   *
-   * @param {string} errorMessage - The error message
-   */
-  const handleVideoCallError = (errorMessage) => {
-    setVideoCallError(errorMessage)
-    console.error('Video call error:', errorMessage)
-  }
-
   return (
     <div
       style={{ paddingTop: NAVBAR_HEIGHT }}
@@ -107,17 +95,10 @@ const Session = () => {
     >
       <div className='flex-1 flex'>
         <div className='flex-1 flex flex-col'>
-          <div className='flex-1 flex justify-center items-center bg-gray-100'>
-            {videoCallError ? (
-              <div className='text-red-500 p-4 rounded bg-red-50'>
-                {videoCallError}
-              </div>
-            ) : (
+          <div className='flex-1 flex justify-center items-center bg-black'>
               <VideoCall 
-                courseId={courseId} 
-                onError={handleVideoCallError} 
+                courseId={courseId}
               />
-            )}
           </div>
         </div>
       </div>
