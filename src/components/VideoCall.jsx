@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from 'react'
+import { useState, useEffect, useRef, useContext, useCallback } from 'react'
 import { UserContext } from '../contexts/UserContext'
 import { 
   doc, 
@@ -45,38 +45,81 @@ const VideoCall = ({ courseId, onError }) => {
     ]
   }
 
+  /**
+   * Checks available media devices and updates the device status state.
+   * 
+   * @returns {Promise<void>}
+   */
+  const checkDevices = useCallback(async () => {
+    try {
+      setDeviceStatus(prevStatus => ({ ...prevStatus, checking: true }))
+      
+      // First check for device permissions
+      let hasCamera = false
+      let hasMicrophone = false
+      
+      try {
+        // Try to access media devices to verify they're really available
+        const testStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true
+        })
+        
+        // Check which tracks we actually got
+        testStream.getTracks().forEach(track => {
+          if (track.kind === 'video') {
+            hasCamera = true
+          }
+          if (track.kind === 'audio') {
+            hasMicrophone = true
+          }
+          // Stop the track after checking
+          track.stop()
+        })
+      } catch (permissionErr) {
+        console.log('Permission check failed:', permissionErr)
+        
+        // Fallback to device enumeration if permission check fails
+        const devices = await navigator.mediaDevices.enumerateDevices()
+        hasCamera = devices.some(device => device.kind === 'videoinput' && device.deviceId)
+        hasMicrophone = devices.some(device => device.kind === 'audioinput' && device.deviceId)
+      }
+      
+      setDeviceStatus({
+        hasCamera,
+        hasMicrophone,
+        checking: false
+      })
+      
+      // Removed error notification for no devices
+    } catch (err) {
+      console.error('Error checking media devices:', err)
+      setDeviceStatus({
+        hasCamera: false,
+        hasMicrophone: false,
+        checking: false
+      })
+      onError('Unable to check for camera/microphone: ' + err.message)
+    }
+  }, [onError])
+
   // Check available media devices on component mount
   useEffect(() => {
-    const checkDevices = async () => {
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices()
-        const hasCamera = devices.some(device => device.kind === 'videoinput')
-        const hasMicrophone = devices.some(
-          device => device.kind === 'audioinput'
-        )
-        
-        setDeviceStatus({
-          hasCamera,
-          hasMicrophone,
-          checking: false
-        })
-        
-        if (!hasCamera && !hasMicrophone) {
-          onError('No camera or microphone detected on this device.')
-        }
-      } catch (err) {
-        console.error('Error checking media devices:', err)
-        setDeviceStatus({
-          hasCamera: false,
-          hasMicrophone: false,
-          checking: false
-        })
-        onError('Unable to check for camera/microphone: ' + err.message)
-      }
+    checkDevices()
+    
+    // Set up device change listener
+    const handleDeviceChange = () => {
+      console.log('Device change detected')
+      checkDevices()
     }
     
-    checkDevices()
-  }, [onError])
+    navigator.mediaDevices.addEventListener('devicechange', handleDeviceChange)
+    
+    // Clean up listener on unmount
+    return () => {
+      navigator.mediaDevices.removeEventListener('devicechange', handleDeviceChange)
+    }
+  }, [checkDevices])
 
   useEffect(() => {
     if (!courseId || !user) return
@@ -110,6 +153,11 @@ const VideoCall = ({ courseId, onError }) => {
    */
   const setupLocalStream = async () => {
     try {
+      // Stop any previous streams
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop())
+      }
+      
       const constraints = {
         video: deviceStatus.hasCamera,
         audio: deviceStatus.hasMicrophone
@@ -154,6 +202,33 @@ const VideoCall = ({ courseId, onError }) => {
       } else {
         onError('Could not access media devices: ' + err.message)
         return null
+      }
+    }
+  }
+
+  /**
+   * Refreshes the media devices and attempts to reconnect the stream.
+   * 
+   * @returns {Promise<void>}
+   */
+  const refreshDevices = async () => {
+    await checkDevices()
+    
+    // If already in a call, update the stream
+    if (isConnected && peerConnectionRef.current) {
+      const newStream = await setupLocalStream()
+      
+      if (newStream) {
+        // Remove old tracks
+        const senders = peerConnectionRef.current.getSenders()
+        senders.forEach(sender => {
+          peerConnectionRef.current.removeTrack(sender)
+        })
+        
+        // Add new tracks
+        newStream.getTracks().forEach(track => {
+          peerConnectionRef.current.addTrack(track, newStream)
+        })
       }
     }
   }
@@ -462,11 +537,19 @@ const VideoCall = ({ courseId, onError }) => {
           Checking available devices...
         </div>
       ) : (
-        <div className='mt-2 text-center text-sm text-gray-500'>
+        <div className='mt-2 text-center text-sm text-gray-500 flex items-center justify-center'>
           {!deviceStatus.hasCamera && !deviceStatus.hasMicrophone ? (
-            <span className='text-yellow-500'>
-              No camera or microphone detected
-            </span>
+            <>
+              <span className='text-yellow-500'>
+                No camera or microphone detected
+              </span>
+              <button 
+                onClick={refreshDevices}
+                className='ml-3 text-blue-500 hover:text-blue-700 text-sm underline'
+              >
+                Refresh Devices
+              </button>
+            </>
           ) : (
             <>
               {deviceStatus.hasCamera ? 
@@ -476,6 +559,12 @@ const VideoCall = ({ courseId, onError }) => {
               {deviceStatus.hasMicrophone ? 
                 'Microphone available' : 
                 <span className='text-yellow-500'>No microphone</span>}
+              <button 
+                onClick={refreshDevices}
+                className='ml-3 text-blue-500 hover:text-blue-700 text-sm underline'
+              >
+                Refresh
+              </button>
             </>
           )}
         </div>
