@@ -24,11 +24,13 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const { isSmallScreen } = use(ScreenContext)
+  const navigate = useNavigate()
 
   const handleSignOut = async () => {
     await signOut(auth)
       .then(() => {
         console.log('Signed out successfully!')
+        navigate('/')
       })
       .catch(error => {
         console.error('Error signing out:', error)

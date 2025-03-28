@@ -16,7 +16,6 @@ import { doc, setDoc } from 'firebase/firestore'
 import Auth from '../screens/Auth'
 import { AnimatePresence } from 'framer-motion'
 import { ScreenContextProvider } from './ScreenContext'
-import { th } from 'framer-motion/client'
 
 /**
  * @typedef {Object} UserContextType
@@ -53,13 +52,11 @@ const UserContext = createContext(defaultContext)
 const UserContextProvider = ({ children }) => {
   const [user, setUser] = useState(auth.currentUser || undefined)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
-  useConsoleLog('AuthModalOpen', isAuthModalOpen) // Debugging line
   const initialActionRef = useRef(null)
   const [isCheckingEmailVerification, setIsCheckingEmailVerification] =
     useState(false)
   const [isAuthLoading, setIsAuthLoading] = useState(false)
   const verificationIntervalRef = useRef(null)
-  useConsoleLog('user', user)
 
   // Clear any existing verification interval
   const clearVerificationInterval = () => {
@@ -209,6 +206,7 @@ const UserContextProvider = ({ children }) => {
     try {
       clearVerificationInterval()
       await firebaseSignOut(auth)
+
     } catch (error) {
       setIsAuthLoading(false)
       throw error

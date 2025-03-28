@@ -118,6 +118,7 @@ const ChatComponent = memo(function ChatComponent({ courseId, courseData }) {
    */
   const handleSendMessage = async e => {
     e.preventDefault()
+    
     const formData = new FormData(formRef.current)
     const data = Object.fromEntries(formData.entries())
     const messageText = data.message.trim()
@@ -309,14 +310,14 @@ const ChatComponent = memo(function ChatComponent({ courseId, courseData }) {
         </motion.form>
       }
     >
-      <div className='h-full flex flex-col'>
+      {user && <div className='h-full flex flex-col'>
         <div
           ref={chatContainerRef}
           className='flex flex-1 flex-col overflow-y-auto scrollbar-hidden p-2 space-y-3'
         >
           {renderChatContent()}
         </div>
-      </div>
+      </div>}
     </CustomCard>
   )
 })

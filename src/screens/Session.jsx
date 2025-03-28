@@ -1,7 +1,6 @@
 import { useState, useEffect, useContext } from 'react'
 import { useLocation } from 'react-router-dom'
 import { NAVBAR_HEIGHT } from '../constants/visualConstants'
-import { CustomCard } from '../components'
 import { doc, getDoc } from 'firebase/firestore'
 import { db } from '../../firebaseConfig'
 import { UserContext } from '../contexts/UserContext'
