@@ -160,7 +160,7 @@ const Booking = () => {
                 </div>
               </div>
             ) : (
-              <div className='flex flex-1 flex-col gap-2'>
+              <div className='flex flex-1 flex-col gap-4'>
                 <CustomInput
                   ref={topicRef}
                   name='topic'

@@ -26,7 +26,7 @@ const {
     error,
     write,
   } = require("firebase-functions/logger");
-const { getFirestore } = require('firebase-admin/firestore')
+const { getFirestore, FieldValue } = require('firebase-admin/firestore')
 require("firebase-functions/logger/compat");
 
 // Initialize Firebase Admin SDK
@@ -323,7 +323,7 @@ exports.acceptCourseRequest = onCall(
           tutorDisplayName,
           tuteeDisplayName,
           requestedAt: requestData.createdAt,
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          createdAt: FieldValue.serverTimestamp(),
         }
         
         // Set the course document
@@ -333,7 +333,7 @@ exports.acceptCourseRequest = onCall(
         const welcomeMessage = {
           senderId: 'system',
           text: 'Course request accepted! You can now chat here.',
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          createdAt: FieldValue.serverTimestamp(),
         }
         
         transaction.set(

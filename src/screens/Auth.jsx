@@ -164,6 +164,19 @@ const Auth = ({ initialAction }) => {
 
   if (user?.emailVerified) closeAuthModal()
 
+  useEffect(() => {
+    const handleKeyDown = event => {
+      if (event.key === 'Escape') {
+        closeAuthModal()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [closeAuthModal])
+
   return (
     <div className='fixed overflow-y-scroll scrollbar-hide py-4 z-20 flex w-screen h-screen text-primary-text justify-center items-center'>
       <motion.div
@@ -238,7 +251,9 @@ const Auth = ({ initialAction }) => {
               </div>
             </motion.div>
           ) : user ? (
-            <></>
+            // TODO: Add a welcome message
+            <>
+            </>
           ) : action === 'register' ? (
             <>
               <motion.div

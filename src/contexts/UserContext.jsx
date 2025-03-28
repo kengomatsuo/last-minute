@@ -84,7 +84,6 @@ const UserContextProvider = ({ children }) => {
           const isVerified = await checkEmailVerification()
           if (isVerified) {
             clearVerificationInterval()
-            setIsAuthModalOpen(false)
           }
           // console.log('Checking email verification status...')
         },
@@ -276,7 +275,7 @@ const UserContextProvider = ({ children }) => {
 
   /**
    * Opens the authentication modal with the specified initial action.
-   * 
+   *
    * @param {string} action - The initial action for the auth modal
    */
   const openAuthModal = action => {
@@ -287,9 +286,8 @@ const UserContextProvider = ({ children }) => {
   }
 
   const closeAuthModal = () => {
-    if (!user || (user && user.emailVerified)) {
+    // if (!user || (user && user.emailVerified)) 
       setIsAuthModalOpen(false)
-    }
   }
 
   return (
