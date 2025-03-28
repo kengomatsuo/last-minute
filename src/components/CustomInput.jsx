@@ -148,6 +148,13 @@ const CustomInput = ({
         setInputValue('')
         setSavedValue('')
       },
+      focus: () => {
+        // Find the input/textarea element and focus it
+        const inputElement = inputContainerRef.current?.querySelector('input, textarea')
+        if (inputElement) {
+          inputElement.focus()
+        }
+      }
     }
   })
 

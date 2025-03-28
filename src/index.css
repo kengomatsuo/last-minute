@@ -97,6 +97,8 @@ html::-webkit-scrollbar {
   --color-accent: rgba(152, 216, 239);
   --color-primary-text: rgba(0, 0, 0);
   --color-secondary-text: rgba(252, 250, 241);
+  --color-chat-own-message: rgba(173, 169, 145);
+  --color-chat-other-message: rgba(237, 235, 228);
   --color-interactive-hover: rgba(191, 187, 169, 0.15);
   --color-interactive-active: rgba(191, 187, 169, 0.30);
   --color-filled-button-hover: rgba(191, 187, 169, 0.8);
