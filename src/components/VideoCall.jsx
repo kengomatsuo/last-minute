@@ -218,18 +218,6 @@ const VideoCall = ({ courseId }) => {
     setActiveMicrophoneId(newMicrophoneId)
   }
 
-  const handleVideoToggle = async () => {
-    if (!videoInputs.length) {
-      console.error('No camera detected.')
-      return
-    }
-    if (!isVideoStreaming && !isAudioStreaming) {
-      setIsVideoStreamingLoading(true)
-    }
-    setIsScreenSharing(false)
-    setIsVideoStreaming(!isVideoStreaming)
-  }
-
   const testMicrophone = async () => {
     const audioContext = new (window.AudioContext ||
       window.webkitAudioContext)()
@@ -267,6 +255,18 @@ const VideoCall = ({ courseId }) => {
       console.error('Error testing microphone:', error)
       return false
     }
+  }
+
+  const handleVideoToggle = async () => {
+    if (!videoInputs.length) {
+      console.error('No camera detected.')
+      return
+    }
+    if (!isVideoStreaming && !isAudioStreaming) {
+      setIsVideoStreamingLoading(true)
+    }
+    setIsScreenSharing(false)
+    setIsVideoStreaming(!isVideoStreaming)
   }
 
   const handleAudioToggle = async () => {
