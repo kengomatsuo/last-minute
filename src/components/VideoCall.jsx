@@ -16,6 +16,7 @@ import AudioSlashIcon from '../assets/icons/microphone-slash.svg?react'
 const VideoCall = ({ courseId }) => {
   const [videoInputs, setVideoInputs] = useState([])
   const [audioInputs, setAudioInputs] = useState([])
+  useConsoleLog('audioInputs', audioInputs)
   const [audioOutputs, setAudioOutputs] = useState([])
   const [stream, setStream] = useState(null)
   const [isVideoStreaming, setIsVideoStreaming] = useState(false)
@@ -34,6 +35,7 @@ const VideoCall = ({ courseId }) => {
    * Updates the available device lists
    */
   const updateDeviceLists = useCallback(async () => {
+    console.log('Updating device lists...')
     try {
       const devices = await navigator.mediaDevices.enumerateDevices()
       console.log('devices', devices)
@@ -44,6 +46,16 @@ const VideoCall = ({ courseId }) => {
       console.error('Error enumerating devices:', error)
     }
   }, [])
+
+  // disable video and audio buttons if no devices are available
+  useEffect(() => {
+    if (!videoInputs.length) {
+      setIsVideoStreaming(false)
+    }
+    if (!audioInputs.length) {
+      setIsAudioStreaming(false)
+    }
+  }, [videoInputs, audioInputs])
 
   useEffect(() => {
     updateDeviceLists()
@@ -108,21 +120,30 @@ const VideoCall = ({ courseId }) => {
             video: isVideoStreaming
               ? {
                   deviceId: activeCameraId,
-                  width: 1920,
-                  height: 1080,
+                  width: { ideal: 1280, max: 2560 },
+                  height: { ideal: 720, max: 1440 },
+                  frameRate: { min: 8, max: 24 },
+                  resizeMode: 'none',
                 }
               : false,
           }
           const newStream = await navigator.mediaDevices.getUserMedia(
             constraints
           )
+
+          if (videoRef.current && videoRef.current.srcObject) {
+            videoRef.current.srcObject
+              .getTracks()
+              .forEach(track => track.stop())
+          }
           if (videoRef.current) {
             videoRef.current.srcObject = newStream
           }
+
           setStream(newStream)
         }
       } catch (error) {
-        console.error('Error opening camera:', error)
+        console.error('Error opening:', error)
       }
     }
     updateStream()
@@ -149,13 +170,73 @@ const VideoCall = ({ courseId }) => {
     setActiveMicrophoneId(newMicrophoneId)
   }
 
+  const handleVideoToggle = async () => {
+    if (!videoInputs.length) {
+      console.error('No camera detected.')
+      return
+    }
+    setIsVideoStreaming(!isVideoStreaming)
+  }
+
+  const testMicrophone = async () => {
+    const audioContext = new (window.AudioContext ||
+      window.webkitAudioContext)()
+    const analyser = audioContext.createAnalyser()
+    analyser.fftSize = 256
+
+    try {
+      const testStream = await navigator.mediaDevices.getUserMedia({
+        audio: { deviceId: activeMicrophoneId },
+      })
+      const source = audioContext.createMediaStreamSource(testStream)
+      source.connect(analyser)
+
+      const dataArray = new Uint8Array(analyser.frequencyBinCount)
+      let hasSound = false
+
+      const checkAudio = () => {
+        analyser.getByteFrequencyData(dataArray)
+        hasSound = dataArray.some(value => value > 10)
+      }
+
+      const interval = setInterval(checkAudio, 100)
+
+      await new Promise(resolve => setTimeout(resolve, 3000))
+
+      clearInterval(interval)
+      testStream.getTracks().forEach(track => track.stop())
+
+      if (!hasSound) {
+        console.error('No sound detected from the microphone')
+        return false
+      }
+      return true
+    } catch (error) {
+      console.error('Error testing microphone:', error)
+      return false
+    }
+  }
+
+  const handleAudioToggle = async () => {
+    if (!audioInputs.length) {
+      console.error('No audio input detected')
+      return
+    }
+
+    if (!isAudioStreaming && !(await testMicrophone())) {
+      return
+    }
+    // toggle audio streaming
+    setIsAudioStreaming(!isAudioStreaming)
+  }
+
   return (
     <div className='bg-black flex-1 h-full relative flex justify-center items-center'>
-      <video ref={videoRef} id='localVideo' autoPlay playsInline muted />
+      <video ref={videoRef} id='localVideo' autoPlay playsInline />
 
       <div className='absolute bottom-4 flex gap-4 bg-primary p-1 rounded-lg max-w-11/12 overflow-auto'>
         <CustomButton
-          onClick={() => setIsVideoStreaming(!isVideoStreaming)}
+          onClick={() => handleVideoToggle()}
           filled
           className='!p-2 flex aspect-square'
         >
@@ -166,7 +247,7 @@ const VideoCall = ({ courseId }) => {
           )}
         </CustomButton>
         <CustomButton
-          onClick={() => setIsAudioStreaming(!isAudioStreaming)}
+          onClick={() => handleAudioToggle()}
           filled
           className='!p-2 flex aspect-square'
         >

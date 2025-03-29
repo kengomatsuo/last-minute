@@ -42,13 +42,13 @@ const CustomButton = ({
       type={type}
       onClick={handleClick}
       className={`${
-        isLoading ? 'pointer-events-none' : ''
+        (loading || isLoading) ? 'pointer-events-none' : ''
       } ${className} px-2.5 py-1 truncate transition-all ${
         filled
           ? 'bg-primary text-secondary-text'
           : 'bg-transparent text-primary'
       } ${
-        disabled || isLoading
+        disabled
           ? 'opacity-50 !cursor-not-allowed !hover:border-primary'
           : filled
           ? 'hover:bg-filled-button-hover hover:border-filled-button-hover active:bg-filled-button-active  active:ring-primary active:ring focus-visible:!ring-background-secondary'
@@ -58,12 +58,12 @@ const CustomButton = ({
     >
       <div
         className={`${disabled ? 'pointer-events-none' : ''} ${
-          loading ? 'opacity-0' : ''
+          (loading || isLoading) ? 'opacity-0' : ''
         } transition-transform active:scale-[97%] active:opacity-75 flex gap-2 justify-center items-center`}
       >
         {children}
       </div>
-      {loading && (
+      {(loading || isLoading) && (
         <div className='absolute inset-0 flex items-center justify-center'>
           <LoadingDots dotsClassName={filled ? 'h-2 w-2 bg-background' : 'h-2 w-2 bg-primary'} />
         </div>
