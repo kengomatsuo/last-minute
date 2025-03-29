@@ -6,8 +6,8 @@ import VideoSlashIcon from '../assets/icons/video-slash.svg?react'
 import AudioIcon from '../assets/icons/microphone.svg?react'
 import AudioSlashIcon from '../assets/icons/microphone-slash.svg?react'
 import ScreenShareIcon from '../assets/icons/screen-share.svg?react'
-import ScreenShareSlashIcon from '../assets/icons/laptop-slash.svg?react'
-import CustomCard from './CustomCard'
+import CallIcon from '../assets/icons/phone-call.svg?react'
+import LeaveIcon from '../assets/icons/leave.svg?react'
 import CustomInteractive from './CustomInteractive'
 import CustomPopup from './CustomPopup'
 import { addDoc, doc, setDoc } from 'firebase/firestore'
@@ -278,7 +278,7 @@ const VideoCall = ({ courseId }) => {
 
   /**
    * Tests if the selected microphone is capturing audio
-   * 
+   *
    * @returns {Promise<boolean>} True if sound is detected, false otherwise
    */
   const testMicrophone = async () => {
@@ -302,10 +302,10 @@ const VideoCall = ({ courseId }) => {
       const soundDetectionPromise = new Promise(resolve => {
         const checkAudio = () => {
           if (testCompleted) return
-          
+
           analyser.getByteFrequencyData(dataArray)
           const soundDetected = dataArray.some(value => value > 10)
-          
+
           if (soundDetected) {
             hasSound = true
             testCompleted = true
@@ -314,7 +314,7 @@ const VideoCall = ({ courseId }) => {
         }
 
         const interval = setInterval(checkAudio, 100)
-        
+
         // Set timeout to stop checking after 5 seconds
         setTimeout(() => {
           if (!testCompleted) {
@@ -401,12 +401,13 @@ const VideoCall = ({ courseId }) => {
   }
 
   useEffect(() => {
-    if(user?.claims.isTutor && course?.answer) {
-      peerConnection.setRemoteDescription(new RTCSessionDescription(course.answer))
+    if (user?.claims.isTutor && course?.answer) {
+      peerConnection.setRemoteDescription(
+        new RTCSessionDescription(course.answer)
+      )
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [course, user?.claims.isTutor])
-  
 
   const answerCall = async () => {
     peerConnection.setRemoteDescription(new RTCSessionDescription(course.offer))
@@ -421,50 +422,22 @@ const VideoCall = ({ courseId }) => {
 
   return (
     <div className='bg-black flex-1 h-full w-full relative flex flex-col justify-center items-center'>
-      {user?.claims.isTutor ? (
-        course?.offer ? (
-          <div className='flex flex-wrap gap-4 justify-center items-center w-full p-8'>
-            <video
-              ref={localVideoRef}
-              id='localVideo'
-              autoPlay
-              playsInline
-              className='rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
-            />
-            <video
-              ref={remoteVideoRef}
-              id='remoteVideo'
-              autoPlay
-              playsInline
-              className='rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
-            />
-          </div>
-        ) : (
-          <CustomButton filled onClick={() => makeCall()}>
-            Make Call
-          </CustomButton>
-        )
-      ) : course?.answer ? (
-        <div className='flex flex-wrap gap-4 justify-center items-center w-full p-8'>
-          <video
-            ref={localVideoRef}
-            id='localVideo'
-            autoPlay
-            playsInline
-            className='rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
-          />
-          <video
-            ref={remoteVideoRef}
-            id='remoteVideo'
-            autoPlay
-            playsInline
-            className='rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
-          />
-        </div>
-      ) : course?.offer ? (
-        <CustomButton onClick={() => answerCall()}>Answer Call</CustomButton>
-      ) : null}
-
+      <div className='flex flex-wrap gap-4 justify-center items-center w-full p-8'>
+        <video
+          ref={localVideoRef}
+          id='localVideo'
+          autoPlay
+          playsInline
+          className='rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
+        />
+        <video
+          ref={remoteVideoRef}
+          id='remoteVideo'
+          autoPlay
+          playsInline
+          className='rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
+        />
+      </div>
       <div className='absolute bottom-4 flex gap-1 bg-[#faf9f5] p-2 rounded-lg min-w-fit max-w-11/12'>
         <CustomButton
           onClick={() => handleAudioToggle()}
@@ -512,6 +485,29 @@ const VideoCall = ({ courseId }) => {
             } w-6 h-6`}
           />
         </CustomInteractive>
+
+        {/* Spacer */}
+        <div className='flex-1 mx-2 min-w-[1px] bg-primary/40' />
+        {/* Spacer */}
+
+        <CustomButton
+          onClick={() => (user?.claims.isTutor ? makeCall() : answerCall())}
+          disabled={!user?.claims.isTutor && !course?.offer}
+          loading={isVideoStreamingLoading}
+          className={`${
+            (user?.claims.isTutor && course?.offer) ||
+            (!user?.claims.isTutor && course?.answer)
+              ? '!bg-red-500'
+              : '!bg-green-500'
+          } flex !p-2 !border-none transition-none`}
+        >
+          {(user?.claims.isTutor && course?.offer) ||
+          (!user?.claims.isTutor && course?.answer) ? (
+            <LeaveIcon className=' w-6 h-6 fill-white' />
+          ) : (
+            <CallIcon className='w-6 h-6 fill-white' />
+          )}
+        </CustomButton>
       </div>
     </div>
   )
