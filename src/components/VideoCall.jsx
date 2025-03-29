@@ -349,7 +349,7 @@ const VideoCall = ({ courseId }) => {
 
   return (
     <div className='bg-black flex-1 h-full w-full relative flex flex-col justify-center items-center'>
-      <div className='flex flex-wrap gap-4 justify-center items-center w-full p-2'>
+      <div className='flex flex-wrap gap-4 justify-center items-center w-full p-8'>
         <video
           ref={videoRef}
           id='localVideo'
