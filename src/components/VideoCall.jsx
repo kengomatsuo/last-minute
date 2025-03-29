@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react'
+import { useEffect, useState, useRef, useCallback, useContext } from 'react'
 import { useConsoleLog } from '../hooks'
 import CustomButton from './CustomButton'
 import VideoIcon from '../assets/icons/video-camera-alt.svg?react'
@@ -7,10 +7,13 @@ import AudioIcon from '../assets/icons/microphone.svg?react'
 import AudioSlashIcon from '../assets/icons/microphone-slash.svg?react'
 import ScreenShareIcon from '../assets/icons/screen-share.svg?react'
 import ScreenShareSlashIcon from '../assets/icons/laptop-slash.svg?react'
-import { s } from 'framer-motion/client'
 import CustomCard from './CustomCard'
 import CustomInteractive from './CustomInteractive'
 import CustomPopup from './CustomPopup'
+import { doc, setDoc } from 'firebase/firestore'
+import { db } from '../../firebaseConfig'
+import { CourseContext } from '../contexts/CourseContext'
+import { UserContext } from '../contexts/UserContext'
 
 /**
  * VideoCall component for handling video and audio streaming
@@ -20,9 +23,14 @@ import CustomPopup from './CustomPopup'
  * @returns {JSX.Element} The rendered video call component
  */
 const VideoCall = ({ courseId }) => {
+  const { courses } = useContext(CourseContext)
+  const { user } = useContext(UserContext)
+
+  const course = courses.find(course => course.id === courseId)
+  useConsoleLog('course', course)
+
   const [videoInputs, setVideoInputs] = useState([])
   const [audioInputs, setAudioInputs] = useState([])
-  useConsoleLog('audioInputs', audioInputs)
   const [audioOutputs, setAudioOutputs] = useState([])
   const [stream, setStream] = useState(null)
   const [isVideoStreaming, setIsVideoStreaming] = useState(false)
@@ -32,23 +40,18 @@ const VideoCall = ({ courseId }) => {
   const [isScreenSharing, setIsScreenSharing] = useState(false)
   const [isScreenSharingLoading, setIsScreenSharingLoading] = useState(false)
   const videoRef = useRef(null)
-
-  useConsoleLog('videoInputs', videoInputs)
-  useConsoleLog('audioInputs', audioInputs)
-  useConsoleLog('audioOutpus', audioOutputs)
-
   const [activeCameraId, setActiveCameraId] = useState('default')
   const [activeMicrophoneId, setActiveMicrophoneId] = useState('default')
   const [activeSpeakerId, setActiveSpeakerId] = useState('default')
+
+  const [isCalling, setIsCalling] = useState(false)
 
   /**
    * Updates the available device lists
    */
   const updateDeviceLists = useCallback(async () => {
-    console.log('Updating device lists...')
     try {
       const devices = await navigator.mediaDevices.enumerateDevices()
-      console.log('devices', devices)
       setVideoInputs(devices.filter(device => device.kind === 'videoinput'))
       setAudioInputs(devices.filter(device => device.kind === 'audioinput'))
       setAudioOutputs(devices.filter(device => device.kind === 'audiooutput'))
@@ -347,24 +350,93 @@ const VideoCall = ({ courseId }) => {
     setIsScreenSharing(!isScreenSharing)
   }
 
+  const config = {
+    iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' },
+      { urls: 'stun:stun2.l.google.com:19302' },
+      { urls: 'stun:stun3.l.google.com:19302' },
+      { urls: 'stun:stun4.l.google.com:19302' },
+    ],
+  }
+
+  const peerConnection = new RTCPeerConnection(config)
+
+  const makeCall = async () => {
+    const offer = await peerConnection.createOffer()
+    await peerConnection.setLocalDescription(offer)
+    await setDoc(
+      doc(db, 'courses', courseId),
+      { offer: offer },
+      { merge: true }
+    )
+  }
+
+  useEffect(() => {
+    if(user.claims.isTutor && course?.answer) {
+      peerConnection.setRemoteDescription(new RTCSessionDescription(course.answer))
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [course, user.claims.isTutor])
+  
+
+  const answerCall = async () => {
+    peerConnection.setRemoteDescription(new RTCSessionDescription(course.offer))
+    const answer = await peerConnection.createAnswer()
+    await peerConnection.setLocalDescription(answer)
+    await setDoc(
+      doc(db, 'courses', courseId),
+      { answer: answer },
+      { merge: true }
+    )
+  }
+
   return (
     <div className='bg-black flex-1 h-full w-full relative flex flex-col justify-center items-center'>
-      <div className='flex flex-wrap gap-4 justify-center items-center w-full p-8'>
-        <video
-          ref={videoRef}
-          id='localVideo'
-          autoPlay
-          playsInline
-          className='bg-green-500 rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
-        />
-        <video
-          ref={videoRef}
-          id='localVideo'
-          autoPlay
-          playsInline
-          className='bg-red-500 rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
-        />
-      </div>
+      {user.claims.isTutor ? (
+        course?.offer ? (
+          <div className='flex flex-wrap gap-4 justify-center items-center w-full p-8'>
+            <video
+              ref={videoRef}
+              id='localVideo'
+              autoPlay
+              playsInline
+              className='bg-green-500 rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
+            />
+            <video
+              ref={videoRef}
+              id='remoteVideo'
+              autoPlay
+              playsInline
+              className='bg-red-500 rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
+            />
+          </div>
+        ) : (
+          <CustomButton filled onClick={() => makeCall()}>
+            Make Call
+          </CustomButton>
+        )
+      ) : course?.answer ? (
+        <div className='flex flex-wrap gap-4 justify-center items-center w-full p-8'>
+          <video
+            ref={videoRef}
+            id='localVideo'
+            autoPlay
+            playsInline
+            className='bg-red-500 rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
+          />
+          <video
+            ref={videoRef}
+            id='remoteVideo'
+            autoPlay
+            playsInline
+            className='bg-green-500 rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
+          />
+        </div>
+      ) : course?.offer ? (
+        <CustomButton onClick={() => answerCall()}>Answer Call</CustomButton>
+      ) : null}
+
       <div className='absolute bottom-4 flex gap-1 bg-[#faf9f5] p-2 rounded-lg min-w-fit max-w-11/12'>
         <CustomButton
           onClick={() => handleAudioToggle()}

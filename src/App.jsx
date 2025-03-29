@@ -40,8 +40,6 @@ function App() {
   const location = useLocation()
   const scrollContainerRef = useRef(null)
 
-  useConsoleLog('userinApp', user)
-
   return (
     <AnimatePresence mode='wait'>
       {user === undefined ? (
