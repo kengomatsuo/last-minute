@@ -92,6 +92,7 @@ const VideoCall = ({ courseId }) => {
     const updateStream = async () => {
       try {
         if (stream) {
+          console.log('Stream:', stream.getTracks())
           stopStream()
         }
         if (isVideoStreaming || isAudioStreaming) {
@@ -100,6 +101,8 @@ const VideoCall = ({ courseId }) => {
               ? {
                   deviceId: activeMicrophoneId,
                   echoCancellation: true,
+                  noiseSuppression: true,
+                  autoGainControl: true,
                 }
               : false,
             video: isVideoStreaming
@@ -110,7 +113,6 @@ const VideoCall = ({ courseId }) => {
                 }
               : false,
           }
-          console.log(constraints)
           const newStream = await navigator.mediaDevices.getUserMedia(
             constraints
           )
@@ -124,7 +126,7 @@ const VideoCall = ({ courseId }) => {
       }
     }
     updateStream()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAudioStreaming, isVideoStreaming, activeCameraId, activeMicrophoneId])
 
   /**
