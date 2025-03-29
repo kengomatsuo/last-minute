@@ -350,18 +350,6 @@ const VideoCall = ({ courseId }) => {
 
       <div className='absolute bottom-4 flex gap-1 bg-primary p-2 rounded-lg max-w-11/12 overflow-auto'>
         <CustomButton
-          onClick={() => handleVideoToggle()}
-          loading={isVideoStreamingLoading}
-          filled
-          className='!p-2 flex aspect-square'
-        >
-          {isVideoStreaming ? (
-            <VideoIcon className=' w-6 h-6 fill-background' />
-          ) : (
-            <VideoSlashIcon className='w-6 h-6 fill-background' />
-          )}
-        </CustomButton>
-        <CustomButton
           onClick={() => handleAudioToggle()}
           loading={isAudioStreamingLoading}
           filled
@@ -373,7 +361,23 @@ const VideoCall = ({ courseId }) => {
             <AudioSlashIcon className='w-6 h-6 fill-background' />
           )}
         </CustomButton>
+        <CustomButton
+          onClick={() => handleVideoToggle()}
+          loading={isVideoStreamingLoading}
+          filled
+          className='!p-2 flex aspect-square'
+        >
+          {isVideoStreaming ? (
+            <VideoIcon className=' w-6 h-6 fill-background' />
+          ) : (
+            <VideoSlashIcon className='w-6 h-6 fill-background' />
+          )}
+        </CustomButton>
+
+        {/* Spacer */}
         <div className='flex-1 mx-1 w-0.5 bg-background-secondary' />
+        {/* Spacer */}
+        
         <CustomButton
           onClick={() => handleScreenSharingToggle()}
           loading={isScreenSharingLoading}
