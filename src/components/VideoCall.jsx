@@ -8,6 +8,7 @@ import AudioSlashIcon from '../assets/icons/microphone-slash.svg?react'
 import ScreenShareIcon from '../assets/icons/screen-share.svg?react'
 import ScreenShareSlashIcon from '../assets/icons/laptop-slash.svg?react'
 import { s } from 'framer-motion/client'
+import CustomCard from './CustomCard'
 
 /**
  * VideoCall component for handling video and audio streaming
@@ -348,29 +349,29 @@ const VideoCall = ({ courseId }) => {
     <div className='bg-black flex-1 h-full relative flex justify-center items-center'>
       <video ref={videoRef} id='localVideo' autoPlay playsInline />
 
-      <div className='absolute bottom-4 flex gap-1 bg-primary p-2 rounded-lg max-w-11/12 overflow-auto'>
+      <div className='absolute bottom-4 flex gap-1 bg-background p-2 rounded-lg min-w-fit max-w-11/12'>
         <CustomButton
           onClick={() => handleAudioToggle()}
           loading={isAudioStreamingLoading}
-          filled
-          className='!p-2 flex aspect-square'
+          popup={<CustomCard>Hey there! This is a popup test</CustomCard>}
+          className='flex !bg-background-secondary/10 !border-transparent active:!ring-0'
         >
           {isAudioStreaming ? (
-            <AudioIcon className=' w-6 h-6 fill-background' />
+            <AudioIcon className=' w-6 h-6 fill-primary' />
           ) : (
-            <AudioSlashIcon className='w-6 h-6 fill-background' />
+            <AudioSlashIcon className='w-6 h-6 fill-primary' />
           )}
         </CustomButton>
         <CustomButton
           onClick={() => handleVideoToggle()}
           loading={isVideoStreamingLoading}
-          filled
-          className='!p-2 flex aspect-square'
+          popup={<CustomCard>Hey there! This is a popup test</CustomCard>}
+          className='flex !bg-background-secondary/10 !border-transparent active:!ring-0'
         >
           {isVideoStreaming ? (
-            <VideoIcon className=' w-6 h-6 fill-background' />
+            <VideoIcon className=' w-6 h-6 fill-primary' />
           ) : (
-            <VideoSlashIcon className='w-6 h-6 fill-background' />
+            <VideoSlashIcon className='w-6 h-6 fill-primary' />
           )}
         </CustomButton>
 
@@ -382,7 +383,7 @@ const VideoCall = ({ courseId }) => {
           onClick={() => handleScreenSharingToggle()}
           loading={isScreenSharingLoading}
           filled
-          className='!p-2 flex aspect-square'
+          className='!p-2 flex'
         >
           <ScreenShareIcon
             className={`${
@@ -390,39 +391,6 @@ const VideoCall = ({ courseId }) => {
             } w-6 h-6`}
           />
         </CustomButton>
-        {/* {videoInputs.length > 0 && (
-          <div>
-            <label htmlFor='cameraSelect'>Camera: </label>
-            <select
-              id='cameraSelect'
-              value={activeCameraId}
-              onChange={handleCameraChange}
-            >
-              {videoInputs.map(device => (
-                <option key={device.deviceId} value={device.deviceId}>
-                  {device.label || `Camera ${videoInputs.indexOf(device) + 1}`}
-                </option>
-              ))}
-            </select>
-          </div>
-        )} */}
-        {/* {audioInputs.length > 0 && (
-          <div>
-            <label htmlFor='microphoneSelect'>Microphone: </label>
-            <select
-              id='microphoneSelect'
-              value={activeMicrophoneId}
-              onChange={handleMicrophoneChange}
-            >
-              {audioInputs.map(device => (
-                <option key={device.deviceId} value={device.deviceId}>
-                  {device.label ||
-                    `Microphone ${audioInputs.indexOf(device) + 1}`}
-                </option>
-              ))}
-            </select>
-          </div>
-        )} */}
       </div>
     </div>
   )
