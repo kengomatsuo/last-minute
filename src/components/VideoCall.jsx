@@ -5,6 +5,8 @@ import VideoIcon from '../assets/icons/video-camera-alt.svg?react'
 import VideoSlashIcon from '../assets/icons/video-slash.svg?react'
 import AudioIcon from '../assets/icons/microphone.svg?react'
 import AudioSlashIcon from '../assets/icons/microphone-slash.svg?react'
+import ScreenShareIcon from '../assets/icons/screen-share.svg?react'
+import ScreenShareSlashIcon from '../assets/icons/laptop-slash.svg?react'
 
 /**
  * VideoCall component for handling video and audio streaming
@@ -21,6 +23,7 @@ const VideoCall = ({ courseId }) => {
   const [stream, setStream] = useState(null)
   const [isVideoStreaming, setIsVideoStreaming] = useState(false)
   const [isAudioStreaming, setIsAudioStreaming] = useState(false)
+  const [isScreenSharing, setIsScreenSharing] = useState(false)
   const videoRef = useRef(null)
 
   useConsoleLog('videoInputs', videoInputs)
@@ -148,7 +151,7 @@ const VideoCall = ({ courseId }) => {
     }
     updateStream()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAudioStreaming, isVideoStreaming, activeCameraId, activeMicrophoneId])
+  }, [isAudioStreaming, isVideoStreaming, isScreenSharing, activeCameraId, activeMicrophoneId])
 
   /**
    * Handles camera selection change
@@ -230,11 +233,15 @@ const VideoCall = ({ courseId }) => {
     setIsAudioStreaming(!isAudioStreaming)
   }
 
+  const handleScreenSharingToggle = async () => {
+    setIsScreenSharing(!isScreenSharing)
+  }
+
   return (
     <div className='bg-black flex-1 h-full relative flex justify-center items-center'>
       <video ref={videoRef} id='localVideo' autoPlay playsInline />
 
-      <div className='absolute bottom-4 flex gap-4 bg-primary p-1 rounded-lg max-w-11/12 overflow-auto'>
+      <div className='absolute bottom-4 flex gap-2 bg-primary p-1 rounded-lg max-w-11/12 overflow-auto'>
         <CustomButton
           onClick={() => handleVideoToggle()}
           filled
@@ -255,6 +262,18 @@ const VideoCall = ({ courseId }) => {
             <AudioIcon className=' w-6 h-6 fill-background' />
           ) : (
             <AudioSlashIcon className='w-6 h-6 fill-background' />
+          )}
+        </CustomButton>
+        <div className='flex-1 w-0.5 bg-background-secondary' />
+        <CustomButton
+          onClick={() => handleScreenSharingToggle()}
+          filled
+          className='!p-2 flex aspect-square'
+        >
+          {isScreenSharing ? (
+            <ScreenShareIcon className=' w-6 h-6 fill-background' />
+          ) : (
+            <ScreenShareSlashIcon className='w-6 h-6 fill-background' />
           )}
         </CustomButton>
         {/* {videoInputs.length > 0 && (
