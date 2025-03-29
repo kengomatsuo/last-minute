@@ -124,6 +124,7 @@ const VideoCall = ({ courseId }) => {
       }
     }
     updateStream()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAudioStreaming, isVideoStreaming, activeCameraId, activeMicrophoneId])
 
   /**
