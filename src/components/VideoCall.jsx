@@ -27,7 +27,6 @@ const VideoCall = ({ courseId }) => {
   const { user } = useContext(UserContext)
 
   const course = courses.find(course => course.id === courseId)
-  useConsoleLog('course', course)
 
   const [videoInputs, setVideoInputs] = useState([])
   const [audioInputs, setAudioInputs] = useState([])
@@ -39,7 +38,9 @@ const VideoCall = ({ courseId }) => {
   const [isAudioStreamingLoading, setIsAudioStreamingLoading] = useState(false)
   const [isScreenSharing, setIsScreenSharing] = useState(false)
   const [isScreenSharingLoading, setIsScreenSharingLoading] = useState(false)
-  const videoRef = useRef(null)
+
+  const localVideoRef = useRef(null)
+  const remoteVideoRef = useRef(null)
   const [activeCameraId, setActiveCameraId] = useState('default')
   const [activeMicrophoneId, setActiveMicrophoneId] = useState('default')
   const [activeSpeakerId, setActiveSpeakerId] = useState('default')
@@ -89,8 +90,8 @@ const VideoCall = ({ courseId }) => {
   const stopStream = useCallback(() => {
     if (stream) {
       stream.getTracks().forEach(track => track.stop())
-      if (videoRef.current) {
-        videoRef.current.srcObject = null
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = null
       }
       setStream(null)
     }
@@ -119,8 +120,8 @@ const VideoCall = ({ courseId }) => {
         // Create a new stream if one doesn't exist yet
         if (!stream) {
           const newStream = new MediaStream()
-          if (videoRef.current) {
-            videoRef.current.srcObject = newStream
+          if (localVideoRef.current) {
+            localVideoRef.current.srcObject = newStream
           }
           setStream(newStream)
         }
@@ -424,18 +425,18 @@ const VideoCall = ({ courseId }) => {
         course?.offer ? (
           <div className='flex flex-wrap gap-4 justify-center items-center w-full p-8'>
             <video
-              ref={videoRef}
+              ref={localVideoRef}
               id='localVideo'
               autoPlay
               playsInline
-              className='bg-green-500 rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
+              className='rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
             />
             <video
-              ref={videoRef}
+              ref={remoteVideoRef}
               id='remoteVideo'
               autoPlay
               playsInline
-              className='bg-red-500 rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
+              className='rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
             />
           </div>
         ) : (
@@ -446,18 +447,18 @@ const VideoCall = ({ courseId }) => {
       ) : course?.answer ? (
         <div className='flex flex-wrap gap-4 justify-center items-center w-full p-8'>
           <video
-            ref={videoRef}
+            ref={localVideoRef}
             id='localVideo'
             autoPlay
             playsInline
-            className='bg-red-500 rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
+            className='rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
           />
           <video
-            ref={videoRef}
+            ref={remoteVideoRef}
             id='remoteVideo'
             autoPlay
             playsInline
-            className='bg-green-500 rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
+            className='rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
           />
         </div>
       ) : course?.offer ? (
