@@ -23,7 +23,9 @@ const VideoCall = ({ courseId }) => {
   const [audioOutputs, setAudioOutputs] = useState([])
   const [stream, setStream] = useState(null)
   const [isVideoStreaming, setIsVideoStreaming] = useState(false)
+  const [isVideoStreamingLoading, setIsVideoStreamingLoading] = useState(false)
   const [isAudioStreaming, setIsAudioStreaming] = useState(false)
+  const [isAudioStreamingLoading, setIsAudioStreamingLoading] = useState(false)
   const [isScreenSharing, setIsScreenSharing] = useState(false)
   const [isScreenSharingLoading, setIsScreenSharingLoading] = useState(false)
   const videoRef = useRef(null)
@@ -145,8 +147,6 @@ const VideoCall = ({ courseId }) => {
           } catch (error) {
             setIsScreenSharing(false)
             throw error
-          } finally {
-            setIsScreenSharingLoading(false)
           }
         } else if (isVideoStreaming || isAudioStreaming) {
           const newStream = await navigator.mediaDevices.getUserMedia({
@@ -182,6 +182,10 @@ const VideoCall = ({ courseId }) => {
         }
       } catch (error) {
         console.error(error)
+      } finally {
+        setIsVideoStreamingLoading(false)
+        setIsAudioStreamingLoading(false)
+        setIsScreenSharingLoading(false)
       }
     }
     updateStream()
@@ -219,6 +223,9 @@ const VideoCall = ({ courseId }) => {
       console.error('No camera detected.')
       return
     }
+    if (!isVideoStreaming && !isAudioStreaming) {
+      setIsVideoStreamingLoading(true)
+    }
     setIsScreenSharing(false)
     setIsVideoStreaming(!isVideoStreaming)
   }
@@ -246,7 +253,7 @@ const VideoCall = ({ courseId }) => {
 
       const interval = setInterval(checkAudio, 100)
 
-      await new Promise(resolve => setTimeout(resolve, 3000))
+      await new Promise(resolve => setTimeout(resolve, 1500))
 
       clearInterval(interval)
       testStream.getTracks().forEach(track => track.stop())
@@ -271,13 +278,15 @@ const VideoCall = ({ courseId }) => {
     if (!isAudioStreaming && !(await testMicrophone())) {
       return
     }
+    if (!isAudioStreaming) {
+      setIsAudioStreamingLoading(true)
+    }
     // toggle audio streaming
     setIsAudioStreaming(!isAudioStreaming)
   }
 
   const handleScreenSharingToggle = async () => {
     if (!isScreenSharing) {
-      // setIsVideoStreaming(isScreenSharing)
       setIsScreenSharingLoading(true)
     }
     setIsScreenSharing(!isScreenSharing)
@@ -290,8 +299,11 @@ const VideoCall = ({ courseId }) => {
       <div className='absolute bottom-4 flex gap-2 bg-primary p-1 rounded-lg max-w-11/12 overflow-auto'>
         <CustomButton
           onClick={() => handleVideoToggle()}
+          loading={isVideoStreamingLoading}
           filled
-          className={`${isScreenSharing && !isScreenSharingLoading ? 'opacity-70' : ''} !p-2 flex aspect-square`}
+          className={`${
+            isScreenSharing && !isScreenSharingLoading ? 'opacity-70' : ''
+          } !p-2 flex aspect-square`}
         >
           {isVideoStreaming ? (
             <VideoIcon className=' w-6 h-6 fill-background' />
@@ -301,6 +313,7 @@ const VideoCall = ({ courseId }) => {
         </CustomButton>
         <CustomButton
           onClick={() => handleAudioToggle()}
+          loading={isAudioStreamingLoading}
           filled
           className='!p-2 flex aspect-square'
         >
