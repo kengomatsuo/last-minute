@@ -10,7 +10,7 @@ import ScreenShareSlashIcon from '../assets/icons/laptop-slash.svg?react'
 import CustomCard from './CustomCard'
 import CustomInteractive from './CustomInteractive'
 import CustomPopup from './CustomPopup'
-import { doc, setDoc } from 'firebase/firestore'
+import { addDoc, doc, setDoc } from 'firebase/firestore'
 import { db } from '../../firebaseConfig'
 import { CourseContext } from '../contexts/CourseContext'
 import { UserContext } from '../contexts/UserContext'
@@ -358,6 +358,7 @@ const VideoCall = ({ courseId }) => {
       { urls: 'stun:stun3.l.google.com:19302' },
       { urls: 'stun:stun4.l.google.com:19302' },
     ],
+    iceCandidatePoolSize: 10,
   }
 
   const peerConnection = new RTCPeerConnection(config)
