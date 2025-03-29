@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import LoadingDots from './LoadingDots'
 import PopupIcon from '../assets/icons/angle-small-right.svg?react'
 
@@ -32,6 +32,33 @@ const CustomButton = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isPopupOpen, setIsPopupOpen] = useState(false)
+  const buttonRef = useRef(null)
+  const popupRef = useRef(null)
+
+  useEffect(() => {
+    /**
+     * Handle clicks outside of the popup to close it
+     * 
+     * @param {MouseEvent} event - The click event
+     */
+    const handleOutsideClick = (event) => {
+      if (isPopupOpen && 
+          buttonRef.current && 
+          popupRef.current && 
+          !buttonRef.current.contains(event.target) && 
+          !popupRef.current.contains(event.target)) {
+        setIsPopupOpen(false)
+      }
+    }
+
+    if (isPopupOpen) {
+      document.addEventListener('mousedown', handleOutsideClick)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick)
+    }
+  }, [isPopupOpen])
 
   const handleClick = async event => {
     if (disabled || isLoading) return
@@ -42,6 +69,7 @@ const CustomButton = ({
 
   return (
     <button
+      ref={buttonRef}
       formNoValidate
       type={type}
       onClick={!popup ? handleClick : null}
@@ -49,7 +77,7 @@ const CustomButton = ({
         loading || isLoading ? 'pointer-events-none' : ''
       } ${className} ${
         popup ? '!p-0' : ''
-      } px-2.5 py-1 truncate transition-all ${
+      } ${isPopupOpen ? 'active:!ring-0' : ''} px-2.5 py-1 truncate transition-all ${
         filled
           ? 'bg-primary text-secondary-text'
           : 'bg-transparent text-primary'
@@ -64,9 +92,16 @@ const CustomButton = ({
     >
       {isPopupOpen && (
         <div
+          ref={popupRef}
           className={
             'absolute bottom-[calc(100%+0.5rem)] mb-2 self-center z-10'
           }
+          onClick={e => {
+            e.stopPropagation()
+            e.preventDefault()
+          }}
+          onMouseDown={e => e.stopPropagation()}
+          onMouseUp={e => e.stopPropagation()}
         >
           {popup}
         </div>

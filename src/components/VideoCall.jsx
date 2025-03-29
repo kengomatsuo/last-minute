@@ -378,7 +378,7 @@ const VideoCall = ({ courseId }) => {
         </CustomButton>
 
         {/* Spacer */}
-        <div className='flex-1 mx-2 min-w-0.5 bg-primary/40' />
+        <div className='flex-1 mx-2 min-w-[1px] bg-primary/40' />
         {/* Spacer */}
         
         <CustomInteractive
