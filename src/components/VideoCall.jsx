@@ -348,10 +348,24 @@ const VideoCall = ({ courseId }) => {
   }
 
   return (
-    <div className='bg-black flex-1 h-full relative flex justify-center items-center'>
-      <video ref={videoRef} id='localVideo' autoPlay playsInline />
-
-      <div className='absolute bottom-4 flex gap-1 bg-background p-2 rounded-lg min-w-fit max-w-11/12'>
+    <div className='bg-black flex-1 h-full w-full relative flex flex-col justify-center items-center'>
+      <div className='flex flex-wrap gap-4 justify-center items-center w-full p-2'>
+        <video
+          ref={videoRef}
+          id='localVideo'
+          autoPlay
+          playsInline
+          className='bg-green-500 rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
+        />
+        <video
+          ref={videoRef}
+          id='localVideo'
+          autoPlay
+          playsInline
+          className='bg-red-500 rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
+        />
+      </div>
+      <div className='absolute bottom-4 flex gap-1 bg-[#faf9f5] p-2 rounded-lg min-w-fit max-w-11/12'>
         <CustomButton
           onClick={() => handleAudioToggle()}
           loading={isAudioStreamingLoading}
@@ -380,15 +394,21 @@ const VideoCall = ({ courseId }) => {
         {/* Spacer */}
         <div className='flex-1 mx-2 min-w-[1px] bg-primary/40' />
         {/* Spacer */}
-        
+
         <CustomInteractive
           onClick={() => handleScreenSharingToggle()}
           loading={isScreenSharingLoading}
-          className={`${(isScreenSharing && !isScreenSharingLoading) ? '!bg-primary' : '!bg-background-secondary/10'} !p-2 items-center justify-center flex active:!bg-primary/25`}
+          className={`${
+            isScreenSharing && !isScreenSharingLoading
+              ? '!bg-primary'
+              : '!bg-background-secondary/10'
+          } !p-2 items-center justify-center flex active:!bg-primary/25`}
         >
           <ScreenShareIcon
             className={`${
-              isScreenSharing && !isScreenSharingLoading ? 'animate-pulse fill-success' : 'fill-primary'
+              isScreenSharing && !isScreenSharingLoading
+                ? 'animate-pulse fill-success'
+                : 'fill-primary'
             } w-6 h-6`}
           />
         </CustomInteractive>
