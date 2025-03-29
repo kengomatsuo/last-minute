@@ -9,6 +9,8 @@ import ScreenShareIcon from '../assets/icons/screen-share.svg?react'
 import ScreenShareSlashIcon from '../assets/icons/laptop-slash.svg?react'
 import { s } from 'framer-motion/client'
 import CustomCard from './CustomCard'
+import CustomInteractive from './CustomInteractive'
+import CustomPopup from './CustomPopup'
 
 /**
  * VideoCall component for handling video and audio streaming
@@ -353,8 +355,8 @@ const VideoCall = ({ courseId }) => {
         <CustomButton
           onClick={() => handleAudioToggle()}
           loading={isAudioStreamingLoading}
-          popup={<CustomCard>Hey there! This is a popup test</CustomCard>}
-          className='flex !bg-background-secondary/10 !border-transparent active:!ring-0'
+          popup={<CustomPopup>Sup</CustomPopup>}
+          className='flex !bg-background-secondary/10 !border-none transition-none'
         >
           {isAudioStreaming ? (
             <AudioIcon className=' w-6 h-6 fill-primary' />
@@ -365,8 +367,8 @@ const VideoCall = ({ courseId }) => {
         <CustomButton
           onClick={() => handleVideoToggle()}
           loading={isVideoStreamingLoading}
-          popup={<CustomCard>Hey there! This is a popup test</CustomCard>}
-          className='flex !bg-background-secondary/10 !border-transparent active:!ring-0'
+          popup={<CustomPopup></CustomPopup>}
+          className='flex !bg-background-secondary/10 !border-none transition-none'
         >
           {isVideoStreaming ? (
             <VideoIcon className=' w-6 h-6 fill-primary' />
@@ -376,21 +378,20 @@ const VideoCall = ({ courseId }) => {
         </CustomButton>
 
         {/* Spacer */}
-        <div className='flex-1 mx-1 w-0.5 bg-background-secondary' />
+        <div className='flex-1 mx-2 min-w-0.5 bg-primary/40' />
         {/* Spacer */}
         
-        <CustomButton
+        <CustomInteractive
           onClick={() => handleScreenSharingToggle()}
           loading={isScreenSharingLoading}
-          filled
-          className='!p-2 flex'
+          className={`${(isScreenSharing && !isScreenSharingLoading) ? '!bg-primary' : '!bg-background-secondary/10'} !p-2 items-center justify-center flex active:!bg-primary/25`}
         >
           <ScreenShareIcon
             className={`${
-              isScreenSharing ? 'animate-pulse fill-success' : 'fill-background'
+              isScreenSharing && !isScreenSharingLoading ? 'animate-pulse fill-success' : 'fill-primary'
             } w-6 h-6`}
           />
-        </CustomButton>
+        </CustomInteractive>
       </div>
     </div>
   )

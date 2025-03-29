@@ -221,7 +221,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                           onClick={() => setIsMenuOpen(false)}
                           className='py-2 flex justify-end text-right'
                         >
-                          {navPath.name}
+                          <p className='w-full'>{navPath.name}</p>
                         </CustomInteractive>
                       </NavLink>
                     ))}

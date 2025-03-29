@@ -38,7 +38,7 @@ const CustomInteractive = ({
       onPointerLeave={() => setIsPressed(false)}
     >
       <div
-        className={`transition-transform w-full ${
+        className={`transition-transform justify-center flex w-full ${
           isPressed ? 'scale-[97%]' : ''
         }`}
       >
