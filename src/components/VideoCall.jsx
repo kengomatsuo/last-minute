@@ -110,93 +110,144 @@ const VideoCall = ({ courseId }) => {
   useEffect(() => {
     const updateStream = async () => {
       try {
-        if (stream) {
-          console.log('Stream:', stream.getTracks())
-          stopStream()
+        // Create a new stream if one doesn't exist yet
+        if (!stream) {
+          const newStream = new MediaStream()
+          if (videoRef.current) {
+            videoRef.current.srcObject = newStream
+          }
+          setStream(newStream)
         }
 
+        // Handle video tracks only
         if (isScreenSharing) {
           try {
-            console.log(navigator.mediaDevices.getSupportedConstraints())
+            // Stop any existing video tracks
+            const existingVideoTracks = stream?.getVideoTracks() || []
+            existingVideoTracks.forEach(track => {
+              stream.removeTrack(track)
+              track.stop()
+            })
+
+            // Get new screen sharing track
             const screenStream = await navigator.mediaDevices.getDisplayMedia({
               video: {
                 cursor: 'always',
                 frameRate: 24,
                 resizeMode: 'none',
               },
-              audio: isAudioStreaming
-                ? {
-                    deviceId: activeMicrophoneId,
-                    echoCancellation: true,
-                    noiseSuppression: true,
-                    autoGainControl: true,
-                  }
-                : false,
+              audio: false, // Handle audio separately
             })
 
-            if (videoRef.current && videoRef.current.srcObject) {
-              videoRef.current.srcObject
-                .getTracks()
-                .forEach(track => track.stop())
-            }
-            if (videoRef.current) {
-              videoRef.current.srcObject = screenStream
-            }
+            // Add screen track to the existing stream
+            screenStream.getVideoTracks().forEach(track => {
+              stream.addTrack(track)
 
-            setStream(screenStream)
+              // Handle when user stops screen sharing via browser UI
+              track.onended = () => {
+                setIsScreenSharing(false)
+              }
+            })
           } catch (error) {
             setIsScreenSharing(false)
             throw error
           }
-        } else if (isVideoStreaming || isAudioStreaming) {
-          const newStream = await navigator.mediaDevices.getUserMedia({
-            audio: isAudioStreaming
-              ? {
-                  deviceId: activeMicrophoneId,
-                  echoCancellation: true,
-                  noiseSuppression: true,
-                  autoGainControl: true,
-                }
-              : false,
-            video: isVideoStreaming
-              ? {
-                  deviceId: activeCameraId,
-                  width: { ideal: 1280, max: 2560 },
-                  height: { ideal: 720, max: 1440 },
-                  frameRate: { min: 8, max: 24 },
-                  resizeMode: 'none',
-                }
-              : false,
+        } else if (isVideoStreaming) {
+          // Stop any existing video tracks
+          const existingVideoTracks = stream?.getVideoTracks() || []
+          existingVideoTracks.forEach(track => {
+            stream.removeTrack(track)
+            track.stop()
           })
 
-          if (videoRef.current && videoRef.current.srcObject) {
-            videoRef.current.srcObject
-              .getTracks()
-              .forEach(track => track.stop())
-          }
-          if (videoRef.current) {
-            videoRef.current.srcObject = newStream
-          }
+          // Get new camera video track
+          const videoStream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              deviceId: activeCameraId,
+              width: { ideal: 1280, max: 2560 },
+              height: { ideal: 720, max: 1440 },
+              frameRate: { min: 8, max: 24 },
+              resizeMode: 'none',
+            },
+          })
 
-          setStream(newStream)
+          // Add camera track to the existing stream
+          videoStream.getVideoTracks().forEach(track => {
+            stream.addTrack(track)
+          })
+        } else {
+          // If neither video nor screen sharing is active, stop any video tracks
+          const existingVideoTracks = stream?.getVideoTracks() || []
+          existingVideoTracks.forEach(track => {
+            stream.removeTrack(track)
+            track.stop()
+          })
         }
       } catch (error) {
-        console.error(error)
+        console.error('Error updating video tracks:', error)
       } finally {
         setIsVideoStreamingLoading(false)
-        setIsAudioStreamingLoading(false)
         setIsScreenSharingLoading(false)
       }
     }
+
     updateStream()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    isAudioStreaming,
-    isVideoStreaming,
-    isScreenSharing,
-    activeCameraId,
-    activeMicrophoneId,
-  ])
+  }, [isVideoStreaming, isScreenSharing, activeCameraId, stream])
+
+  // Separate effect for handling audio tracks only
+  useEffect(() => {
+    const updateAudioTrack = async () => {
+      if (!stream) return
+
+      try {
+        // Handle audio tracks separately
+        if (isAudioStreaming) {
+          // Check if we already have an audio track
+          const existingAudioTracks = stream.getAudioTracks() || []
+
+          // Only get a new audio track if we don't have one or if the device changed
+          if (
+            existingAudioTracks.length === 0 ||
+            existingAudioTracks[0].getSettings().deviceId !== activeMicrophoneId
+          ) {
+            // Remove existing audio tracks
+            existingAudioTracks.forEach(track => {
+              stream.removeTrack(track)
+              track.stop()
+            })
+
+            // Get new audio track
+            const audioStream = await navigator.mediaDevices.getUserMedia({
+              audio: {
+                deviceId: activeMicrophoneId,
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: true,
+              },
+            })
+
+            // Add audio track to the existing stream
+            audioStream.getAudioTracks().forEach(track => {
+              stream.addTrack(track)
+            })
+          }
+        } else {
+          // If audio streaming is disabled, stop any audio tracks
+          const existingAudioTracks = stream.getAudioTracks() || []
+          existingAudioTracks.forEach(track => {
+            stream.removeTrack(track)
+            track.stop()
+          })
+        }
+      } catch (error) {
+        console.error('Error updating audio tracks:', error)
+      } finally {
+        setIsAudioStreamingLoading(false)
+      }
+    }
+
+    updateAudioTrack()
+  }, [isAudioStreaming, activeMicrophoneId, stream])
 
   /**
    * Handles camera selection change
@@ -289,6 +340,7 @@ const VideoCall = ({ courseId }) => {
     if (!isScreenSharing) {
       setIsScreenSharingLoading(true)
     }
+    setIsVideoStreaming(false)
     setIsScreenSharing(!isScreenSharing)
   }
 
@@ -296,14 +348,12 @@ const VideoCall = ({ courseId }) => {
     <div className='bg-black flex-1 h-full relative flex justify-center items-center'>
       <video ref={videoRef} id='localVideo' autoPlay playsInline />
 
-      <div className='absolute bottom-4 flex gap-2 bg-primary p-1 rounded-lg max-w-11/12 overflow-auto'>
+      <div className='absolute bottom-4 flex gap-1 bg-primary p-2 rounded-lg max-w-11/12 overflow-auto'>
         <CustomButton
           onClick={() => handleVideoToggle()}
           loading={isVideoStreamingLoading}
           filled
-          className={`${
-            isScreenSharing && !isScreenSharingLoading ? 'opacity-70' : ''
-          } !p-2 flex aspect-square`}
+          className='!p-2 flex aspect-square'
         >
           {isVideoStreaming ? (
             <VideoIcon className=' w-6 h-6 fill-background' />
@@ -323,18 +373,18 @@ const VideoCall = ({ courseId }) => {
             <AudioSlashIcon className='w-6 h-6 fill-background' />
           )}
         </CustomButton>
-        <div className='flex-1 w-0.5 bg-background-secondary' />
+        <div className='flex-1 mx-1 w-0.5 bg-background-secondary' />
         <CustomButton
           onClick={() => handleScreenSharingToggle()}
           loading={isScreenSharingLoading}
           filled
           className='!p-2 flex aspect-square'
         >
-          {isScreenSharing ? (
-            <ScreenShareSlashIcon className=' w-6 h-6 fill-background' />
-          ) : (
-            <ScreenShareIcon className='w-6 h-6 fill-background' />
-          )}
+          <ScreenShareIcon
+            className={`${
+              isScreenSharing ? 'animate-pulse fill-success' : 'fill-background'
+            } w-6 h-6`}
+          />
         </CustomButton>
         {/* {videoInputs.length > 0 && (
           <div>
