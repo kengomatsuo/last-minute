@@ -7,6 +7,7 @@ import AudioIcon from '../assets/icons/microphone.svg?react'
 import AudioSlashIcon from '../assets/icons/microphone-slash.svg?react'
 import ScreenShareIcon from '../assets/icons/screen-share.svg?react'
 import ScreenShareSlashIcon from '../assets/icons/laptop-slash.svg?react'
+import { s } from 'framer-motion/client'
 
 /**
  * VideoCall component for handling video and audio streaming
@@ -24,6 +25,7 @@ const VideoCall = ({ courseId }) => {
   const [isVideoStreaming, setIsVideoStreaming] = useState(false)
   const [isAudioStreaming, setIsAudioStreaming] = useState(false)
   const [isScreenSharing, setIsScreenSharing] = useState(false)
+  const [isScreenSharingLoading, setIsScreenSharingLoading] = useState(false)
   const videoRef = useRef(null)
 
   useConsoleLog('videoInputs', videoInputs)
@@ -110,8 +112,44 @@ const VideoCall = ({ courseId }) => {
           console.log('Stream:', stream.getTracks())
           stopStream()
         }
-        if (isVideoStreaming || isAudioStreaming) {
-          const constraints = {
+
+        if (isScreenSharing) {
+          try {
+            console.log(navigator.mediaDevices.getSupportedConstraints())
+            const screenStream = await navigator.mediaDevices.getDisplayMedia({
+              video: {
+                cursor: 'always',
+                frameRate: 24,
+                resizeMode: 'none',
+              },
+              audio: isAudioStreaming
+                ? {
+                    deviceId: activeMicrophoneId,
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true,
+                  }
+                : false,
+            })
+
+            if (videoRef.current && videoRef.current.srcObject) {
+              videoRef.current.srcObject
+                .getTracks()
+                .forEach(track => track.stop())
+            }
+            if (videoRef.current) {
+              videoRef.current.srcObject = screenStream
+            }
+
+            setStream(screenStream)
+          } catch (error) {
+            setIsScreenSharing(false)
+            throw error
+          } finally {
+            setIsScreenSharingLoading(false)
+          }
+        } else if (isVideoStreaming || isAudioStreaming) {
+          const newStream = await navigator.mediaDevices.getUserMedia({
             audio: isAudioStreaming
               ? {
                   deviceId: activeMicrophoneId,
@@ -129,10 +167,7 @@ const VideoCall = ({ courseId }) => {
                   resizeMode: 'none',
                 }
               : false,
-          }
-          const newStream = await navigator.mediaDevices.getUserMedia(
-            constraints
-          )
+          })
 
           if (videoRef.current && videoRef.current.srcObject) {
             videoRef.current.srcObject
@@ -146,12 +181,18 @@ const VideoCall = ({ courseId }) => {
           setStream(newStream)
         }
       } catch (error) {
-        console.error('Error opening:', error)
+        console.error(error)
       }
     }
     updateStream()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAudioStreaming, isVideoStreaming, isScreenSharing, activeCameraId, activeMicrophoneId])
+  }, [
+    isAudioStreaming,
+    isVideoStreaming,
+    isScreenSharing,
+    activeCameraId,
+    activeMicrophoneId,
+  ])
 
   /**
    * Handles camera selection change
@@ -178,6 +219,7 @@ const VideoCall = ({ courseId }) => {
       console.error('No camera detected.')
       return
     }
+    setIsScreenSharing(false)
     setIsVideoStreaming(!isVideoStreaming)
   }
 
@@ -234,6 +276,10 @@ const VideoCall = ({ courseId }) => {
   }
 
   const handleScreenSharingToggle = async () => {
+    if (!isScreenSharing) {
+      // setIsVideoStreaming(isScreenSharing)
+      setIsScreenSharingLoading(true)
+    }
     setIsScreenSharing(!isScreenSharing)
   }
 
@@ -245,7 +291,7 @@ const VideoCall = ({ courseId }) => {
         <CustomButton
           onClick={() => handleVideoToggle()}
           filled
-          className='!p-2 flex aspect-square'
+          className={`${isScreenSharing && !isScreenSharingLoading ? 'opacity-70' : ''} !p-2 flex aspect-square`}
         >
           {isVideoStreaming ? (
             <VideoIcon className=' w-6 h-6 fill-background' />
@@ -267,13 +313,14 @@ const VideoCall = ({ courseId }) => {
         <div className='flex-1 w-0.5 bg-background-secondary' />
         <CustomButton
           onClick={() => handleScreenSharingToggle()}
+          loading={isScreenSharingLoading}
           filled
           className='!p-2 flex aspect-square'
         >
           {isScreenSharing ? (
-            <ScreenShareIcon className=' w-6 h-6 fill-background' />
+            <ScreenShareSlashIcon className=' w-6 h-6 fill-background' />
           ) : (
-            <ScreenShareSlashIcon className='w-6 h-6 fill-background' />
+            <ScreenShareIcon className='w-6 h-6 fill-background' />
           )}
         </CustomButton>
         {/* {videoInputs.length > 0 && (
