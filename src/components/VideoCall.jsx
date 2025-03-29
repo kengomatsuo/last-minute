@@ -275,6 +275,11 @@ const VideoCall = ({ courseId }) => {
     setActiveMicrophoneId(newMicrophoneId)
   }
 
+  /**
+   * Tests if the selected microphone is capturing audio
+   * 
+   * @returns {Promise<boolean>} True if sound is detected, false otherwise
+   */
   const testMicrophone = async () => {
     const audioContext = new (window.AudioContext ||
       window.webkitAudioContext)()
@@ -290,17 +295,38 @@ const VideoCall = ({ courseId }) => {
 
       const dataArray = new Uint8Array(analyser.frequencyBinCount)
       let hasSound = false
+      let testCompleted = false
 
-      const checkAudio = () => {
-        analyser.getByteFrequencyData(dataArray)
-        hasSound = dataArray.some(value => value > 10)
-      }
+      // Create a promise that resolves when sound is detected or timeout occurs
+      const soundDetectionPromise = new Promise(resolve => {
+        const checkAudio = () => {
+          if (testCompleted) return
+          
+          analyser.getByteFrequencyData(dataArray)
+          const soundDetected = dataArray.some(value => value > 10)
+          
+          if (soundDetected) {
+            hasSound = true
+            testCompleted = true
+            resolve()
+          }
+        }
 
-      const interval = setInterval(checkAudio, 100)
+        const interval = setInterval(checkAudio, 100)
+        
+        // Set timeout to stop checking after 5 seconds
+        setTimeout(() => {
+          if (!testCompleted) {
+            testCompleted = true
+            clearInterval(interval)
+            resolve()
+          }
+        }, 5000)
+      })
 
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      await soundDetectionPromise
 
-      clearInterval(interval)
+      // Cleanup
       testStream.getTracks().forEach(track => track.stop())
 
       if (!hasSound) {
@@ -374,11 +400,11 @@ const VideoCall = ({ courseId }) => {
   }
 
   useEffect(() => {
-    if(user.claims.isTutor && course?.answer) {
+    if(user?.claims.isTutor && course?.answer) {
       peerConnection.setRemoteDescription(new RTCSessionDescription(course.answer))
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [course, user.claims.isTutor])
+  }, [course, user?.claims.isTutor])
   
 
   const answerCall = async () => {
@@ -394,7 +420,7 @@ const VideoCall = ({ courseId }) => {
 
   return (
     <div className='bg-black flex-1 h-full w-full relative flex flex-col justify-center items-center'>
-      {user.claims.isTutor ? (
+      {user?.claims.isTutor ? (
         course?.offer ? (
           <div className='flex flex-wrap gap-4 justify-center items-center w-full p-8'>
             <video
