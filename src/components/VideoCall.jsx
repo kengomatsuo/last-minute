@@ -410,11 +410,14 @@ const VideoCall = ({ courseId }) => {
       }
     }
     peerConnection.ontrack = event => {
+      console.log('Remote track received:', event.track.kind)
       const remoteStream = event.streams[0]
       if (remoteVideoRef.current) {
+        console.log('Setting remote stream to video element')
         remoteVideoRef.current.srcObject = remoteStream
       }
       remoteStream.getTracks().forEach(track => {
+        console.log('Remote track details:', track.kind, track.enabled, track.muted)
         track.onended = () => {
           console.log('Remote track ended')
           stopStream()
@@ -425,66 +428,90 @@ const VideoCall = ({ courseId }) => {
     return peerConnection
   }
 
+  /**
+   * Ensures stream has at least one track, adding a muted audio track if needed
+   * 
+   * @param {MediaStream} stream - The media stream to validate
+   * @param {string} microphoneId - ID of the microphone to use if needed
+   * @returns {Promise<boolean>} True if stream has tracks after validation
+   */
+  const ensureStreamHasTracks = async (stream, microphoneId) => {
+    if (!stream) {
+      console.error('No stream available')
+      return false
+    }
+  
+    if (!stream.getTracks().length) {
+      console.warn('No tracks in stream. Acquiring muted audio track...')
+  
+      try {
+        // Get audio stream without enabling audio streaming state
+        const audioStream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            deviceId: microphoneId,
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+          },
+        })
+  
+        // Add track to stream but keep it muted
+        const audioTrack = audioStream.getAudioTracks()[0]
+        if (audioTrack) {
+          audioTrack.enabled = false // Keep it muted
+          stream.addTrack(audioTrack)
+          console.log('Added muted audio track:', audioTrack)
+        }
+      } catch (error) {
+        console.error('Error adding muted audio track:', error)
+        return false
+      }
+    }
+  
+    // Wait for tracks to be available
+    await new Promise(resolve => {
+      const checkForTracks = () => {
+        if (stream && stream.getTracks().length > 0) {
+          console.log('Tracks acquired successfully:', stream.getTracks())
+          resolve()
+        } else {
+          setTimeout(checkForTracks, 500)
+        }
+      }
+  
+      checkForTracks()
+      setTimeout(() => resolve(), 10000)
+    })
+  
+    if (!stream.getTracks().length) {
+      console.error('No tracks found in stream after 10 seconds')
+      return false
+    }
+  
+    console.log('Tracks acquired successfully:', stream.getTracks())
+    return true
+  }
+  
+  /**
+   * Makes a WebRTC call to the remote peer
+   * 
+   * @returns {Promise<void>} A promise that resolves when the call is set up
+   */
   const makeCall = async () => {
     try {
       console.log('Making call...')
       const peerConnection = makePeerConnection()
-
+  
       if (!peerConnection) {
         console.error('Failed to create peer connection')
         throw new Error('Failed to create peer connection')
       }
-      if (!stream) {
-        console.error('No stream available')
-        throw new Error('No stream available')
+  
+      // Ensure stream has tracks before proceeding
+      if (!(await ensureStreamHasTracks(stream, activeMicrophoneId))) {
+        throw new Error('Failed to ensure stream has tracks')
       }
-
-      if (!stream.getTracks().length) {
-        console.warn('No tracks in stream. Acquiring muted audio track...')
-
-        try {
-          // Get audio stream without enabling audio streaming state
-          const audioStream = await navigator.mediaDevices.getUserMedia({
-            audio: {
-              deviceId: activeMicrophoneId,
-              echoCancellation: true,
-              noiseSuppression: true,
-              autoGainControl: true,
-            },
-          })
-
-          // Add track to stream but keep it muted
-          const audioTrack = audioStream.getAudioTracks()[0]
-          if (audioTrack) {
-            audioTrack.enabled = false // Keep it muted
-            stream.addTrack(audioTrack)
-            console.log('Added muted audio track:', audioTrack)
-          }
-        } catch (error) {
-          console.error('Error adding muted audio track:', error)
-        }
-      }
-
-      await new Promise(resolve => {
-        const checkForTracks = () => {
-          if (stream && stream.getTracks().length > 0) {
-            console.log('Tracks acquired successfully:', stream.getTracks())
-            resolve()
-          } else {
-            setTimeout(checkForTracks, 500)
-          }
-        }
-
-        checkForTracks()
-        setTimeout(() => resolve(), 10000)
-      })
-
-      if (!stream.getTracks().length) {
-        console.error('No tracks found in stream after 10 seconds')
-        throw new Error('No tracks found in stream after 10 seconds')
-      }
-      console.log('Tracks acquired successfully:', stream.getTracks())
-
+  
       setIsCalling(true)
       console.log('Adding local stream to peer connection:', stream)
       stream.getTracks().forEach(track => {
@@ -492,7 +519,7 @@ const VideoCall = ({ courseId }) => {
         peerConnection.addTrack(track, stream)
       })
       console.log('Local stream added to peer connection')
-
+  
       // ICE candidates listener
       let iceCandidates = []
       peerConnection.onicecandidate = async event => {
@@ -502,72 +529,32 @@ const VideoCall = ({ courseId }) => {
         }
       }
       console.log('ICE candidates listener set up')
-
+  
       const offer = await peerConnection.createOffer()
       await peerConnection.setLocalDescription(offer)
-
-      // Promise to wait for ICE candidates to be gathered
-      await new Promise((resolve, reject) => {
-        // Track if we've already resolved/rejected
-        let isResolved = false
-        
-        // Handler for ICE gathering state changes
-        peerConnection.onicegatheringstatechange = () => {
-          if (isResolved) return
-          
-          if (peerConnection.iceGatheringState === 'complete') {
-            console.log('ICE gathering complete')
-            console.log('ICE candidates:', iceCandidates)
-            isResolved = true
-            resolve()
-          } else {
-            console.log('ICE gathering state:', peerConnection.iceGatheringState)
-          }
-        }
-        
-        // Set timeout to ensure we don't wait indefinitely
-        const timeoutId = setTimeout(() => {
-          if (isResolved) return
-          
-          isResolved = true
-          console.warn('ICE gathering timed out after 10 seconds')
-          
-          // If we have at least one candidate, resolve anyway
-          if (iceCandidates.length > 0) {
-            console.log('Proceeding with available candidates:', iceCandidates.length)
-            resolve()
-          } else {
-            reject(new Error('ICE gathering timed out with no candidates'))
-          }
-        }, 5000) // 5 second timeout
-        
-        // Cleanup timeout if resolved naturally
-        peerConnection.addEventListener('icegatheringstatechange', () => {
-          if (peerConnection.iceGatheringState === 'complete') {
-            clearTimeout(timeoutId)
-          }
-        }, { once: true })
-      })
-
+  
+      // Wait for ICE gathering with timeout
+      await gatherIceCandidatesWithTimeout(peerConnection, iceCandidates)
+  
       if (!iceCandidates.length) {
         console.error('No ICE candidates found')
         throw new Error('No ICE candidates found')
       }
-
+  
       console.log(peerConnection.localDescription)
-      if(!peerConnection.localDescription.sdp.includes('a=candidate:')) {
+      if (!peerConnection.localDescription.sdp.includes('a=candidate:')) {
         console.error('No ICE candidates found in local description')
         throw new Error('No ICE candidates found in local description')
       }
       console.log('ICE candidates found in local description')
-
+  
       // serialize local description
       const serializedOffer = {
         type: peerConnection.localDescription.type,
         sdp: peerConnection.localDescription.sdp,
       }
       console.log('Serialized offer:', serializedOffer)
-
+  
       await setDoc(
         doc(db, 'courses', courseId),
         { offer: serializedOffer },
@@ -575,6 +562,91 @@ const VideoCall = ({ courseId }) => {
       )
     } catch (error) {
       console.error('Error making call:', error)
+    } finally {
+      setIsCalling(false)
+    }
+  }
+  
+  /**
+   * Answers an incoming WebRTC call
+   * 
+   * @returns {Promise<void>} A promise that resolves when the call is answered
+   */
+  const answerCall = async () => {
+    try {
+      console.log('Answering call...')
+      const peerConnection = makePeerConnection()
+
+      if (!peerConnection) {
+        console.error('Failed to create peer connection')
+        throw new Error('No peer connection available')
+      }
+  
+      if (!course?.offer) {
+        console.error('No offer available to answer')
+        throw new Error('No offer available to answer')
+      }
+  
+      // Ensure stream has tracks before proceeding
+      if (!(await ensureStreamHasTracks(stream, activeMicrophoneId))) {
+        throw new Error('Failed to ensure stream has tracks')
+      }
+  
+      console.log('Answering call...')
+      setIsCalling(true)
+      
+      // Set the remote description from the offer
+      await peerConnection.setRemoteDescription(
+        new RTCSessionDescription(course.offer)
+      )
+      console.log('Remote description set from offer')
+  
+      // Create an answer
+      const answer = await peerConnection.createAnswer()
+      await peerConnection.setLocalDescription(answer)
+      console.log('Local description set with answer')
+  
+      // ICE candidates listener
+      let iceCandidates = []
+      peerConnection.onicecandidate = async event => {
+        if (event.candidate) {
+          console.log('ICE candidate:', event.candidate)
+          iceCandidates.push(event.candidate)
+        }
+      }
+      console.log('ICE candidates listener set up')
+  
+      // Wait for ICE gathering with timeout
+      await gatherIceCandidatesWithTimeout(peerConnection, iceCandidates)
+  
+      if (!iceCandidates.length) {
+        console.error('No ICE candidates found')
+        throw new Error('No ICE candidates found')
+      }
+  
+      // Check if candidates are in the SDP
+      if (!peerConnection.localDescription.sdp.includes('a=candidate:')) {
+        console.error('No ICE candidates found in local description')
+        throw new Error('No ICE candidates found in local description')
+      }
+      console.log('ICE candidates found in local description')
+  
+      // Serialize the answer
+      const serializedAnswer = {
+        type: peerConnection.localDescription.type,
+        sdp: peerConnection.localDescription.sdp,
+      }
+      console.log('Serialized answer:', serializedAnswer)
+  
+      // Send the answer to Firestore
+      await setDoc(
+        doc(db, 'courses', courseId),
+        { answer: serializedAnswer },
+        { merge: true }
+      )
+      console.log('Answer sent successfully')
+    } catch (error) {
+      console.error('Error answering call:', error)
     } finally {
       setIsCalling(false)
     }
@@ -589,15 +661,56 @@ const VideoCall = ({ courseId }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [course, user?.claims.isTutor])
 
-  const answerCall = async () => {
-    peerConnection.setRemoteDescription(new RTCSessionDescription(course.offer))
-    const answer = await peerConnection.createAnswer()
-    await peerConnection.setLocalDescription(answer)
-    await setDoc(
-      doc(db, 'courses', courseId),
-      { answer: answer },
-      { merge: true }
-    )
+  /**
+   * Handles ICE gathering with timeout
+   * 
+   * @param {RTCPeerConnection} peerConnection - The WebRTC peer connection
+   * @param {Array} iceCandidates - Array to store ICE candidates
+   * @param {number} timeoutMs - Timeout in milliseconds
+   * @returns {Promise<void>} Resolves when gathering is complete or times out
+   */
+  const gatherIceCandidatesWithTimeout = (peerConnection, iceCandidates, timeoutMs = 5000) => {
+    return new Promise((resolve, reject) => {
+      // Track if we've already resolved/rejected
+      let isResolved = false
+      
+      // Handler for ICE gathering state changes
+      peerConnection.onicegatheringstatechange = () => {
+        if (isResolved) return
+        
+        if (peerConnection.iceGatheringState === 'complete') {
+          console.log('ICE gathering complete')
+          console.log('ICE candidates:', iceCandidates)
+          isResolved = true
+          resolve()
+        } else {
+          console.log('ICE gathering state:', peerConnection.iceGatheringState)
+        }
+      }
+      
+      // Set timeout to ensure we don't wait indefinitely
+      const timeoutId = setTimeout(() => {
+        if (isResolved) return
+        
+        isResolved = true
+        console.warn(`ICE gathering timed out after ${timeoutMs}ms`)
+        
+        // If we have at least one candidate, resolve anyway
+        if (iceCandidates.length > 0) {
+          console.log('Proceeding with available candidates:', iceCandidates.length)
+          resolve()
+        } else {
+          reject(new Error('ICE gathering timed out with no candidates'))
+        }
+      }, timeoutMs)
+      
+      // Cleanup timeout if resolved naturally
+      peerConnection.addEventListener('icegatheringstatechange', () => {
+        if (peerConnection.iceGatheringState === 'complete') {
+          clearTimeout(timeoutId)
+        }
+      }, { once: true })
+    })
   }
 
   const endCall = async () => {
