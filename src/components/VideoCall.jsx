@@ -600,6 +600,19 @@ const VideoCall = ({ courseId }) => {
     )
   }
 
+  const endCall = async () => {
+    if (peerConnection) {
+      peerConnection.close()
+      setPeerConnection(null)
+    }
+    await setDoc(
+      doc(db, 'courses', courseId),
+      { offer: null, answer: null },
+      { merge: true }
+    )
+    stopStream()
+  }
+
   return (
     <div className='bg-black flex-1 h-full w-full relative flex flex-col justify-center items-center'>
       <div className='flex flex-wrap gap-4 justify-center items-center w-full p-8'>
@@ -672,7 +685,7 @@ const VideoCall = ({ courseId }) => {
         {/* Spacer */}
 
         <CustomButton
-          onClick={() => (user?.claims.isTutor ? makeCall() : answerCall())}
+          onClick={() => (course?.answer ? endCall() : user?.claims.isTutor ? makeCall() : answerCall())}
           disabled={!user?.claims.isTutor && !course?.offer}
           loading={isCalling}
           className={`${
