@@ -430,6 +430,35 @@ const VideoCall = ({ courseId }) => {
     return peerConnection.current
   }
 
+  const createDummyAudioTrack = () => {
+    const audioContext = new (window.AudioContext ||
+      window.webkitAudioContext)()
+    const oscillator = audioContext.createOscillator()
+    oscillator.type = 'sine'
+    oscillator.frequency.setValueAtTime(440, audioContext.currentTime)
+    const destination = audioContext.createMediaStreamDestination()
+    oscillator.connect(destination)
+    oscillator.start()
+
+    const dummyAudioTrack = destination.stream.getAudioTracks()[0]
+    stream.current.addTrack(dummyAudioTrack)
+    console.log('Dummy audio track created and added to stream:', dummyAudioTrack)
+  }
+
+  const createDummyVideoTrack = () => {
+    const canvas = document.createElement('canvas')
+    canvas.width = 1280
+    canvas.height = 720
+    const ctx = canvas.getContext('2d')
+    ctx.fillStyle = 'grey'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+    const videoStream = canvas.captureStream(1)
+    const dummyVideoTrack = videoStream.getVideoTracks()[0]
+    stream.current.addTrack(dummyVideoTrack)
+    console.log('Dummy video track created and added to stream:', dummyVideoTrack)
+  }
+
   /**
    * Ensures stream has at least one track, adding a muted audio track if needed
    *
@@ -442,10 +471,17 @@ const VideoCall = ({ courseId }) => {
       createStream()
     }
 
-    await updateAudioTrack(isAudioStreaming)
+    if (stream.current.getTracks().length < 2) {
+      console.warn('Not enough tracks in stream. Creating dummy audio or video track...')
 
-    if (!stream.current.getTracks().length) {
-      console.warn('No tracks in stream. Acquiring muted audio track...')
+      // Create a dummy audio track if no audio track exists
+      if (stream.current.getAudioTracks().length === 0) {
+        createDummyAudioTrack()
+      }
+      // Create a dummy video track if no video track exists
+      if (stream.current.getVideoTracks().length === 0) {
+        createDummyVideoTrack()
+      }
 
       // Wait for tracks to be available
       await new Promise(resolve => {
