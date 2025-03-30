@@ -736,7 +736,6 @@ const VideoCall = ({ courseId }) => {
       { offer: null, answer: null },
       { merge: true }
     )
-    stopStream()
   }
 
   return (
