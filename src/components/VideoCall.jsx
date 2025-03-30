@@ -389,7 +389,7 @@ const VideoCall = ({ courseId }) => {
     iceCandidatePoolSize: 10,
   }
 
-  const makePeerConnection = () => {
+  const createPeerConnection = () => {
     console.log('Creating peer connection...')
     const newPeerConnection = new RTCPeerConnection(config)
     console.log('Peer connection created:', newPeerConnection)
@@ -481,7 +481,7 @@ const VideoCall = ({ courseId }) => {
   const makeCall = async () => {
     try {
       console.log('Making call...')
-      makePeerConnection()
+      createPeerConnection()
 
       if (!peerConnection.current) {
         console.error('Failed to create peer connection')
@@ -561,7 +561,7 @@ const VideoCall = ({ courseId }) => {
   const answerCall = async () => {
     try {
       console.log('Answering call...')
-      makePeerConnection()
+      createPeerConnection()
 
       if (!peerConnection.current) {
         console.error('Failed to create peer connection')
