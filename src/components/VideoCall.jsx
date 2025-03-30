@@ -425,7 +425,7 @@ const VideoCall = ({ courseId }) => {
       { urls: 'stun:stun3.l.google.com:19302' },
       { urls: 'stun:stun4.l.google.com:19302' },
     ],
-    iceCandidatePoolSize: 5,
+    iceCandidatePoolSize: 10,
   }
 
   const makePeerConnection = () => {
@@ -525,6 +525,9 @@ const VideoCall = ({ courseId }) => {
         console.error('Failed to create peer connection')
         throw new Error('Failed to create peer connection')
       }
+
+      peerConnection.addTransceiver('video', { direction: 'recvonly' })
+      peerConnection.addTransceiver('audio', { direction: 'recvonly' })
 
       // Ensure stream has tracks before proceeding
       if (!(await ensureStreamHasTracks(stream))) {
