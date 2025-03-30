@@ -14,7 +14,6 @@ import PropTypes from 'prop-types'
 import { db } from '../../firebaseConfig'
 import { CourseContext } from '../contexts/CourseContext'
 import { UserContext } from '../contexts/UserContext'
-import { th } from 'framer-motion/client'
 
 /**
  * VideoCall component for handling video and audio streaming
@@ -609,6 +608,7 @@ const VideoCall = ({ courseId }) => {
           id='localVideo'
           autoPlay
           playsInline
+          muted
           className='rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
         />
         <video
