@@ -149,6 +149,7 @@ const VideoCall = ({ courseId }) => {
 
             // Add screen track to the existing stream
             screenStream.getVideoTracks().forEach(track => {
+              console.log('Adding screen sharing track:', track)
               stream.addTrack(track)
 
               // Handle when user stops screen sharing via browser UI
@@ -181,6 +182,7 @@ const VideoCall = ({ courseId }) => {
 
           // Add camera track to the existing stream
           videoStream.getVideoTracks().forEach(track => {
+            console.log('Adding camera track:', track)
             stream.addTrack(track)
           })
         } else {
@@ -234,6 +236,7 @@ const VideoCall = ({ courseId }) => {
           // Add audio track to the existing stream
           audioStream.getAudioTracks().forEach(track => {
             track.enabled = specified // specified status
+            console.log('Adding Audio track:', track)
             stream.addTrack(track)
           })
         }
@@ -265,6 +268,7 @@ const VideoCall = ({ courseId }) => {
           // Add audio track to the existing stream
           audioStream.getAudioTracks().forEach(track => {
             track.enabled = true // Ensure it's enabled
+            console.log('Adding audio track:', track)
             stream.addTrack(track)
           })
         } else {
@@ -547,6 +551,7 @@ const VideoCall = ({ courseId }) => {
 
       const offer = await peerConnection.createOffer()
       await peerConnection.setLocalDescription(offer)
+      console.log('Local description set with offer')
 
       // Wait for ICE gathering with timeout
       await gatherIceCandidatesWithTimeout(peerConnection, iceCandidates)
@@ -575,6 +580,7 @@ const VideoCall = ({ courseId }) => {
         { offer: serializedOffer },
         { merge: true }
       )
+      console.log('Offer sent successfully')
     } catch (error) {
       console.error('Error making call:', error)
     } finally {
@@ -607,19 +613,19 @@ const VideoCall = ({ courseId }) => {
         throw new Error('Failed to ensure stream has tracks')
       }
 
-      console.log('Answering call...')
       setIsCalling(true)
+      console.log('Adding local stream to peer connection:', stream)
+      stream.getTracks().forEach(track => {
+        console.log('Adding track:', track)
+        peerConnection.addTrack(track, stream)
+      })
+      console.log('Local stream added to peer connection')
 
       // Set the remote description from the offer
       await peerConnection.setRemoteDescription(
         new RTCSessionDescription(course.offer)
       )
       console.log('Remote description set from offer')
-
-      // Create an answer
-      const answer = await peerConnection.createAnswer()
-      await peerConnection.setLocalDescription(answer)
-      console.log('Local description set with answer')
 
       // ICE candidates listener
       let iceCandidates = []
@@ -630,6 +636,11 @@ const VideoCall = ({ courseId }) => {
         }
       }
       console.log('ICE candidates listener set up')
+
+      // Create an answer
+      const answer = await peerConnection.createAnswer()
+      await peerConnection.setLocalDescription(answer)
+      console.log('Local description set with answer')
 
       // Wait for ICE gathering with timeout
       await gatherIceCandidatesWithTimeout(peerConnection, iceCandidates)
@@ -653,7 +664,6 @@ const VideoCall = ({ courseId }) => {
       }
       console.log('Serialized answer:', serializedAnswer)
 
-      // Send the answer to Firestore
       await setDoc(
         doc(db, 'courses', courseId),
         { answer: serializedAnswer },
