@@ -69,7 +69,7 @@ const CourseContextProvider = ({ children }) => {
   const { user } = useContext(UserContext)
   const isTutor = user?.claims?.isTutor
 
-  useConsoleLog('courses', courses)
+  // useConsoleLog('courses', courses)
   // useConsoleLog('requests', requests)
   // useConsoleLog('isTutor', isTutor)
 

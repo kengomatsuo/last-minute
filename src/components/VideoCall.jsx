@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef, useCallback, useContext } from 'react'
-import { useConsoleLog } from '../hooks'
 import CustomButton from './CustomButton'
 import VideoIcon from '../assets/icons/video-camera-alt.svg?react'
 import VideoSlashIcon from '../assets/icons/video-slash.svg?react'
@@ -10,10 +9,12 @@ import CallIcon from '../assets/icons/phone-call.svg?react'
 import LeaveIcon from '../assets/icons/leave.svg?react'
 import CustomInteractive from './CustomInteractive'
 import CustomPopup from './CustomPopup'
-import { addDoc, doc, setDoc } from 'firebase/firestore'
+import { doc, setDoc } from 'firebase/firestore'
+import PropTypes from 'prop-types'
 import { db } from '../../firebaseConfig'
 import { CourseContext } from '../contexts/CourseContext'
 import { UserContext } from '../contexts/UserContext'
+import { th } from 'framer-motion/client'
 
 /**
  * VideoCall component for handling video and audio streaming
@@ -39,6 +40,7 @@ const VideoCall = ({ courseId }) => {
   const [isScreenSharing, setIsScreenSharing] = useState(false)
   const [isScreenSharingLoading, setIsScreenSharingLoading] = useState(false)
 
+  const [peerConnection, setPeerConnection] = useState(null)
   const localVideoRef = useRef(null)
   const remoteVideoRef = useRef(null)
   const [activeCameraId, setActiveCameraId] = useState('default')
@@ -207,7 +209,6 @@ const VideoCall = ({ courseId }) => {
       if (!stream) return
 
       try {
-        // Handle audio tracks separately
         if (isAudioStreaming) {
           // Check if we already have an audio track
           const existingAudioTracks = stream.getAudioTracks() || []
@@ -217,7 +218,7 @@ const VideoCall = ({ courseId }) => {
             existingAudioTracks.length === 0 ||
             existingAudioTracks[0].getSettings().deviceId !== activeMicrophoneId
           ) {
-            // Remove existing audio tracks
+            // Remove existing audio tracks if we're changing devices
             existingAudioTracks.forEach(track => {
               stream.removeTrack(track)
               track.stop()
@@ -235,15 +236,20 @@ const VideoCall = ({ courseId }) => {
 
             // Add audio track to the existing stream
             audioStream.getAudioTracks().forEach(track => {
+              track.enabled = true // Ensure it's enabled
               stream.addTrack(track)
+            })
+          } else {
+            // If we have the right track, just make sure it's enabled
+            existingAudioTracks.forEach(track => {
+              track.enabled = true
             })
           }
         } else {
-          // If audio streaming is disabled, stop any audio tracks
+          // Instead of removing tracks, just disable them
           const existingAudioTracks = stream.getAudioTracks() || []
           existingAudioTracks.forEach(track => {
-            stream.removeTrack(track)
-            track.stop()
+            track.enabled = false // Mute the track instead of removing
           })
         }
       } catch (error) {
@@ -385,19 +391,194 @@ const VideoCall = ({ courseId }) => {
       { urls: 'stun:stun3.l.google.com:19302' },
       { urls: 'stun:stun4.l.google.com:19302' },
     ],
-    iceCandidatePoolSize: 10,
+    iceCandidatePoolSize: 5,
   }
 
-  const peerConnection = new RTCPeerConnection(config)
+  const makePeerConnection = () => {
+    console.log('Creating peer connection...')
+    const peerConnection = new RTCPeerConnection(config)
+    console.log('Peer connection created:', peerConnection)
+    setPeerConnection(peerConnection)
+    peerConnection.oniceconnectionstatechange = () => {
+      if (peerConnection.iceConnectionState === 'disconnected') {
+        console.log('Disconnected from peer')
+        stopStream()
+      } else if (peerConnection.iceConnectionState === 'connected') {
+        console.log('Connected to peer')
+      } else if (peerConnection.iceConnectionState === 'failed') {
+        console.error('Connection failed')
+        stopStream()
+      }
+    }
+    peerConnection.ontrack = event => {
+      const remoteStream = event.streams[0]
+      if (remoteVideoRef.current) {
+        remoteVideoRef.current.srcObject = remoteStream
+      }
+      remoteStream.getTracks().forEach(track => {
+        track.onended = () => {
+          console.log('Remote track ended')
+          stopStream()
+        }
+      })
+    }
+    console.log('Peer connection listeners set up')
+    return peerConnection
+  }
 
   const makeCall = async () => {
-    const offer = await peerConnection.createOffer()
-    await peerConnection.setLocalDescription(offer)
-    await setDoc(
-      doc(db, 'courses', courseId),
-      { offer: offer },
-      { merge: true }
-    )
+    try {
+      console.log('Making call...')
+      const peerConnection = makePeerConnection()
+
+      if (!peerConnection) {
+        console.error('Failed to create peer connection')
+        throw new Error('Failed to create peer connection')
+      }
+      if (!stream) {
+        console.error('No stream available')
+        throw new Error('No stream available')
+      }
+
+      if (!stream.getTracks().length) {
+        console.warn('No tracks in stream. Acquiring muted audio track...')
+
+        try {
+          // Get audio stream without enabling audio streaming state
+          const audioStream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              deviceId: activeMicrophoneId,
+              echoCancellation: true,
+              noiseSuppression: true,
+              autoGainControl: true,
+            },
+          })
+
+          // Add track to stream but keep it muted
+          const audioTrack = audioStream.getAudioTracks()[0]
+          if (audioTrack) {
+            audioTrack.enabled = false // Keep it muted
+            stream.addTrack(audioTrack)
+            console.log('Added muted audio track:', audioTrack)
+          }
+        } catch (error) {
+          console.error('Error adding muted audio track:', error)
+        }
+      }
+
+      await new Promise(resolve => {
+        const checkForTracks = () => {
+          if (stream && stream.getTracks().length > 0) {
+            console.log('Tracks acquired successfully:', stream.getTracks())
+            resolve()
+          } else {
+            setTimeout(checkForTracks, 500)
+          }
+        }
+
+        checkForTracks()
+        setTimeout(() => resolve(), 10000)
+      })
+
+      if (!stream.getTracks().length) {
+        console.error('No tracks found in stream after 10 seconds')
+        throw new Error('No tracks found in stream after 10 seconds')
+      }
+      console.log('Tracks acquired successfully:', stream.getTracks())
+
+      setIsCalling(true)
+      console.log('Adding local stream to peer connection:', stream)
+      stream.getTracks().forEach(track => {
+        console.log('Adding track:', track)
+        peerConnection.addTrack(track, stream)
+      })
+      console.log('Local stream added to peer connection')
+
+      // ICE candidates listener
+      let iceCandidates = []
+      peerConnection.onicecandidate = async event => {
+        if (event.candidate) {
+          console.log('ICE candidate:', event.candidate)
+          iceCandidates.push(event.candidate)
+        }
+      }
+      console.log('ICE candidates listener set up')
+
+      const offer = await peerConnection.createOffer()
+      await peerConnection.setLocalDescription(offer)
+
+      // Promise to wait for ICE candidates to be gathered
+      await new Promise((resolve, reject) => {
+        // Track if we've already resolved/rejected
+        let isResolved = false
+        
+        // Handler for ICE gathering state changes
+        peerConnection.onicegatheringstatechange = () => {
+          if (isResolved) return
+          
+          if (peerConnection.iceGatheringState === 'complete') {
+            console.log('ICE gathering complete')
+            console.log('ICE candidates:', iceCandidates)
+            isResolved = true
+            resolve()
+          } else {
+            console.log('ICE gathering state:', peerConnection.iceGatheringState)
+          }
+        }
+        
+        // Set timeout to ensure we don't wait indefinitely
+        const timeoutId = setTimeout(() => {
+          if (isResolved) return
+          
+          isResolved = true
+          console.warn('ICE gathering timed out after 10 seconds')
+          
+          // If we have at least one candidate, resolve anyway
+          if (iceCandidates.length > 0) {
+            console.log('Proceeding with available candidates:', iceCandidates.length)
+            resolve()
+          } else {
+            reject(new Error('ICE gathering timed out with no candidates'))
+          }
+        }, 5000) // 5 second timeout
+        
+        // Cleanup timeout if resolved naturally
+        peerConnection.addEventListener('icegatheringstatechange', () => {
+          if (peerConnection.iceGatheringState === 'complete') {
+            clearTimeout(timeoutId)
+          }
+        }, { once: true })
+      })
+
+      if (!iceCandidates.length) {
+        console.error('No ICE candidates found')
+        throw new Error('No ICE candidates found')
+      }
+
+      console.log(peerConnection.localDescription)
+      if(!peerConnection.localDescription.sdp.includes('a=candidate:')) {
+        console.error('No ICE candidates found in local description')
+        throw new Error('No ICE candidates found in local description')
+      }
+      console.log('ICE candidates found in local description')
+
+      // serialize local description
+      const serializedOffer = {
+        type: peerConnection.localDescription.type,
+        sdp: peerConnection.localDescription.sdp,
+      }
+      console.log('Serialized offer:', serializedOffer)
+
+      await setDoc(
+        doc(db, 'courses', courseId),
+        { offer: serializedOffer },
+        { merge: true }
+      )
+    } catch (error) {
+      console.error('Error making call:', error)
+    } finally {
+      setIsCalling(false)
+    }
   }
 
   useEffect(() => {
@@ -493,7 +674,7 @@ const VideoCall = ({ courseId }) => {
         <CustomButton
           onClick={() => (user?.claims.isTutor ? makeCall() : answerCall())}
           disabled={!user?.claims.isTutor && !course?.offer}
-          loading={isVideoStreamingLoading}
+          loading={isCalling}
           className={`${
             (user?.claims.isTutor && course?.offer) ||
             (!user?.claims.isTutor && course?.answer)
@@ -511,6 +692,9 @@ const VideoCall = ({ courseId }) => {
       </div>
     </div>
   )
+}
+VideoCall.propTypes = {
+  courseId: PropTypes.string.isRequired,
 }
 
 export default VideoCall
