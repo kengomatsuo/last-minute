@@ -202,62 +202,92 @@ const VideoCall = ({ courseId }) => {
     updateStream()
   }, [isVideoStreaming, isScreenSharing, activeCameraId, stream])
 
-  // Separate effect for handling audio tracks only
-  useEffect(() => {
-    const updateAudioTrack = async () => {
-      if (!stream) return
+  const updateAudioTrack = async (specified = undefined) => {
+    if (!stream) return
 
-      try {
-        if (isAudioStreaming) {
-          // Check if we already have an audio track
-          const existingAudioTracks = stream.getAudioTracks() || []
+    try {
+      if (specified !== undefined) {
+        // Check if we already have an audio track
+        const existingAudioTracks = stream.getAudioTracks() || []
 
-          // Only get a new audio track if we don't have one or if the device changed
-          if (
-            existingAudioTracks.length === 0 ||
-            existingAudioTracks[0].getSettings().deviceId !== activeMicrophoneId
-          ) {
-            // Remove existing audio tracks if we're changing devices
-            existingAudioTracks.forEach(track => {
-              stream.removeTrack(track)
-              track.stop()
-            })
-
-            // Get new audio track
-            const audioStream = await navigator.mediaDevices.getUserMedia({
-              audio: {
-                deviceId: activeMicrophoneId,
-                echoCancellation: true,
-                noiseSuppression: true,
-                autoGainControl: true,
-              },
-            })
-
-            // Add audio track to the existing stream
-            audioStream.getAudioTracks().forEach(track => {
-              track.enabled = true // Ensure it's enabled
-              stream.addTrack(track)
-            })
-          } else {
-            // If we have the right track, just make sure it's enabled
-            existingAudioTracks.forEach(track => {
-              track.enabled = true
-            })
-          }
-        } else {
-          // Instead of removing tracks, just disable them
-          const existingAudioTracks = stream.getAudioTracks() || []
+        // Only get a new audio track if we don't have one or if the device changed
+        if (
+          existingAudioTracks.length === 0 ||
+          existingAudioTracks[0].getSettings().deviceId !== activeMicrophoneId
+        ) {
+          // Remove existing audio tracks if we're changing devices
           existingAudioTracks.forEach(track => {
-            track.enabled = false // Mute the track instead of removing
+            stream.removeTrack(track)
+            track.stop()
+          })
+
+          // Get new audio track
+          const audioStream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              deviceId: activeMicrophoneId,
+              echoCancellation: true,
+              noiseSuppression: true,
+              autoGainControl: true,
+            },
+          })
+
+          // Add audio track to the existing stream
+          audioStream.getAudioTracks().forEach(track => {
+            track.enabled = specified // specified status
+            stream.addTrack(track)
+          })
+      }} else if (isAudioStreaming) {
+        // Check if we already have an audio track
+        const existingAudioTracks = stream.getAudioTracks() || []
+
+        // Only get a new audio track if we don't have one or if the device changed
+        if (
+          existingAudioTracks.length === 0 ||
+          existingAudioTracks[0].getSettings().deviceId !== activeMicrophoneId
+        ) {
+          // Remove existing audio tracks if we're changing devices
+          existingAudioTracks.forEach(track => {
+            stream.removeTrack(track)
+            track.stop()
+          })
+
+          // Get new audio track
+          const audioStream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              deviceId: activeMicrophoneId,
+              echoCancellation: true,
+              noiseSuppression: true,
+              autoGainControl: true,
+            },
+          })
+
+          // Add audio track to the existing stream
+          audioStream.getAudioTracks().forEach(track => {
+            track.enabled = true // Ensure it's enabled
+            stream.addTrack(track)
+          })
+        } else {
+          // If we have the right track, just make sure it's enabled
+          existingAudioTracks.forEach(track => {
+            track.enabled = true
           })
         }
-      } catch (error) {
-        console.error('Error updating audio tracks:', error)
-      } finally {
-        setIsAudioStreamingLoading(false)
+      } else {
+        // Instead of removing tracks, just disable them
+        const existingAudioTracks = stream.getAudioTracks() || []
+        existingAudioTracks.forEach(track => {
+          track.enabled = false // Mute the track instead of removing
+        })
       }
+    } catch (error) {
+      console.error('Error updating audio tracks:', error)
+    } finally {
+      setIsAudioStreamingLoading(false)
     }
+  }
 
+  // Separate effect for handling audio tracks only
+  useEffect(() => {
     updateAudioTrack()
   }, [isAudioStreaming, activeMicrophoneId, stream])
 
@@ -417,7 +447,12 @@ const VideoCall = ({ courseId }) => {
         remoteVideoRef.current.srcObject = remoteStream
       }
       remoteStream.getTracks().forEach(track => {
-        console.log('Remote track details:', track.kind, track.enabled, track.muted)
+        console.log(
+          'Remote track details:',
+          track.kind,
+          track.enabled,
+          track.muted
+        )
         track.onended = () => {
           console.log('Remote track ended')
           stopStream()
@@ -430,88 +465,67 @@ const VideoCall = ({ courseId }) => {
 
   /**
    * Ensures stream has at least one track, adding a muted audio track if needed
-   * 
+   *
    * @param {MediaStream} stream - The media stream to validate
    * @param {string} microphoneId - ID of the microphone to use if needed
    * @returns {Promise<boolean>} True if stream has tracks after validation
    */
-  const ensureStreamHasTracks = async (stream, microphoneId) => {
+  const ensureStreamHasTracks = async (stream) => {
     if (!stream) {
       console.error('No stream available')
       return false
     }
-  
+
     if (!stream.getTracks().length) {
       console.warn('No tracks in stream. Acquiring muted audio track...')
-  
-      try {
-        // Get audio stream without enabling audio streaming state
-        const audioStream = await navigator.mediaDevices.getUserMedia({
-          audio: {
-            deviceId: microphoneId,
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true,
-          },
-        })
-  
-        // Add track to stream but keep it muted
-        const audioTrack = audioStream.getAudioTracks()[0]
-        if (audioTrack) {
-          audioTrack.enabled = false // Keep it muted
-          stream.addTrack(audioTrack)
-          console.log('Added muted audio track:', audioTrack)
+
+      await updateAudioTrack(false)
+
+      // Wait for tracks to be available
+      await new Promise(resolve => {
+        const checkForTracks = () => {
+          if (stream && stream.getTracks().length > 0) {
+            console.log('Tracks acquired successfully:', stream.getTracks())
+            resolve()
+          } else {
+            setTimeout(checkForTracks, 500)
+          }
         }
-      } catch (error) {
-        console.error('Error adding muted audio track:', error)
-        return false
-      }
+
+        checkForTracks()
+        setTimeout(() => resolve(), 10000)
+      })
     }
-  
-    // Wait for tracks to be available
-    await new Promise(resolve => {
-      const checkForTracks = () => {
-        if (stream && stream.getTracks().length > 0) {
-          console.log('Tracks acquired successfully:', stream.getTracks())
-          resolve()
-        } else {
-          setTimeout(checkForTracks, 500)
-        }
-      }
-  
-      checkForTracks()
-      setTimeout(() => resolve(), 10000)
-    })
-  
+
     if (!stream.getTracks().length) {
       console.error('No tracks found in stream after 10 seconds')
       return false
     }
-  
+
     console.log('Tracks acquired successfully:', stream.getTracks())
     return true
   }
-  
+
   /**
    * Makes a WebRTC call to the remote peer
-   * 
+   *
    * @returns {Promise<void>} A promise that resolves when the call is set up
    */
   const makeCall = async () => {
     try {
       console.log('Making call...')
       const peerConnection = makePeerConnection()
-  
+
       if (!peerConnection) {
         console.error('Failed to create peer connection')
         throw new Error('Failed to create peer connection')
       }
-  
+
       // Ensure stream has tracks before proceeding
-      if (!(await ensureStreamHasTracks(stream, activeMicrophoneId))) {
+      if (!(await ensureStreamHasTracks(stream))) {
         throw new Error('Failed to ensure stream has tracks')
       }
-  
+
       setIsCalling(true)
       console.log('Adding local stream to peer connection:', stream)
       stream.getTracks().forEach(track => {
@@ -519,7 +533,7 @@ const VideoCall = ({ courseId }) => {
         peerConnection.addTrack(track, stream)
       })
       console.log('Local stream added to peer connection')
-  
+
       // ICE candidates listener
       let iceCandidates = []
       peerConnection.onicecandidate = async event => {
@@ -529,32 +543,32 @@ const VideoCall = ({ courseId }) => {
         }
       }
       console.log('ICE candidates listener set up')
-  
+
       const offer = await peerConnection.createOffer()
       await peerConnection.setLocalDescription(offer)
-  
+
       // Wait for ICE gathering with timeout
       await gatherIceCandidatesWithTimeout(peerConnection, iceCandidates)
-  
+
       if (!iceCandidates.length) {
         console.error('No ICE candidates found')
         throw new Error('No ICE candidates found')
       }
-  
+
       console.log(peerConnection.localDescription)
       if (!peerConnection.localDescription.sdp.includes('a=candidate:')) {
         console.error('No ICE candidates found in local description')
         throw new Error('No ICE candidates found in local description')
       }
       console.log('ICE candidates found in local description')
-  
+
       // serialize local description
       const serializedOffer = {
         type: peerConnection.localDescription.type,
         sdp: peerConnection.localDescription.sdp,
       }
       console.log('Serialized offer:', serializedOffer)
-  
+
       await setDoc(
         doc(db, 'courses', courseId),
         { offer: serializedOffer },
@@ -566,10 +580,10 @@ const VideoCall = ({ courseId }) => {
       setIsCalling(false)
     }
   }
-  
+
   /**
    * Answers an incoming WebRTC call
-   * 
+   *
    * @returns {Promise<void>} A promise that resolves when the call is answered
    */
   const answerCall = async () => {
@@ -581,31 +595,31 @@ const VideoCall = ({ courseId }) => {
         console.error('Failed to create peer connection')
         throw new Error('No peer connection available')
       }
-  
+
       if (!course?.offer) {
         console.error('No offer available to answer')
         throw new Error('No offer available to answer')
       }
-  
+
       // Ensure stream has tracks before proceeding
-      if (!(await ensureStreamHasTracks(stream, activeMicrophoneId))) {
+      if (!(await ensureStreamHasTracks(stream))) {
         throw new Error('Failed to ensure stream has tracks')
       }
-  
+
       console.log('Answering call...')
       setIsCalling(true)
-      
+
       // Set the remote description from the offer
       await peerConnection.setRemoteDescription(
         new RTCSessionDescription(course.offer)
       )
       console.log('Remote description set from offer')
-  
+
       // Create an answer
       const answer = await peerConnection.createAnswer()
       await peerConnection.setLocalDescription(answer)
       console.log('Local description set with answer')
-  
+
       // ICE candidates listener
       let iceCandidates = []
       peerConnection.onicecandidate = async event => {
@@ -615,29 +629,29 @@ const VideoCall = ({ courseId }) => {
         }
       }
       console.log('ICE candidates listener set up')
-  
+
       // Wait for ICE gathering with timeout
       await gatherIceCandidatesWithTimeout(peerConnection, iceCandidates)
-  
+
       if (!iceCandidates.length) {
         console.error('No ICE candidates found')
         throw new Error('No ICE candidates found')
       }
-  
+
       // Check if candidates are in the SDP
       if (!peerConnection.localDescription.sdp.includes('a=candidate:')) {
         console.error('No ICE candidates found in local description')
         throw new Error('No ICE candidates found in local description')
       }
       console.log('ICE candidates found in local description')
-  
+
       // Serialize the answer
       const serializedAnswer = {
         type: peerConnection.localDescription.type,
         sdp: peerConnection.localDescription.sdp,
       }
       console.log('Serialized answer:', serializedAnswer)
-  
+
       // Send the answer to Firestore
       await setDoc(
         doc(db, 'courses', courseId),
@@ -663,21 +677,25 @@ const VideoCall = ({ courseId }) => {
 
   /**
    * Handles ICE gathering with timeout
-   * 
+   *
    * @param {RTCPeerConnection} peerConnection - The WebRTC peer connection
    * @param {Array} iceCandidates - Array to store ICE candidates
    * @param {number} timeoutMs - Timeout in milliseconds
    * @returns {Promise<void>} Resolves when gathering is complete or times out
    */
-  const gatherIceCandidatesWithTimeout = (peerConnection, iceCandidates, timeoutMs = 5000) => {
+  const gatherIceCandidatesWithTimeout = (
+    peerConnection,
+    iceCandidates,
+    timeoutMs = 5000
+  ) => {
     return new Promise((resolve, reject) => {
       // Track if we've already resolved/rejected
       let isResolved = false
-      
+
       // Handler for ICE gathering state changes
       peerConnection.onicegatheringstatechange = () => {
         if (isResolved) return
-        
+
         if (peerConnection.iceGatheringState === 'complete') {
           console.log('ICE gathering complete')
           console.log('ICE candidates:', iceCandidates)
@@ -687,29 +705,36 @@ const VideoCall = ({ courseId }) => {
           console.log('ICE gathering state:', peerConnection.iceGatheringState)
         }
       }
-      
+
       // Set timeout to ensure we don't wait indefinitely
       const timeoutId = setTimeout(() => {
         if (isResolved) return
-        
+
         isResolved = true
         console.warn(`ICE gathering timed out after ${timeoutMs}ms`)
-        
+
         // If we have at least one candidate, resolve anyway
         if (iceCandidates.length > 0) {
-          console.log('Proceeding with available candidates:', iceCandidates.length)
+          console.log(
+            'Proceeding with available candidates:',
+            iceCandidates.length
+          )
           resolve()
         } else {
           reject(new Error('ICE gathering timed out with no candidates'))
         }
       }, timeoutMs)
-      
+
       // Cleanup timeout if resolved naturally
-      peerConnection.addEventListener('icegatheringstatechange', () => {
-        if (peerConnection.iceGatheringState === 'complete') {
-          clearTimeout(timeoutId)
-        }
-      }, { once: true })
+      peerConnection.addEventListener(
+        'icegatheringstatechange',
+        () => {
+          if (peerConnection.iceGatheringState === 'complete') {
+            clearTimeout(timeoutId)
+          }
+        },
+        { once: true }
+      )
     })
   }
 
@@ -798,7 +823,13 @@ const VideoCall = ({ courseId }) => {
         {/* Spacer */}
 
         <CustomButton
-          onClick={() => (course?.answer ? endCall() : user?.claims.isTutor ? makeCall() : answerCall())}
+          onClick={() =>
+            course?.answer
+              ? endCall()
+              : user?.claims.isTutor
+              ? makeCall()
+              : answerCall()
+          }
           disabled={!user?.claims.isTutor && !course?.offer}
           loading={isCalling}
           className={`${
