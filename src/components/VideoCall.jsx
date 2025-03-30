@@ -236,7 +236,8 @@ const VideoCall = ({ courseId }) => {
             track.enabled = specified // specified status
             stream.addTrack(track)
           })
-      }} else if (isAudioStreaming) {
+        }
+      } else if (isAudioStreaming) {
         // Check if we already have an audio track
         const existingAudioTracks = stream.getAudioTracks() || []
 
@@ -470,7 +471,7 @@ const VideoCall = ({ courseId }) => {
    * @param {string} microphoneId - ID of the microphone to use if needed
    * @returns {Promise<boolean>} True if stream has tracks after validation
    */
-  const ensureStreamHasTracks = async (stream) => {
+  const ensureStreamHasTracks = async stream => {
     if (!stream) {
       console.error('No stream available')
       return false
