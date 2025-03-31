@@ -35,10 +35,10 @@ const VideoCall = ({ courseId }) => {
   const [audioInputs, setAudioInputs] = useState([])
   const [audioOutputs, setAudioOutputs] = useState([])
   const stream = useRef()
-  const [isVideoStreaming, setIsVideoStreaming] = useState(true)
+  const [isVideoStreaming, setIsVideoStreaming] = useState(false)
   useConsoleLog('isVideoStreaming', isVideoStreaming)
-  const [isVideoStreamingLoading, setIsVideoStreamingLoading] = useState(true)
-  const [isAudioStreaming, setIsAudioStreaming] = useState(true)
+  const [isVideoStreamingLoading, setIsVideoStreamingLoading] = useState(false)
+  const [isAudioStreaming, setIsAudioStreaming] = useState(false)
   const [isAudioStreamingLoading, setIsAudioStreamingLoading] = useState(false)
   const [isScreenSharing, setIsScreenSharing] = useState(false)
   const [isScreenSharingLoading, setIsScreenSharingLoading] = useState(false)
@@ -141,7 +141,7 @@ const VideoCall = ({ courseId }) => {
       await videoSender.current.replaceTrack(newTrack)
       console.log('Video track replaced successfully')
     } catch (error) {
-      throw new Error('Error replacing video track:', error)
+      throw new Error(`Error replacing video track: ${error.message}`)
     }
   }
 
@@ -162,7 +162,7 @@ const VideoCall = ({ courseId }) => {
       await audioSender.current.replaceTrack(newTrack)
       console.log('Audio track replaced successfully')
     } catch (error) {
-      throw new Error('Error replacing audio track:', error)
+      throw new Error(`Error replacing audio track: ${error}`)
     }
   }
 
