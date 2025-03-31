@@ -504,12 +504,10 @@ const VideoCall = ({ courseId }) => {
     peerConnection.current.oniceconnectionstatechange = () => {
       if (peerConnection.current.iceConnectionState === 'disconnected') {
         console.log('Disconnected from peer')
-        stopStream()
       } else if (peerConnection.current.iceConnectionState === 'connected') {
         console.log('Connected to peer')
       } else if (peerConnection.current.iceConnectionState === 'failed') {
         console.error('Connection failed')
-        stopStream()
       }
     }
     peerConnection.current.ontrack = event => {
@@ -528,7 +526,6 @@ const VideoCall = ({ courseId }) => {
         )
         track.onended = () => {
           console.log('Remote track ended')
-          stopStream()
         }
       })
     }
@@ -623,13 +620,13 @@ const VideoCall = ({ courseId }) => {
       )
 
       // // Create a dummy audio track if no audio track exists
-      // if (stream.current.getAudioTracks().length === 0) {
-      //   createDummyAudioTrack()
-      // }
+      if (stream.current.getAudioTracks().length === 0) {
+        createDummyAudioTrack()
+      }
       // // Create a dummy video track if no video track exists
-      // if (stream.current.getVideoTracks().length === 0) {
-      //   createDummyVideoTrack()
-      // }
+      if (stream.current.getVideoTracks().length === 0) {
+        createDummyVideoTrack()
+      }
 
       // Wait for tracks to be available
       await new Promise(resolve => {
