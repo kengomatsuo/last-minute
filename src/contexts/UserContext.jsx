@@ -10,7 +10,6 @@ import {
   reload,
 } from 'firebase/auth'
 import { auth, db, functions } from '../../firebaseConfig'
-import { useConsoleLog } from '../hooks'
 import { httpsCallable } from 'firebase/functions'
 import { doc, setDoc } from 'firebase/firestore'
 import Auth from '../screens/Auth'
@@ -153,7 +152,7 @@ const UserContextProvider = ({ children }) => {
       startVerificationChecking()
     }
 
-    console.log('User:', user)
+    // console.log('User:', user)
     // console.log('Verified:', user && user.emailVerified)
 
     // Clean up the interval when component unmounts

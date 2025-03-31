@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
+import LoadingDots from './LoadingDots'
 
 /**
  * CustomInteractive component
@@ -15,6 +16,7 @@ const CustomInteractive = ({
   className = '',
   children,
   onClick = () => {},
+  loading = false,
 }) => {
   const [isPressed, setIsPressed] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -28,9 +30,9 @@ const CustomInteractive = ({
   return (
     <div
       className={`${
-        isLoading ? 'pointer-events-none opacity-50' : ''
-      } ${className} px-3 py-1 w-full rounded-md hover:bg-interactive-hover
-        active:bg-interactive-active active:ring-background-secondary active:ring truncate text-primary-text text-center font-medium text-lg cursor-pointer`}
+        loading || isLoading ? 'pointer-events-none' : ''
+      } ${isLoading ? 'opacity-50' : ''} ${className} px-3 py-1 w-full rounded-md hover:bg-interactive-hover
+        active:bg-interactive-active active:ring-background-secondary active:ring text-ellipsis relative text-primary-text text-center font-medium text-lg cursor-pointer`}
       onClick={handleClick}
       onPointerDown={() => setIsPressed(true)}
       onPointerCancel={() => setIsPressed(false)}
@@ -38,12 +40,17 @@ const CustomInteractive = ({
       onPointerLeave={() => setIsPressed(false)}
     >
       <div
-        className={`transition-transform w-full ${
+        className={`${loading ? 'opacity-0' :''} transition-transform justify-center flex w-full ${
           isPressed ? 'scale-[97%]' : ''
         }`}
       >
         {children}
       </div>
+      {(loading || isLoading) && (
+        <div className='absolute inset-0 flex items-center justify-center'>
+          <LoadingDots dotsClassName='h-2 w-2 bg-primary' />
+        </div>
+      )}
     </div>
   )
 }
