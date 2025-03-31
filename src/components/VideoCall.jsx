@@ -14,6 +14,7 @@ import PropTypes from 'prop-types'
 import { db } from '../../firebaseConfig'
 import { CourseContext } from '../contexts/CourseContext'
 import { UserContext } from '../contexts/UserContext'
+import { useConsoleLog } from '../hooks'
 
 /**
  * VideoCall component for handling video and audio streaming
@@ -32,14 +33,16 @@ const VideoCall = ({ courseId }) => {
   const [audioInputs, setAudioInputs] = useState([])
   const [audioOutputs, setAudioOutputs] = useState([])
   const stream = useRef()
-  const [isVideoStreaming, setIsVideoStreaming] = useState(false)
-  const [isVideoStreamingLoading, setIsVideoStreamingLoading] = useState(false)
-  const [isAudioStreaming, setIsAudioStreaming] = useState(false)
+  const [isVideoStreaming, setIsVideoStreaming] = useState(true)
+  useConsoleLog('isVideoStreaming', isVideoStreaming)
+  const [isVideoStreamingLoading, setIsVideoStreamingLoading] = useState(true)
+  const [isAudioStreaming, setIsAudioStreaming] = useState(true)
   const [isAudioStreamingLoading, setIsAudioStreamingLoading] = useState(false)
   const [isScreenSharing, setIsScreenSharing] = useState(false)
   const [isScreenSharingLoading, setIsScreenSharingLoading] = useState(false)
 
   const peerConnection = useRef(null)
+  const videoSender = useRef(null)
   const localVideoRef = useRef(null)
   const remoteVideoRef = useRef(null)
   const [activeCameraId, setActiveCameraId] = useState('default')
@@ -77,10 +80,10 @@ const VideoCall = ({ courseId }) => {
   // disable video and audio buttons if no devices are available
   useEffect(() => {
     if (!videoInputs.length) {
-      setIsVideoStreaming(false)
+      null
     }
     if (!audioInputs.length) {
-      setIsAudioStreaming(false)
+      updateAudioTrack(isAudioStreaming)
     }
   }, [videoInputs, audioInputs])
 
@@ -120,6 +123,27 @@ const VideoCall = ({ courseId }) => {
   }, [stopStream])
 
   /**
+   * Replaces the current video track with a new one
+   *
+   * @param {MediaStreamTrack} newTrack - The new video track to use
+   * @returns {Promise<void>}
+   */
+  const replaceVideoTrack = async newTrack => {
+    if (!peerConnection.current || !videoSender.current) {
+      console.error('No active connection or video sender available')
+      return
+    }
+
+    try {
+      console.log('Replacing video track:', newTrack)
+      await videoSender.current.replaceTrack(newTrack)
+      console.log('Video track replaced successfully')
+    } catch (error) {
+      console.error('Error replacing video track:', error)
+    }
+  }
+
+  /**
    * Opens camera with specified settings
    *
    * @param {string} cameraId - The ID of the camera to use
@@ -127,96 +151,123 @@ const VideoCall = ({ courseId }) => {
    * @param {number} height - Height for the video
    * @returns {Promise<MediaStream>} The media stream
    */
-  useEffect(() => {
-    const updateStream = async () => {
-      try {
-        // Create a new stream if one doesn't exist yet
-        if (!stream.current) {
-          createStream()
-        }
+  const updateVideoTrack = async () => {
+    try {
+      // Create a new stream if one doesn't exist yet
+      if (!stream.current) {
+        createStream()
+      }
 
-        // Handle video tracks only
-        if (isScreenSharing) {
-          try {
-            // Stop any existing video tracks
-            const existingVideoTracks = stream.current?.getVideoTracks() || []
-            existingVideoTracks.forEach(track => {
-              stream.current.removeTrack(track)
-              track.stop()
-            })
-
-            // Get new screen sharing track
-            const screenStream = await navigator.mediaDevices.getDisplayMedia({
-              video: {
-                cursor: 'always',
-                frameRate: 24,
-                resizeMode: 'none',
-              },
-              audio: false, // Handle audio separately
-            })
-
-            // Add screen track to the existing stream
-            screenStream.getVideoTracks().forEach(track => {
-              console.log('Adding screen sharing track:', track)
-              stream.current.addTrack(track)
-
-              // Handle when user stops screen sharing via browser UI
-              track.onended = () => {
-                setIsScreenSharing(false)
-              }
-            })
-          } catch (error) {
-            setIsScreenSharing(false)
-            throw error
-          }
-        } else if (isVideoStreaming) {
+      // Handle video tracks only
+      if (isScreenSharing) {
+        try {
           // Stop any existing video tracks
           const existingVideoTracks = stream.current?.getVideoTracks() || []
           existingVideoTracks.forEach(track => {
+            if (track._interval) {
+              clearInterval(track._interval)
+            }
+            if (track._canvas) {
+              track._canvas.remove()
+            }
+            console.log('Removing existing video track:', track)
             stream.current.removeTrack(track)
             track.stop()
           })
 
-          // Get new camera video track
-          const videoStream = await navigator.mediaDevices.getUserMedia({
+          // Get new screen sharing track
+          const screenStream = await navigator.mediaDevices.getDisplayMedia({
             video: {
-              deviceId: activeCameraId,
-              width: { ideal: 1280, max: 2560 },
-              height: { ideal: 720, max: 1440 },
-              frameRate: { min: 8, max: 24 },
+              cursor: 'always',
+              frameRate: 24,
               resizeMode: 'none',
             },
+            audio: false, // Handle audio separately
           })
 
-          // Add camera track to the existing stream
-          videoStream.getVideoTracks().forEach(track => {
-            console.log('Adding camera track:', track)
+          // Add screen track to the existing stream
+          screenStream.getVideoTracks().forEach(track => {
+            console.log('Adding screen sharing track:', track)
             stream.current.addTrack(track)
-          })
-        } else {
-          // If neither video nor screen sharing is active, stop any video tracks
-          const existingVideoTracks = stream.current?.getVideoTracks() || []
-          existingVideoTracks.forEach(track => {
-            stream.current.removeTrack(track)
-            track.stop()
-          })
-        }
-      } catch (error) {
-        console.error('Error updating video tracks:', error)
-      } finally {
-        setIsVideoStreamingLoading(false)
-        setIsScreenSharingLoading(false)
-      }
-    }
 
-    updateStream()
+            // Handle when user stops screen sharing via browser UI
+            track.onended = () => {
+              setIsScreenSharing(false)
+            }
+          })
+        } catch (error) {
+          setIsScreenSharing(false)
+          throw error
+        }
+      } else if (isVideoStreaming) {
+        // Stop any existing video tracks
+        const existingVideoTracks = stream.current?.getVideoTracks() || []
+        existingVideoTracks.forEach(track => {
+          if (track._interval) {
+            clearInterval(track._interval)
+          }
+          if (track._canvas) {
+            track._canvas.remove()
+          }
+          console.log('Removing existing video track:', track)
+          stream.current.removeTrack(track)
+          track.stop()
+        })
+
+        // Get new camera video track
+        const videoStream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            deviceId: activeCameraId,
+            width: { ideal: 1280, max: 2560 },
+            height: { ideal: 720, max: 1440 },
+            frameRate: { min: 8, max: 24 },
+            resizeMode: 'none',
+          },
+        })
+
+        // Add camera track to the existing stream
+        videoStream.getVideoTracks().forEach(track => {
+          console.log('Adding camera track:', track)
+          stream.current.addTrack(track)
+        })
+      } else {
+        // If neither video nor screen sharing is active, stop any video tracks
+        const existingVideoTracks = stream.current?.getVideoTracks() || []
+        existingVideoTracks.forEach(track => {
+          stream.current.removeTrack(track)
+          track.stop()
+        })
+
+        // Create a dummy video track if no video track exists
+        createDummyVideoTrack()
+      }
+
+      if (peerConnection.current && videoSender.current) {
+        const newVideoTrack = stream.current.getVideoTracks()[0]
+        if (newVideoTrack) {
+          await replaceVideoTrack(newVideoTrack)
+        }
+      }
+    } catch (error) {
+      console.error('Error updating video tracks:', error)
+    } finally {
+      setIsVideoStreamingLoading(false)
+      setIsScreenSharingLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    updateVideoTrack()
   }, [isVideoStreaming, isScreenSharing, activeCameraId])
 
   const updateAudioTrack = async state => {
-    if (!stream.current) return
+    if (!stream.current || isAudioStreamingLoading) return
 
     try {
       setIsAudioStreamingLoading(true)
+
+      console.log('Testing microphone:', activeMicrophoneId)
+      console.log('Audio streaming state:', state)
 
       if (state === true) {
         await testMicrophone()
@@ -260,6 +311,7 @@ const VideoCall = ({ courseId }) => {
       setIsAudioStreaming(state)
     } catch (error) {
       console.error('Error updating audio tracks:', error)
+      setIsAudioStreaming(!state)
     } finally {
       setIsAudioStreamingLoading(false)
     }
@@ -267,8 +319,11 @@ const VideoCall = ({ courseId }) => {
 
   // Separate effect for handling audio tracks only
   useEffect(() => {
-    updateAudioTrack(isAudioStreaming)
-  }, [activeMicrophoneId])
+    if (stream) {
+      // updateVideoTrack(isVideoStreaming)
+      updateAudioTrack(isAudioStreaming)
+    }
+  }, [stream])
 
   /**
    * Handles camera selection change
@@ -342,9 +397,13 @@ const VideoCall = ({ courseId }) => {
 
     // Cleanup
     testStream.getTracks().forEach(track => track.stop())
+    audioContext.suspend()
+    audioContext.close()
+    analyser.disconnect()
+    source.disconnect()
 
     if (!hasSound) {
-      console.error('No sound detected from the microphone')
+      console.error('No sound detected from the microphone. Cleaning up...')
       throw new Error('No sound detected from the microphone')
     }
     return
@@ -442,21 +501,58 @@ const VideoCall = ({ courseId }) => {
 
     const dummyAudioTrack = destination.stream.getAudioTracks()[0]
     stream.current.addTrack(dummyAudioTrack)
-    console.log('Dummy audio track created and added to stream:', dummyAudioTrack)
+    console.log(
+      'Dummy audio track created and added to stream:',
+      dummyAudioTrack
+    )
   }
 
   const createDummyVideoTrack = () => {
+    // Store canvas in a wider scope or as a class property
     const canvas = document.createElement('canvas')
     canvas.width = 1280
     canvas.height = 720
     const ctx = canvas.getContext('2d')
+
+    // Draw initial grey rectangle
     ctx.fillStyle = 'grey'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    const videoStream = canvas.captureStream(1)
+    // Add some text or identifier
+    ctx.fillStyle = 'white'
+    ctx.font = '40px Arial'
+    ctx.fillText('Video Off', canvas.width / 2 - 80, canvas.height / 2)
+
+    // Set up continuous drawing to ensure stream remains active
+    const drawInterval = setInterval(() => {
+      // Add a small element that changes to ensure the stream is active
+      const date = new Date()
+      ctx.clearRect(0, canvas.height - 40, canvas.width, 40)
+      ctx.fillStyle = 'grey'
+      ctx.fillRect(0, canvas.height - 40, canvas.width, 40)
+      ctx.fillStyle = 'white'
+      ctx.font = '20px Arial'
+      ctx.fillText(date.toLocaleTimeString(), 20, canvas.height - 15)
+    }, 1000)
+
+    // Capture at a higher framerate
+    const videoStream = canvas.captureStream(8) // 5 FPS instead of 1
     const dummyVideoTrack = videoStream.getVideoTracks()[0]
+
+    // Store references to allow cleanup later
+    dummyVideoTrack._canvas = canvas
+    dummyVideoTrack._interval = drawInterval
+    dummyVideoTrack.onended = () => {
+      clearInterval(drawInterval)
+    }
+
     stream.current.addTrack(dummyVideoTrack)
-    console.log('Dummy video track created and added to stream:', dummyVideoTrack)
+    console.log(
+      'Dummy video track created and added to stream:',
+      dummyVideoTrack
+    )
+
+    return dummyVideoTrack
   }
 
   /**
@@ -472,16 +568,18 @@ const VideoCall = ({ courseId }) => {
     }
 
     if (stream.current.getTracks().length < 2) {
-      console.warn('Not enough tracks in stream. Creating dummy audio or video track...')
+      console.warn(
+        'Not enough tracks in stream. Creating dummy audio or video track...'
+      )
 
-      // Create a dummy audio track if no audio track exists
-      if (stream.current.getAudioTracks().length === 0) {
-        createDummyAudioTrack()
-      }
-      // Create a dummy video track if no video track exists
-      if (stream.current.getVideoTracks().length === 0) {
-        createDummyVideoTrack()
-      }
+      // // Create a dummy audio track if no audio track exists
+      // if (stream.current.getAudioTracks().length === 0) {
+      //   createDummyAudioTrack()
+      // }
+      // // Create a dummy video track if no video track exists
+      // if (stream.current.getVideoTracks().length === 0) {
+      //   createDummyVideoTrack()
+      // }
 
       // Wait for tracks to be available
       await new Promise(resolve => {
@@ -534,7 +632,12 @@ const VideoCall = ({ courseId }) => {
       console.log('Adding local stream to peer connection:', stream.current)
       stream.current.getTracks().forEach(track => {
         console.log('Adding track:', track)
-        peerConnection.current.addTrack(track, stream.current)
+        const sender = peerConnection.current.addTrack(track, stream.current)
+
+        if (track.kind === 'video') {
+          videoSender.current = sender
+          console.log('Video sender added:', sender)
+        }
       })
       console.log('Local stream added to peer connection')
 
@@ -696,10 +799,9 @@ const VideoCall = ({ courseId }) => {
         }
       }
     }
-  
+
     applyAnswer()
   }, [course?.answer, user?.claims.isTutor])
-  
 
   /**
    * Handles ICE gathering with timeout
