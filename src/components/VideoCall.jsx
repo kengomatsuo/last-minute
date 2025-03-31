@@ -24,6 +24,8 @@ import { useConsoleLog } from '../hooks'
  * @returns {JSX.Element} The rendered video call component
  */
 const VideoCall = ({ courseId }) => {
+  // TODO!!: clean up the code
+
   const { courses } = useContext(CourseContext)
   const { user } = useContext(UserContext)
 
@@ -43,6 +45,7 @@ const VideoCall = ({ courseId }) => {
 
   const peerConnection = useRef(null)
   const videoSender = useRef(null)
+  const audioSender = useRef(null)
   const localVideoRef = useRef(null)
   const remoteVideoRef = useRef(null)
   const [activeCameraId, setActiveCameraId] = useState('default')
@@ -130,8 +133,7 @@ const VideoCall = ({ courseId }) => {
    */
   const replaceVideoTrack = async newTrack => {
     if (!peerConnection.current || !videoSender.current) {
-      console.error('No active connection or video sender available')
-      return
+      throw new Error('No active connection or video sender available')
     }
 
     try {
@@ -139,7 +141,28 @@ const VideoCall = ({ courseId }) => {
       await videoSender.current.replaceTrack(newTrack)
       console.log('Video track replaced successfully')
     } catch (error) {
-      console.error('Error replacing video track:', error)
+      throw new Error('Error replacing video track:', error)
+    }
+  }
+
+  /**
+   * Replaces the current audio track with a new one
+   *
+   * @param {MediaStreamTrack} newTrack - The new audio track to use
+   * @returns {Promise<void>}
+   */
+  const replaceAudioTrack = async newTrack => {
+    console.log('Replacing audio track')
+    if (!peerConnection.current || !audioSender.current) {
+      throw new Error('No active connection or audio sender available')
+    }
+
+    try {
+      console.log('Replacing audio track:', newTrack)
+      await audioSender.current.replaceTrack(newTrack)
+      console.log('Audio track replaced successfully')
+    } catch (error) {
+      throw new Error('Error replacing audio track:', error)
     }
   }
 
@@ -244,12 +267,22 @@ const VideoCall = ({ courseId }) => {
 
       if (peerConnection.current && videoSender.current) {
         const newVideoTrack = stream.current.getVideoTracks()[0]
+        console.log('New video track:', newVideoTrack)
         if (newVideoTrack) {
           await replaceVideoTrack(newVideoTrack)
         }
       }
     } catch (error) {
       console.error('Error updating video tracks:', error)
+      createDummyVideoTrack()
+      // If we have a peer connection, replace the video track
+      if (peerConnection.current && videoSender.current) {
+        const newVideoTrack = stream.current.getVideoTracks()[0]
+        if (newVideoTrack) {
+          await replaceVideoTrack(newVideoTrack)
+        }
+      }
+      setIsVideoStreaming(false)
     } finally {
       setIsVideoStreamingLoading(false)
       setIsScreenSharingLoading(false)
@@ -258,6 +291,7 @@ const VideoCall = ({ courseId }) => {
 
   useEffect(() => {
     updateVideoTrack()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isVideoStreaming, isScreenSharing, activeCameraId])
 
   const updateAudioTrack = async state => {
@@ -275,17 +309,14 @@ const VideoCall = ({ courseId }) => {
       // Check if we already have an audio track
       const existingAudioTracks = stream.current.getAudioTracks() || []
 
-      // Only get a new audio track if we don't have one or if the device changed
-      if (
-        existingAudioTracks.length === 0 ||
-        existingAudioTracks[0].getSettings().deviceId !== activeMicrophoneId
-      ) {
-        // Remove existing audio tracks if we're changing devices
-        existingAudioTracks.forEach(track => {
-          stream.current.removeTrack(track)
-          track.stop()
-        })
+      // Remove existing audio tracks if we're changing devices
+      existingAudioTracks.forEach(track => {
+        stream.current.removeTrack(track)
+        track.stop()
+      })
 
+      // Only get a new audio track if we don't have one or if the device changed
+      if (state === true) {
         // Get new audio track
         const audioStream = await navigator.mediaDevices.getUserMedia({
           audio: {
@@ -298,20 +329,34 @@ const VideoCall = ({ courseId }) => {
 
         // Add audio track to the existing stream
         audioStream.getAudioTracks().forEach(track => {
-          track.enabled = state
+          track.enabled = true
           console.log('Adding audio track:', track)
           stream.current.addTrack(track)
         })
       } else {
-        // If we have the right track, just make sure it's enabled
-        existingAudioTracks.forEach(track => {
-          track.enabled = state
-        })
+        createDummyAudioTrack()
       }
+
+      // If we have a peer connection, replace the audio track
+      if (peerConnection.current && audioSender.current) {
+        const newAudioTrack = stream.current.getAudioTracks()[0]
+        if (newAudioTrack) {
+          await replaceAudioTrack(newAudioTrack)
+        }
+      }
+
       setIsAudioStreaming(state)
     } catch (error) {
       console.error('Error updating audio tracks:', error)
-      setIsAudioStreaming(!state)
+      createDummyAudioTrack()
+      // If we have a peer connection, replace the audio track
+      if (peerConnection.current && audioSender.current) {
+        const newAudioTrack = stream.current.getAudioTracks()[0]
+        if (newAudioTrack) {
+          await replaceAudioTrack(newAudioTrack)
+        }
+      }
+      setIsAudioStreaming(false)
     } finally {
       setIsAudioStreamingLoading(false)
     }
@@ -360,53 +405,55 @@ const VideoCall = ({ courseId }) => {
       audio: { deviceId: activeMicrophoneId },
     })
     const source = audioContext.createMediaStreamSource(testStream)
-    source.connect(analyser)
 
-    const dataArray = new Uint8Array(analyser.frequencyBinCount)
-    let hasSound = false
-    let testCompleted = false
+    try {
+      source.connect(analyser)
 
-    // Create a promise that resolves when sound is detected or timeout occurs
-    const soundDetectionPromise = new Promise(resolve => {
-      const checkAudio = () => {
-        if (testCompleted) return
+      const dataArray = new Uint8Array(analyser.frequencyBinCount)
+      let hasSound = false
+      let testCompleted = false
 
-        analyser.getByteFrequencyData(dataArray)
-        const soundDetected = dataArray.some(value => value > 10)
+      // Create a promise that resolves when sound is detected or timeout occurs
+      const soundDetectionPromise = new Promise(resolve => {
+        const checkAudio = () => {
+          if (testCompleted) return
 
-        if (soundDetected) {
-          hasSound = true
-          testCompleted = true
-          resolve()
+          analyser.getByteFrequencyData(dataArray)
+          const soundDetected = dataArray.some(value => value > 10)
+
+          if (soundDetected) {
+            hasSound = true
+            testCompleted = true
+            resolve()
+          }
         }
+
+        const interval = setInterval(checkAudio, 100)
+
+        // Set timeout to stop checking after 5 seconds
+        setTimeout(() => {
+          if (!testCompleted) {
+            testCompleted = true
+            clearInterval(interval)
+            resolve()
+          }
+        }, 5000)
+      })
+
+      await soundDetectionPromise
+
+      if (!hasSound) {
+        console.error('No sound detected from the microphone. Cleaning up...')
+        throw new Error('No sound detected from the microphone')
       }
-
-      const interval = setInterval(checkAudio, 100)
-
-      // Set timeout to stop checking after 5 seconds
-      setTimeout(() => {
-        if (!testCompleted) {
-          testCompleted = true
-          clearInterval(interval)
-          resolve()
-        }
-      }, 5000)
-    })
-
-    await soundDetectionPromise
-
-    // Cleanup
-    testStream.getTracks().forEach(track => track.stop())
-    audioContext.suspend()
-    audioContext.close()
-    analyser.disconnect()
-    source.disconnect()
-
-    if (!hasSound) {
-      console.error('No sound detected from the microphone. Cleaning up...')
-      throw new Error('No sound detected from the microphone')
+      return
+    } finally {
+      testStream.getTracks().forEach(track => track.stop())
+      audioContext.suspend()
+      audioContext.close()
+      analyser.disconnect()
+      source.disconnect()
     }
-    return
   }
 
   const handleVideoToggle = async () => {
@@ -500,6 +547,7 @@ const VideoCall = ({ courseId }) => {
     oscillator.start()
 
     const dummyAudioTrack = destination.stream.getAudioTracks()[0]
+    dummyAudioTrack.enabled = false
     stream.current.addTrack(dummyAudioTrack)
     console.log(
       'Dummy audio track created and added to stream:',
@@ -521,7 +569,9 @@ const VideoCall = ({ courseId }) => {
     // Add some text or identifier
     ctx.fillStyle = 'white'
     ctx.font = '40px Arial'
-    ctx.fillText('Video Off', canvas.width / 2 - 80, canvas.height / 2)
+    const text = user.displayName || 'Anonymous'
+    const textWidth = ctx.measureText(text).width
+    ctx.fillText(text, (canvas.width - textWidth) / 2, canvas.height / 2)
 
     // Set up continuous drawing to ensure stream remains active
     const drawInterval = setInterval(() => {
@@ -638,7 +688,20 @@ const VideoCall = ({ courseId }) => {
           videoSender.current = sender
           console.log('Video sender added:', sender)
         }
+        if (track.kind === 'audio') {
+          audioSender.current = sender
+          console.log('Audio sender added:', sender)
+        }
       })
+
+      console.log('Video and audio senders added:', {
+        videoSender: videoSender.current,
+        audioSender: audioSender.current,
+      })
+
+      if (!videoSender.current || !audioSender.current) {
+        throw new Error('Failed to add video or audio sender')
+      }
       console.log('Local stream added to peer connection')
 
       // ICE candidates listener
@@ -719,7 +782,24 @@ const VideoCall = ({ courseId }) => {
       console.log('Adding local stream to peer connection:', stream.current)
       stream.current.getTracks().forEach(track => {
         console.log('Adding track:', track)
-        peerConnection.current.addTrack(track, stream.current)
+        const sender = peerConnection.current.addTrack(track, stream.current)
+
+        if (track.kind === 'video') {
+          videoSender.current = sender
+          console.log('Video sender added:', sender)
+        }
+        if (track.kind === 'audio') {
+          audioSender.current = sender
+          console.log('Audio sender added:', sender)
+        }
+      })
+
+      if (!videoSender.current || !audioSender.current) {
+        throw new Error('Failed to add video or audio sender')
+      }
+      console.log('Video and audio senders added:', {
+        videoSender: videoSender.current,
+        audioSender: audioSender.current,
       })
       console.log('Local stream added to peer connection')
 
