@@ -362,14 +362,6 @@ const VideoCall = ({ courseId }) => {
     }
   }
 
-  // Separate effect for handling audio tracks only
-  useEffect(() => {
-    if (stream) {
-      // updateVideoTrack(isVideoStreaming)
-      updateAudioTrack(isAudioStreaming)
-    }
-  }, [stream])
-
   /**
    * Handles camera selection change
    *
@@ -859,25 +851,27 @@ const VideoCall = ({ courseId }) => {
   }
 
   useEffect(() => {
-    const applyAnswer = async () => {
-      if (
-        user?.claims.isTutor &&
-        course?.answer &&
-        peerConnection.current &&
-        peerConnection.current.signalingState === 'have-local-offer'
-      ) {
-        try {
-          await peerConnection.current.setRemoteDescription(
-            new RTCSessionDescription(course.answer)
-          )
-          console.log('Remote answer set successfully')
-        } catch (error) {
-          console.error('Failed to set remote answer:', error)
+    if (user?.claims.isTutor && course?.answer) {
+      const applyAnswer = async () => {
+        if (
+          user?.claims.isTutor &&
+          course?.answer &&
+          peerConnection.current &&
+          peerConnection.current.signalingState === 'have-local-offer'
+        ) {
+          try {
+            await peerConnection.current.setRemoteDescription(
+              new RTCSessionDescription(course.answer)
+            )
+            console.log('Remote answer set successfully')
+          } catch (error) {
+            console.error('Failed to set remote answer:', error)
+          }
         }
       }
-    }
 
-    applyAnswer()
+      applyAnswer()
+    }
   }, [course?.answer, user?.claims.isTutor])
 
   /**
@@ -945,7 +939,16 @@ const VideoCall = ({ courseId }) => {
   const endCall = async () => {
     if (peerConnection.current) {
       peerConnection.current.close()
+      peerConnection.current = null
+      console.log('Peer connection closed')
     }
+
+    videoSender.current = null
+    audioSender.current = null
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = null
+    }
+
     await setDoc(
       doc(db, 'courses', courseId),
       { offer: null, answer: null },
