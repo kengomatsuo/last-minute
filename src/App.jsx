@@ -18,6 +18,7 @@ import { CourseContextProvider } from './contexts/CourseContext'
 import Requests from './screens/Requests'
 import { MOVEMENT_TRANSITION } from './constants/visualConstants'
 import { useConsoleLog } from './hooks'
+import AlertDialog from './components/AlertDialog'
 
 /**
  * Layout component that wraps authenticated routes with CourseContextProvider
@@ -63,6 +64,7 @@ function App() {
           transition={MOVEMENT_TRANSITION}
         >
           <ScreenContextProvider>
+            <AlertDialog />
             <CustomNavBar scrollContainerRef={scrollContainerRef} />
             <AnimatePresence mode='wait'>
               <motion.div

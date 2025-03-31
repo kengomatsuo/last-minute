@@ -216,7 +216,7 @@ const Auth = ({ initialAction }) => {
                 loading={isAuthLoading}
                 onClick={() => signOut()}
               >
-                <div className='flex items-center gap-2'>
+                <div className='flex items-center gap-2 text-nowrap'>
                   <ArrowRightIcon
                     width={36}
                     height={36}

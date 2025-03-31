@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import LoadingDots from './LoadingDots'
 import PopupIcon from '../assets/icons/angle-small-right.svg?react'
 
@@ -60,12 +60,19 @@ const CustomButton = ({
     }
   }, [isPopupOpen])
 
-  const handleClick = async event => {
-    if (disabled || isLoading) return
-    setIsLoading(true)
-    await onClick(event)
-    setIsLoading(false)
-  }
+  const handleClick = useCallback(async event => {
+    try {
+      if (disabled || isLoading) {
+        return
+      }
+      setIsLoading(true)
+      await onClick(event)
+    } catch (err) {
+      console.error('CustomButton click error:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [disabled, isLoading, onClick])
 
   return (
     <button

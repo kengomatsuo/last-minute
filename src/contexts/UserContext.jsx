@@ -2,12 +2,12 @@ import { createContext, useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import {
   createUserWithEmailAndPassword,
-  onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
   onIdTokenChanged,
   sendEmailVerification,
   reload,
+  updateProfile,
 } from 'firebase/auth'
 import { auth, db, functions } from '../../firebaseConfig'
 import { httpsCallable } from 'firebase/functions'
@@ -15,6 +15,7 @@ import { doc, setDoc } from 'firebase/firestore'
 import Auth from '../screens/Auth'
 import { AnimatePresence } from 'framer-motion'
 import { ScreenContextProvider } from './ScreenContext'
+import { useConsoleLog } from '../hooks'
 
 /**
  * @typedef {Object} UserContextType
@@ -50,6 +51,7 @@ const UserContext = createContext(defaultContext)
 
 const UserContextProvider = ({ children }) => {
   const [user, setUser] = useState(auth.currentUser || undefined)
+  useConsoleLog('UserContextProvider', user)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const initialActionRef = useRef(null)
   const [isCheckingEmailVerification, setIsCheckingEmailVerification] =
@@ -141,6 +143,7 @@ const UserContextProvider = ({ children }) => {
       unsubscribe()
       clearVerificationInterval()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -165,10 +168,12 @@ const UserContextProvider = ({ children }) => {
    * @param {{ email: string; password: string }} userDetails
    * @returns {Promise<void>}
    */
-  const signUp = async ({ email, password }) => {
+  const signUp = async ({ displayName, email, password }) => {
     setIsAuthLoading(true)
     try {
-      await createUserWithEmailAndPassword(auth, email, password)
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+      await updateProfile(userCredential.user, { displayName })
+      // setUser({ ...userCredential.user, displayName })
       console.log('Signed up successfully!')
       await sendEmailVerification(auth.currentUser)
     } catch (error) {
@@ -205,7 +210,6 @@ const UserContextProvider = ({ children }) => {
     try {
       clearVerificationInterval()
       await firebaseSignOut(auth)
-
     } catch (error) {
       setIsAuthLoading(false)
       throw error
@@ -283,8 +287,8 @@ const UserContextProvider = ({ children }) => {
   }
 
   const closeAuthModal = () => {
-    // if (!user || (user && user.emailVerified)) 
-      setIsAuthModalOpen(false)
+    // if (!user || (user && user.emailVerified))
+    setIsAuthModalOpen(false)
   }
 
   return (

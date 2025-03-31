@@ -1,7 +1,7 @@
 import { useState, createContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { convertRemToPixels } from '../utils/calculations'
-import { useDebounce } from '../hooks'
+import { useConsoleLog, useDebounce } from '../hooks'
 
 /**
  * @typedef {Object} ScreenContextType
@@ -38,14 +38,40 @@ const ScreenContextProvider = ({ children }) => {
   )
   const [isOnline, setIsOnline] = useState(defaultContext.isOnline)
 
-  const minWidth = convertRemToPixels(smallScreenThreshold)
+  const MIN_WIDTH = convertRemToPixels(smallScreenThreshold)
+
+  // Alert management
+  const [alertQueue, setAlertQueue] = useState([])
+  useConsoleLog('alertQueue', alertQueue)
+  const addAlert = ({ type, title, message }) => {
+    const alert = {
+      id: Date.now(),
+      type,
+      title,
+      message,
+    }
+    setAlertQueue(prevQueue => [...prevQueue, alert])
+    return alert.id
+  }
+
+  const removeAlert = id => {
+    setAlertQueue(prevQueue => prevQueue.filter(alert => alert.id !== id))
+  }
+
+  const popAlertHead = () => {
+    setAlertQueue(prevQueue => prevQueue.slice(1))
+  }
+
+  const clearAlerts = () => {
+    setAlertQueue([])
+  }
 
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth
       const height = window.innerHeight
       debouncedSetDimensions({ width, height })
-      setIsSmallScreen(width < minWidth)
+      setIsSmallScreen(width < MIN_WIDTH)
     }
 
     const handleOnline = () => setIsOnline(true)
@@ -60,11 +86,11 @@ const ScreenContextProvider = ({ children }) => {
       window.removeEventListener('online', handleOnline)
       window.removeEventListener('offline', handleOffline)
     }
-  }, [minWidth, debouncedSetDimensions])
+  }, [MIN_WIDTH, debouncedSetDimensions])
 
   const refreshIsSmallScreen = () => {
     const width = window.innerWidth
-    setIsSmallScreen(width < minWidth)
+    setIsSmallScreen(width < MIN_WIDTH)
   }
 
   return (
@@ -74,6 +100,12 @@ const ScreenContextProvider = ({ children }) => {
         refreshIsSmallScreen,
         dimensions,
         isOnline,
+
+        alertQueue,
+        addAlert,
+        removeAlert,
+        popAlertHead,
+        clearAlerts,
       }}
     >
       {children}

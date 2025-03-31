@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from 'react'
+import { use, useEffect, useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { motion, AnimatePresence } from 'framer-motion'
 import CustomButton from './CustomButton'
@@ -26,16 +26,15 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
   const { isSmallScreen } = use(ScreenContext)
   const navigate = useNavigate()
 
-  const handleSignOut = async () => {
-    await signOut(auth)
-      .then(() => {
-        console.log('Signed out successfully!')
-        navigate('/')
-      })
-      .catch(error => {
-        console.error('Error signing out:', error)
-      })
-  }
+  const handleSignOut = useCallback(async () => {
+    try {
+      await signOut(auth)
+      console.log('Signed out successfully!')
+      navigate('/')
+    } catch (error) {
+      console.error('Error signing out:', error)
+    }
+  }, [navigate])
 
   useEffect(() => {
     if (isSmallScreen) {
