@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useRef } from 'react'
+import { createContext, useState, useEffect, useRef, useContext } from 'react'
 import PropTypes from 'prop-types'
 import {
   createUserWithEmailAndPassword,
@@ -14,7 +14,7 @@ import { httpsCallable } from 'firebase/functions'
 import { doc, setDoc } from 'firebase/firestore'
 import Auth from '../screens/Auth'
 import { AnimatePresence } from 'framer-motion'
-import { ScreenContextProvider } from './ScreenContext'
+import { ScreenContext, ScreenContextProvider } from './ScreenContext'
 import { useConsoleLog } from '../hooks'
 
 /**
@@ -50,6 +50,7 @@ const defaultContext = {
 const UserContext = createContext(defaultContext)
 
 const UserContextProvider = ({ children }) => {
+  const { addAlert } = useContext(ScreenContext)
   const [user, setUser] = useState(auth.currentUser || undefined)
   useConsoleLog('UserContextProvider', user)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
@@ -224,14 +225,22 @@ const UserContextProvider = ({ children }) => {
     try {
       // check custom claims to see if user is already a tutor
       if (user.claims?.isTutor) {
-        alert('You are already a tutor!')
+        addAlert({
+          type: 'info',
+          title: 'Already a Tutor',
+          message: 'You are already a tutor!',
+        })
         return
       }
 
       const docRef = doc(db, 'tutorApplications', user.uid)
       const docSnap = await docRef.get()
       if (docSnap.exists()) {
-        alert('You have already applied to be a tutor!')
+        addAlert({
+          type: 'info',
+          title: 'Already Applied',
+          message: 'You have already applied to be a tutor!',
+        })
         return
       }
       await setDoc(doc(db, 'tutorApplications', user.uid), {
@@ -240,9 +249,18 @@ const UserContextProvider = ({ children }) => {
         displayName: user.displayName,
         photoURL: user.photoURL,
       })
-      alert('You have successfully applied to be a tutor!')
+      addAlert({
+        type: 'info',
+        title: 'Application Sent',
+        message: 'Your application to be a tutor has been sent!',
+      })
     } catch (error) {
-      alert(error)
+      addAlert({
+        type: 'info',
+        title: 'Error',
+        message: 'There was an error applying to be a tutor.',
+      })
+      console.error('Error applying to be a tutor:', error)
     }
   }
 
@@ -254,9 +272,17 @@ const UserContextProvider = ({ children }) => {
   const addTutor = async email => {
     try {
       const result = await setTutorClaim({ email, isTutor: true })
-      alert(result.message)
+      addAlert({
+        type: 'info',
+        title: 'Tutor Added',
+        message: `The user ${email} has been added as a tutor.`,
+      })
     } catch (error) {
-      alert(error)
+      addAlert({
+        type: 'error',
+        title: 'Error',
+        message: `There was an error adding the user ${email} as a tutor.`,
+      })
     }
   }
 
@@ -268,9 +294,18 @@ const UserContextProvider = ({ children }) => {
   const addAdmin = async email => {
     try {
       const result = await setAdminClaim({ email, isAdmin: true })
-      alert(result.message)
+      addAlert({
+        type: 'info',
+        title: 'Admin Added',
+        message: `The user ${email} has been added as an admin.`,
+      })
     } catch (error) {
-      alert(error)
+      addAlert({
+        type: 'error',
+        title: 'Error',
+        message: `There was an error adding the user ${email} as an admin.`,
+      })
+      console.error('Error adding admin:', error)
     }
   }
 
@@ -309,9 +344,7 @@ const UserContextProvider = ({ children }) => {
     >
       <AnimatePresence>
         {isAuthModalOpen && (
-          <ScreenContextProvider>
             <Auth initialAction={initialActionRef.current} />
-          </ScreenContextProvider>
         )}
       </AnimatePresence>
       {children}

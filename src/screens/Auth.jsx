@@ -29,8 +29,7 @@ const Auth = ({ initialAction }) => {
     isCheckingEmailVerification,
     isAuthLoading,
   } = useContext(UserContext)
-  const { isSmallScreen, refreshIsSmallScreen } = useContext(ScreenContext)
-  useConsoleLog('issmall', isSmallScreen)
+  const { isSmallScreen, refreshIsSmallScreen, addAlert } = useContext(ScreenContext)
   const [passwordSuccess, setPasswordSuccess] = useState(false)
   const [isModalMounted, setIsModalMounted] = useState(false)
   const [action, setAction] = useState(initialAction || 'register')
@@ -122,7 +121,11 @@ const Auth = ({ initialAction }) => {
 
       await signIn(data)
     } catch (error) {
-      alert(error.message)
+      addAlert({
+        type: 'info',
+        title: 'Error signing in',
+        message: error.message,
+      })
       console.error('Error signing in:', error.message)
     }
   }
@@ -154,7 +157,11 @@ const Auth = ({ initialAction }) => {
 
       await signUp(data)
     } catch (error) {
-      alert(error.message)
+      addAlert({
+        type: 'info',
+        title: 'Error signing up',
+        message: error.message,
+      })
       console.error('Error signing up:', error.message)
     }
   }
@@ -177,7 +184,7 @@ const Auth = ({ initialAction }) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [closeAuthModal])
+  }, [closeAuthModal, refreshIsSmallScreen])
 
   return (
     <div className='fixed overflow-y-scroll scrollbar-hidden py-4 z-20 flex w-screen h-screen text-primary-text justify-center items-center'>
@@ -288,7 +295,7 @@ const Auth = ({ initialAction }) => {
                       {'Already a member?'}
                       <CustomInteractive
                         onClick={() => setAction('signin')}
-                        className='font-semibold !p-1 ml-2 w-min !text-primary'
+                        className='font-semibold !p-1 ml-2 w-min !text-primary text-nowrap'
                       >
                         Sign In
                       </CustomInteractive>

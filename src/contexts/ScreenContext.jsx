@@ -2,6 +2,7 @@ import { useState, createContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { convertRemToPixels } from '../utils/calculations'
 import { useConsoleLog, useDebounce } from '../hooks'
+import AlertDialog from '../components/AlertDialog'
 
 /**
  * @typedef {Object} ScreenContextType
@@ -42,13 +43,21 @@ const ScreenContextProvider = ({ children }) => {
 
   // Alert management
   const [alertQueue, setAlertQueue] = useState([])
+
   useConsoleLog('alertQueue', alertQueue)
-  const addAlert = ({ type, title, message }) => {
+  const addAlert = (
+    props = {
+      type: '',
+      title: '',
+      message: '',
+      onOkay: () => {},
+      onCancel: () => {},
+      onClose: () => {},
+    }
+  ) => {
     const alert = {
       id: Date.now(),
-      type,
-      title,
-      message,
+      ...props,
     }
     setAlertQueue(prevQueue => [...prevQueue, alert])
     return alert.id
@@ -101,7 +110,6 @@ const ScreenContextProvider = ({ children }) => {
         dimensions,
         isOnline,
 
-        alertQueue,
         addAlert,
         removeAlert,
         popAlertHead,
@@ -109,6 +117,7 @@ const ScreenContextProvider = ({ children }) => {
       }}
     >
       {children}
+      <AlertDialog {...alertQueue[0]} />
     </ScreenContext.Provider>
   )
 }

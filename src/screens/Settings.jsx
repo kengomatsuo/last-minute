@@ -31,7 +31,7 @@ const Settings = () => {
         </>
       )}
       <CustomButton
-        onClick={() => addAlert({message: 'heyy'})} />
+        onClick={() => addAlert({message: 'heyy'})}>Test Alert</CustomButton>
     </div>
   )
 }
