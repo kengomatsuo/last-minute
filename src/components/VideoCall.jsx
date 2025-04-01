@@ -362,14 +362,6 @@ const VideoCall = ({ courseId }) => {
     }
   }
 
-  // Separate effect for handling audio tracks only
-  useEffect(() => {
-    if (stream) {
-      // updateVideoTrack(isVideoStreaming)
-      updateAudioTrack(isAudioStreaming)
-    }
-  }, [stream])
-
   /**
    * Handles camera selection change
    *
@@ -504,12 +496,10 @@ const VideoCall = ({ courseId }) => {
     peerConnection.current.oniceconnectionstatechange = () => {
       if (peerConnection.current.iceConnectionState === 'disconnected') {
         console.log('Disconnected from peer')
-        stopStream()
       } else if (peerConnection.current.iceConnectionState === 'connected') {
         console.log('Connected to peer')
       } else if (peerConnection.current.iceConnectionState === 'failed') {
         console.error('Connection failed')
-        stopStream()
       }
     }
     peerConnection.current.ontrack = event => {
@@ -528,7 +518,6 @@ const VideoCall = ({ courseId }) => {
         )
         track.onended = () => {
           console.log('Remote track ended')
-          stopStream()
         }
       })
     }
@@ -623,13 +612,13 @@ const VideoCall = ({ courseId }) => {
       )
 
       // // Create a dummy audio track if no audio track exists
-      // if (stream.current.getAudioTracks().length === 0) {
-      //   createDummyAudioTrack()
-      // }
+      if (stream.current.getAudioTracks().length === 0) {
+        createDummyAudioTrack()
+      }
       // // Create a dummy video track if no video track exists
-      // if (stream.current.getVideoTracks().length === 0) {
-      //   createDummyVideoTrack()
-      // }
+      if (stream.current.getVideoTracks().length === 0) {
+        createDummyVideoTrack()
+      }
 
       // Wait for tracks to be available
       await new Promise(resolve => {
@@ -862,25 +851,27 @@ const VideoCall = ({ courseId }) => {
   }
 
   useEffect(() => {
-    const applyAnswer = async () => {
-      if (
-        user?.claims.isTutor &&
-        course?.answer &&
-        peerConnection.current &&
-        peerConnection.current.signalingState === 'have-local-offer'
-      ) {
-        try {
-          await peerConnection.current.setRemoteDescription(
-            new RTCSessionDescription(course.answer)
-          )
-          console.log('Remote answer set successfully')
-        } catch (error) {
-          console.error('Failed to set remote answer:', error)
+    if (user?.claims.isTutor && course?.answer) {
+      const applyAnswer = async () => {
+        if (
+          user?.claims.isTutor &&
+          course?.answer &&
+          peerConnection.current &&
+          peerConnection.current.signalingState === 'have-local-offer'
+        ) {
+          try {
+            await peerConnection.current.setRemoteDescription(
+              new RTCSessionDescription(course.answer)
+            )
+            console.log('Remote answer set successfully')
+          } catch (error) {
+            console.error('Failed to set remote answer:', error)
+          }
         }
       }
-    }
 
-    applyAnswer()
+      applyAnswer()
+    }
   }, [course?.answer, user?.claims.isTutor])
 
   /**
@@ -948,7 +939,16 @@ const VideoCall = ({ courseId }) => {
   const endCall = async () => {
     if (peerConnection.current) {
       peerConnection.current.close()
+      peerConnection.current = null
+      console.log('Peer connection closed')
     }
+
+    videoSender.current = null
+    audioSender.current = null
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = null
+    }
+
     await setDoc(
       doc(db, 'courses', courseId),
       { offer: null, answer: null },

@@ -62,7 +62,6 @@ function App() {
           exit={{ opacity: 0, scale: 0.8 }}
           transition={MOVEMENT_TRANSITION}
         >
-          <ScreenContextProvider>
             <CustomNavBar scrollContainerRef={scrollContainerRef} />
             <AnimatePresence mode='wait'>
               <motion.div
@@ -125,7 +124,6 @@ function App() {
                 </Routes>
               </motion.div>
             </AnimatePresence>
-          </ScreenContextProvider>
         </motion.div>
       )}
     </AnimatePresence>

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import LoadingDots from './LoadingDots'
 
 /**
@@ -18,31 +18,29 @@ const CustomInteractive = ({
   onClick = () => {},
   loading = false,
 }) => {
-  const [isPressed, setIsPressed] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleClick = async () => {
-    setIsLoading(true)
-    await onClick()
-    setIsLoading(false)
-  }
+  const handleClick = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      await onClick()
+    } catch (err) {
+      console.error('CustomInteractive click error:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [onClick])
 
   return (
     <div
       className={`${
         loading || isLoading ? 'pointer-events-none' : ''
       } ${isLoading ? 'opacity-50' : ''} ${className} px-3 py-1 w-full rounded-md hover:bg-interactive-hover
-        active:bg-interactive-active active:ring-background-secondary active:ring text-ellipsis relative text-primary-text text-center font-medium text-lg cursor-pointer`}
+        active:bg-interactive-active active:scale-[97%] active:ring-background-secondary active:ring text-ellipsis relative text-primary-text text-center font-medium text-lg cursor-pointer`}
       onClick={handleClick}
-      onPointerDown={() => setIsPressed(true)}
-      onPointerCancel={() => setIsPressed(false)}
-      onPointerUp={() => setIsPressed(false)}
-      onPointerLeave={() => setIsPressed(false)}
     >
       <div
-        className={`${loading ? 'opacity-0' :''} transition-transform justify-center flex w-full ${
-          isPressed ? 'scale-[97%]' : ''
-        }`}
+        className={`${loading ? 'opacity-0' :''} transition-transform justify-center flex w-full`}
       >
         {children}
       </div>
