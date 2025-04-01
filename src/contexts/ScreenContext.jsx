@@ -88,7 +88,9 @@ const ScreenContextProvider = ({ children }) => {
 
     window.addEventListener('resize', handleResize)
     window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
+    navigator.connection?.addEventListener('change', () => {
+      setIsOnline(navigator.onLine)
+    })
 
     return () => {
       window.removeEventListener('resize', handleResize)
