@@ -29,7 +29,8 @@ const Auth = ({ initialAction }) => {
     isCheckingEmailVerification,
     isAuthLoading,
   } = useContext(UserContext)
-  const { isSmallScreen, refreshIsSmallScreen, addAlert } = useContext(ScreenContext)
+  const { isSmallScreen, refreshIsSmallScreen, addAlert } =
+    useContext(ScreenContext)
   const [passwordSuccess, setPasswordSuccess] = useState(false)
   const [isModalMounted, setIsModalMounted] = useState(false)
   const [action, setAction] = useState(initialAction || 'register')
@@ -91,13 +92,9 @@ const Auth = ({ initialAction }) => {
   }
 
   const validateEmail = email => {
-    try {
-      const emailRegEx = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
-      if (!emailRegEx.test(email)) {
-        throw new Error('Invalid email')
-      }
-    } catch (error) {
-      console.error('Invalid email:', error.message)
+    const emailRegEx = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/
+    if (!emailRegEx.test(email)) {
+      throw new Error('Invalid email')
     }
   }
 
@@ -368,6 +365,7 @@ const Auth = ({ initialAction }) => {
                         validateFunction={e => validateRetypePassword(e)}
                         type='password'
                         required
+                        saveDelay={0}
                         ref={retypePasswordRef}
                       />
                     )}
