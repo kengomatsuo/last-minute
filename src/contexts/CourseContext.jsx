@@ -20,6 +20,7 @@ import PropTypes from 'prop-types'
 import { UserContext } from './UserContext'
 import { stringToFirestamp } from '../utils/conversions'
 import { useConsoleLog } from '../hooks'
+import { ScreenContext } from './ScreenContext'
 
 /**
  * @typedef {Object} CourseContextType
@@ -58,6 +59,8 @@ const CourseContext = createContext(defaultContext)
  * @returns {JSX.Element} The CourseContext provider
  */
 const CourseContextProvider = ({ children }) => {
+  const { user } = useContext(UserContext)
+  const { addAlert } = useContext(ScreenContext)
   const [courses, setCourses] = useState([])
   const [requests, setRequests] = useState([])
   const [isRequestPending, setIsRequestPending] = useState(false)
@@ -66,7 +69,6 @@ const CourseContextProvider = ({ children }) => {
   const [isCancelPending, setIsCancelPending] = useState(false)
   const [lastVisibleRequest, setLastVisibleRequest] = useState(null)
 
-  const { user } = useContext(UserContext)
   const isTutor = user?.claims?.isTutor
 
   // useConsoleLog('courses', courses)
@@ -215,18 +217,27 @@ const CourseContextProvider = ({ children }) => {
     setIsAcceptPending(true)
     try {
       // Call the server-side function to accept the request
-      const acceptCourseRequest = httpsCallable(functions, 'acceptCourseRequest')
-      
+      const acceptCourseRequest = httpsCallable(
+        functions,
+        'acceptCourseRequest'
+      )
+
       // Call the function with the request ID
       const result = await acceptCourseRequest({
-        requestId: requestData.id
+        requestId: requestData.id,
       })
-      
+
       console.log('Request accepted successfully:', result.data)
-      alert('Request accepted successfully!')
+      addAlert({
+        title: 'Request Accepted',
+        message: 'Course accepted successfully!',
+      })
     } catch (error) {
       console.error('Error accepting request:', error)
-      alert(`Error accepting request: ${error.message}`)
+      addAlert({
+        title: 'Error',
+        message: `Error accepting request: ${error.message}`,
+      })
     } finally {
       setIsAcceptPending(false)
     }
@@ -246,7 +257,7 @@ const CourseContextProvider = ({ children }) => {
       // convert courseForm's bookingTime string into firebase timestamp
       if (courseForm.bookingTime) {
         courseForm.bookingTime = stringToFirestamp(courseForm.bookingTime)
-        if(!courseForm.bookingTime) throw new Error('Invalid booking time')
+        if (!courseForm.bookingTime) throw new Error('Invalid booking time')
       }
 
       if (
@@ -266,9 +277,15 @@ const CourseContextProvider = ({ children }) => {
         createdAt: serverTimestamp(),
         ...courseForm,
       })
-      alert('Course added successfully!')
+      addAlert({
+        title: 'Request Sent',
+        message: 'Course request sent successfully!',
+      })
     } catch (error) {
-      alert('Error requesting course:', error)
+      addAlert({
+        title: 'Error',
+        message: `Error requesting course: ${error.message}`,
+      })
       throw error
     } finally {
       setIsRequestPending(false)

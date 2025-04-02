@@ -166,11 +166,15 @@ const Auth = ({ initialAction }) => {
   // Determine if children should animate based on modal state
   const shouldAnimateChildren = isModalMounted
 
-  if (user?.emailVerified) closeAuthModal()
-
   useEffect(() => {
     // Refresh screen size on mount
     refreshIsSmallScreen()
+    
+    // Add email verification check
+    if (user?.emailVerified) {
+      closeAuthModal()
+    }
+    
     const handleKeyDown = event => {
       if (event.key === 'Escape') {
         closeAuthModal()
@@ -181,7 +185,7 @@ const Auth = ({ initialAction }) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [closeAuthModal, refreshIsSmallScreen])
+  }, [closeAuthModal, refreshIsSmallScreen, user?.emailVerified])
 
   return (
     <div className='fixed overflow-y-scroll scrollbar-hidden py-4 z-20 flex w-screen h-screen text-primary-text justify-center items-center'>
