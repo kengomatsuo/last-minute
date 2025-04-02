@@ -64,7 +64,7 @@ const CustomInput = ({
   forceSuggestions = false,
   requirements = [],
   autoSave = false,
-  saveDelay = 1000,
+  saveDelay = 500,
   ref,
   ...props
 }) => {

@@ -75,8 +75,8 @@ function App() {
                   },
                   exit: {
                     opacity: 0,
-                    scale: 0.8,
-                    transition: { duration: 0.15 },
+                    scale: 0.5,
+                    transition: { duration: 0.10 },
                   },
                 }}
                 transition={MOVEMENT_TRANSITION}
