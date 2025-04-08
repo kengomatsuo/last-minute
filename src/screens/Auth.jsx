@@ -269,10 +269,10 @@ const Auth = ({ initialAction }) => {
             <>
               <motion.div
                 key={'register'}
-                initial={shouldAnimateChildren ? { x: '100%' } : false}
+                initial={shouldAnimateChildren && !isSmallScreen ? { x: '100%' } : false}
                 animate={{ x: 0 }}
-                exit={shouldAnimateChildren ? { x: '100%' } : false}
-                transition={MOVEMENT_TRANSITION}
+                exit={shouldAnimateChildren && !isSmallScreen ? { x: '100%' } : false}
+                transition={!isSmallScreen && MOVEMENT_TRANSITION}
                 className={
                   'p-[min(3rem,6%)] justify-between min-w-fit flex flex-col flex-6'
                 }
@@ -423,10 +423,10 @@ const Auth = ({ initialAction }) => {
             <>
               <motion.div
                 key={'signin'}
-                initial={shouldAnimateChildren ? { x: '-100%' } : false}
+                initial={shouldAnimateChildren && !isSmallScreen ? { x: '-100%' } : false}
                 animate={{ x: 0 }}
-                exit={shouldAnimateChildren ? { x: '-100%' } : false}
-                transition={MOVEMENT_TRANSITION}
+                exit={shouldAnimateChildren && !isSmallScreen ? { x: '-100%' } : false}
+                transition={!isSmallScreen && MOVEMENT_TRANSITION}
                 className='w-full flex flex-col min-w-fit p-[min(3rem,6%)]'
               >
                 <div className={'flex items-center justify-between'}>
