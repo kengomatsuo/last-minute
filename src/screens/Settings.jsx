@@ -44,7 +44,7 @@ const Settings = () => {
   ]
 
   // State for active tab
-  const [activeTab, setActiveTab] = useState(tabs[0].id)
+  const [activeTab, setActiveTab] = useState(tabs[0])
 
   return (
     <div
@@ -58,11 +58,11 @@ const Settings = () => {
             <div
               key={tab.id}
               className={`p-4 cursor-pointer border-l-4 ${
-                activeTab === tab.id
+                activeTab.id === tab.id
                   ? 'border-brown-500 bg-red-50'
                   : 'border-transparent'
               }`}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => setActiveTab(tab)}
             >
               <span className='font-medium'>{tab.name}</span>
             </div>
@@ -71,7 +71,7 @@ const Settings = () => {
 
         {/* Main content */}
         <div className='flex-1 p-6'>
-          {tabs.find(tab => tab.id === activeTab)?.component}
+          {activeTab?.component}
         </div>
       </div>
     </div>
