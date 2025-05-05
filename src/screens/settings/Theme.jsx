@@ -5,9 +5,9 @@ const Theme = () => {
   const [selectedTheme, setSelectedTheme] = useState('theme1')
 
   return (
-    <div className='bg-white rounded-lg shadow p-6'>
-      <h2 className='text-2xl font-bold text-gray-800 mb-6'>Theme</h2>
-      <p className='text-sm text-gray-600 mb-2'>
+    <div className='bg-white rounded-xl box-border border-2 border-card-outline shadow p-6'>
+      <h2 className='text-2xl font-bold text-primary-text mb-6'>Theme</h2>
+      <p className='text-sm text-primary-text mb-2'>
         Customize the color of your interface to your liking
       </p>
 
@@ -18,12 +18,12 @@ const Theme = () => {
           className={`w-12 h-12 rounded-full flex items-center justify-center bg-yellow-50 border-2
                     ${
                       selectedTheme === 'theme1'
-                        ? 'border-gray-500'
+                        ? 'border-card-outline'
                         : 'border-transparent'
                     } cursor-pointer transition-all duration-200`}
         >
           {selectedTheme === 'theme1' && (
-            <span className='text-gray-500 text-lg'>✓</span>
+            <span className='text-card-outline text-lg'>✓</span>
           )}
         </div>
 
@@ -33,12 +33,12 @@ const Theme = () => {
           className={`w-12 h-12 rounded-full flex items-center justify-center bg-red-200 border-2
                     ${
                       selectedTheme === 'theme2'
-                        ? 'border-gray-500'
+                        ? 'border-white'
                         : 'border-transparent'
                     } cursor-pointer transition-all duration-200`}
         >
           {selectedTheme === 'theme2' && (
-            <span className='text-gray-500 text-lg'>✓</span>
+            <span className='text-white text-lg'>✓</span>
           )}
         </div>
 

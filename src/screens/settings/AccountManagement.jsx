@@ -7,20 +7,18 @@ const AccountManagement = () => {
   // State for account management
   const [account, setAccount] = useState({
     password: '',
-    birthDay: '01',
-    birthMonth: '01',
-    birthYear: '2000',
+    dob: '',
   })
-
+  
   return (
-    <div className='bg-white rounded-lg shadow p-6'>
-      <h2 className='text-2xl font-bold text-gray-800 mb-6'>
+    <div className='p-4 bg-card-background rounded-xl box-border border-2 border-card-outline'>
+      <h2 className='text-2xl font-bold text-primary-text mb-6'>
         Personal Information
       </h2>
 
       {/* Password */}
       <div className='mb-6'>
-        <label className='block text-sm font-medium text-gray-700 mb-1'>
+        <label className='block text-sm font-medium text-primary-text mb-1'>
           Password
         </label>
         <div className='flex items-center'>
@@ -32,50 +30,55 @@ const AccountManagement = () => {
             disabled
           />
 
-          <CustomButton className='ml-2'>Change</CustomButton>
+          <CustomButton className='ml-2 bg-primary'>Change</CustomButton>
         </div>
       </div>
 
       {/* DOB */}
       <div className='mb-6'>
-        <label className='block text-sm font-medium text-gray-700 mb-1'>
+        <label className='block text-sm font-medium text-primary-text mb-1'>
           Date of Birth
         </label>
         <div className='flex space-x-2'>
           <CustomInput
-            name='birthDate'
-            value={account.birthDay}
-            placeholder='DD'
-            type='date'
-            className='mb-2'
-          />
-
-          <CustomInput
-            name='birthMonth'
-            value={account.birthMonth}
-            placeholder='MM'
-            type='date'
-            className='mb-2'
-          />
-
-          <CustomInput
-            name='birthYear'
-            value={account.birthYear}
-            placeholder='YYYY'
+            name='dob'
+            value={account.dob}
             type='date'
             className='mb-2'
           />
         </div>
       </div>
 
-      {/* Deactivate & Delete Account */}
+
+      <h2 className='text-2xl font-bold text-primary-text mb-6'>
+        Account Management
+      </h2>
+
+      {/* Sign Out */}
       <div className='mb-6'>
-        <h3 className='text-lg font-bold text-gray-800 mb-4'>
-          Deactivation & Deletion
+        <h3 className='text-lg font-bold text-primary-text mb-4'>
+          Sign Out
         </h3>
 
         <div className='mb-4'>
-          <p className='tsxt-sm text-gray-600 mb-2'>
+          <p className='text-sm text-primary-text mb-2'>
+            Sign out of your current account
+          </p>
+          <CustomButton
+            onClick={() =>handleSignOut() }>
+            Sign Out
+          </CustomButton>
+        </div>
+      </div>
+
+      {/* Deactivate Account */}
+      <div className='mb-6'>
+        <h3 className='text-lg font-bold text-primary-text mb-4'>
+          Deactivate Account
+        </h3>
+
+        <div className='mb-4'>
+          <p className='text-sm text-primary-text mb-2'>
             Temporary disable your account
           </p>
           <CustomButton
@@ -86,9 +89,16 @@ const AccountManagement = () => {
             Deactivate
           </CustomButton>
         </div>
+      </div>
+      
+      {/* Delete Account */}
+      <div>
+        <h3 className='text-lg font-bold text-primary-text mb-4'>
+          Delete Account
+        </h3>
 
         <div>
-          <p className='text-sm text-gray-600 mb-2'>
+          <p className='text-sm text-primary-text mb-2'>
             Permanently delete your account and all its data
           </p>
           <CustomButton

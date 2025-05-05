@@ -14,12 +14,12 @@ const EditProfile = () => {
     profilePicture: null,
   })
   return (
-    <div className='bg-white rounded-lg shadow p-6'>
-      <h2 className='text-2xl font-bold text-gray-800 mb-6'>Edit Profile</h2>
+    <div className='bg-card-background rounded-xl box-border border-2 border-card-outline shadow p-6'>
+      <h2 className='text-2xl font-bold text-primary-text mb-6'>Edit Profile</h2>
 
       {/* Profile picture */}
       <div className='mb-6 flex flex-col items-center'>
-        <div className='w-32 h-32 rounded-full bg-gray-200 overflow-hidden mb-2 relative'>
+        <div className='w-32 h-32 rounded-full bg-white overflow-hidden mb-2 relative'>
           {profile.profilePicture ? (
             <img
               src={profile.profilePicture}
@@ -30,7 +30,7 @@ const EditProfile = () => {
             <div className='w-full h-full flex items-center justify-center'>
               {/* TOLONG INI ERROR ZZZZZZ */}
               {/* <img src={require('../assets/images/image-name.jpg')} alt="👤" /> */}
-              <span className='text-4xl text-gray-400'>👤</span>
+              <span className='text-4xl text-primary-text'>👤</span>
             </div>
           )}
         </div>
@@ -43,7 +43,7 @@ const EditProfile = () => {
       {/* User Name*/}
       <div className='grid grid-cols-2 gap-6 mb-6'>
         <div>
-          <label className='block text-sm font-medium text-gray-700 mb-1'>
+          <label className='block text-sm font-medium text-primary-text mb-1'>
             First Name
           </label>
           <CustomInput
@@ -54,7 +54,7 @@ const EditProfile = () => {
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-gray-700 mb-1'>
+          <label className='block text-sm font-medium text-primary-text mb-1'>
             Last Name
           </label>
           <CustomInput
@@ -67,7 +67,7 @@ const EditProfile = () => {
 
       {/* User Email and Phone No */}
       <div className='mb-6'>
-        <label className='block text-sm font-medium text-gray-700 mb-1'>
+        <label className='block text-sm font-medium text-primary-text mb-1'>
           Email
         </label>
         <CustomInput
@@ -79,7 +79,7 @@ const EditProfile = () => {
       </div>
 
       <div className='mb-6'>
-        <label className='block text-sm font-medium text-gray-700 mb-1'>
+        <label className='block text-sm font-medium text-primary-text mb-1'>
           Phone Number
         </label>
         <CustomInput
@@ -102,5 +102,4 @@ const EditProfile = () => {
     </div>
   )
 }
-
 export default EditProfile

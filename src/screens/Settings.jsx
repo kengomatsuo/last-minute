@@ -53,16 +53,17 @@ const Settings = () => {
     >
       <div className='flex flex-1'>
         {/* Sidebar */}
-        <div className='w-64 border-r border-gray-200 bg-white'>
+        <div className='w-64 mb-2 relative border-r-2 border-card-outline bg-card-background'>
           {tabs.map((tab) => (
             <div
               key={tab.id}
               className={`p-4 cursor-pointer border-l-4 ${
                 activeTab.id === tab.id
-                  ? 'border-brown-500 bg-red-50'
+                  ? 'border-card-outline bg-white'
                   : 'border-transparent'
               }`}
               onClick={() => setActiveTab(tab)}
+              
             >
               <span className='font-medium'>{tab.name}</span>
             </div>
