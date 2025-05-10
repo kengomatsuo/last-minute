@@ -5,7 +5,7 @@ const Theme = () => {
   const [selectedTheme, setSelectedTheme] = useState('theme1')
 
   return (
-    <div className='bg-white rounded-xl box-border border-2 border-card-outline shadow p-6'>
+    <div className='bg-card rounded-xl box-border border-2 border-card-outline shadow p-6'>
       <h2 className='text-2xl font-bold text-primary-text mb-6'>Theme</h2>
       <p className='text-sm text-primary-text mb-2'>
         Customize the color of your interface to your liking
