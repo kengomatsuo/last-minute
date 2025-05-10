@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react'
 import { CustomButton, CustomInput } from '../../components'
 import { ScreenContext } from '../../contexts/ScreenContext'
+import placeholder from '../../assets/placeholders/image.png'
 
 const EditProfile = () => {
   const { addAlert } = useContext(ScreenContext)
@@ -14,7 +15,7 @@ const EditProfile = () => {
     profilePicture: null,
   })
   return (
-    <div className='bg-card-background rounded-xl box-border border-2 border-card-outline shadow p-6 flex flex-col gap-6'>
+    <div className='bg-card-background rounded-xl box-border border-2 border-card-outline shadow p-6 flex flex-col gap-6 min-w-fit'>
       <h2 className='text-2xl font-bold text-primary-text mb-6'>Edit Profile</h2>
 
       {/* Profile picture */}
@@ -28,9 +29,9 @@ const EditProfile = () => {
             />
           ) : (
             <div className='w-full h-full flex items-center justify-center'>
-              {/* TOLONG INI ERROR ZZZZZZ */}
-              {/* <img src={require('../assets/images/image-name.jpg')} alt="👤" /> */}
-              <span className='text-4xl text-primary-text'>👤</span>
+              {/*TODO: TOLONG INI ERROR ZZZZZZ */}
+              <img src={placeholder} alt="👤" />
+              {/* <span className='text-4xl text-primary-text'>👤</span> */}
             </div>
           )}
         </div>

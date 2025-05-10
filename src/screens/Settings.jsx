@@ -3,8 +3,7 @@
 // Change button leads to nothing
 // Re-check buttonnya SEMUA
 
-import { useContext, useState } from 'react'
-import { CustomButton, CustomInput } from '../components'
+import { useState } from 'react'
 import { NAVBAR_HEIGHT } from '../constants/visualConstants'
 // import { UserContext } from '../contexts/UserContext'
 // import { useConsoleLog } from '../hooks'
@@ -47,12 +46,9 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState(tabs[0])
 
   return (
-    <div
-      style={{ paddingTop: NAVBAR_HEIGHT }}
-      className='flex w-screen h-full'
-    >
+    <div style={{ marginTop: NAVBAR_HEIGHT }} className='flex w-screen border-t border-card-outline/50'>
       {/* Sidebar */}
-      <div className='min-w-fit h-full mb-2 relative border-r-2 border-card-outline bg-card-background'>
+      <div className='min-w-fit h-full mb-2 relative border-r border-card-outline/50 bg-card-background'>
         {tabs.map(tab => (
           <div
             key={tab.id}

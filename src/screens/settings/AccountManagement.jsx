@@ -25,13 +25,13 @@ const AccountManagement = () => {
   }, [navigate])
 
   return (
-    <div className='p-4 bg-card-background rounded-xl box-border border-2 border-card-outline'>
-      <h2 className='text-2xl font-bold text-primary-text mb-6'>
+    <div className='p-4 bg-card-background rounded-xl box-border border-2 border-card-outline flex flex-col gap-6 min-w-fit'>
+      <h2 className='text-2xl font-bold text-primary-text'>
         Personal Information
       </h2>
 
       {/* Password */}
-      <div className='mb-6'>
+      <div className=''>
         <div className='flex items-end'>
           <CustomInput
             name='password'
@@ -46,7 +46,7 @@ const AccountManagement = () => {
       </div>
 
       {/* DOB */}
-      <div className='mb-6'>
+      <div className=''>
         <div className='flex space-x-2'>
           <CustomInput
             label='Date of Birth'
@@ -58,12 +58,12 @@ const AccountManagement = () => {
         </div>
       </div>
 
-      <h2 className='text-2xl font-bold text-primary-text mb-6'>
+      <h2 className='text-2xl font-bold text-primary-text'>
         Account Management
       </h2>
 
       {/* Sign Out */}
-      <div className='mb-6'>
+      <div className=''>
         <h3 className='text-lg font-bold text-primary-text mb-4'>Sign Out</h3>
 
         <div className='mb-4'>
@@ -75,12 +75,12 @@ const AccountManagement = () => {
       </div>
 
       {/* Deactivate Account */}
-      <div className='mb-6'>
+      <div className=''>
         <h3 className='text-lg font-bold text-primary-text mb-4'>
           Deactivate Account
         </h3>
 
-        <div className='mb-4'>
+        <div className=''>
           <p className='text-sm text-primary-text mb-2'>
             Temporary disable your account
           </p>
