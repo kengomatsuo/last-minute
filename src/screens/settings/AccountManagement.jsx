@@ -1,15 +1,29 @@
-import { useContext, useState } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import { CustomButton, CustomInput } from '../../components'
 import { ScreenContext } from '../../contexts/ScreenContext'
+import { signOut } from 'firebase/auth'
+import { useNavigate } from 'react-router-dom'
+import { auth } from '../../../firebaseConfig'
 
 const AccountManagement = () => {
+  const navigate = useNavigate()
   const { addAlert } = useContext(ScreenContext)
   // State for account management
   const [account, setAccount] = useState({
     password: '',
     dob: '',
   })
-  
+
+  const handleSignOut = useCallback(async () => {
+    try {
+      await signOut(auth)
+      console.log('Signed out successfully!')
+      navigate('/')
+    } catch (error) {
+      console.error('Error signing out:', error)
+    }
+  }, [navigate])
+
   return (
     <div className='p-4 bg-card-background rounded-xl box-border border-2 border-card-outline'>
       <h2 className='text-2xl font-bold text-primary-text mb-6'>
@@ -18,16 +32,13 @@ const AccountManagement = () => {
 
       {/* Password */}
       <div className='mb-6'>
-        <label className='block text-sm font-medium text-primary-text mb-1'>
-          Password
-        </label>
-        <div className='flex items-center'>
+        <div className='flex items-end'>
           <CustomInput
             name='password'
+            label='Password'
             value={account.password}
             placeholder='Enter Password'
             type='password'
-            disabled
           />
 
           <CustomButton className='ml-2 bg-primary'>Change</CustomButton>
@@ -36,11 +47,9 @@ const AccountManagement = () => {
 
       {/* DOB */}
       <div className='mb-6'>
-        <label className='block text-sm font-medium text-primary-text mb-1'>
-          Date of Birth
-        </label>
         <div className='flex space-x-2'>
           <CustomInput
+            label='Date of Birth'
             name='dob'
             value={account.dob}
             type='date'
@@ -49,25 +58,19 @@ const AccountManagement = () => {
         </div>
       </div>
 
-
       <h2 className='text-2xl font-bold text-primary-text mb-6'>
         Account Management
       </h2>
 
       {/* Sign Out */}
       <div className='mb-6'>
-        <h3 className='text-lg font-bold text-primary-text mb-4'>
-          Sign Out
-        </h3>
+        <h3 className='text-lg font-bold text-primary-text mb-4'>Sign Out</h3>
 
         <div className='mb-4'>
           <p className='text-sm text-primary-text mb-2'>
             Sign out of your current account
           </p>
-          <CustomButton
-            onClick={() =>handleSignOut() }>
-            Sign Out
-          </CustomButton>
+          <CustomButton onClick={() => handleSignOut()}>Sign Out</CustomButton>
         </div>
       </div>
 
@@ -90,7 +93,7 @@ const AccountManagement = () => {
           </CustomButton>
         </div>
       </div>
-      
+
       {/* Delete Account */}
       <div>
         <h3 className='text-lg font-bold text-primary-text mb-4'>
