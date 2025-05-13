@@ -350,7 +350,8 @@ const UserContextProvider = ({ children }) => {
         money: increment(addedBalance),
         last_updated: serverTimestamp(),
       })
-      addAlert({ type: 'success', title: 'Balance Updated', message: `Balance increased by $${parseFloat(addedBalance, 2)}.` })
+      const action = amount >= 0 ? 'increased' : 'decreased'
+      addAlert({ type: 'success', title: 'Balance Updated', message: `Balance ${action} by $${parseFloat(addedBalance, 2)}.` })
     } catch (error) {
       addAlert({ type: 'error', title: 'Error', message: 'Error updating balance.' })
       console.error('Error updating balance:', error)
