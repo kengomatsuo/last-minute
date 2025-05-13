@@ -26,6 +26,7 @@ const Auth = ({ initialAction }) => {
     signUp,
     signOut,
     closeAuthModal,
+    addBalanceDoc,
     isCheckingEmailVerification,
     isAuthLoading,
   } = useContext(UserContext)
@@ -126,6 +127,21 @@ const Auth = ({ initialAction }) => {
       console.error('Error signing in:', error.message)
     }
   }
+
+  useEffect(() => {
+    // Only run this effect if we have a user and they are verified
+    if (user && user.emailVerified) {
+      const createBalanceDoc = async () => {
+        try {
+          await addBalanceDoc()
+        } catch (error) {
+          console.error('Error creating balance doc:', error)
+        }
+      }
+      
+      createBalanceDoc()
+    }
+  }, [user, addBalanceDoc])
 
   const handleSignup = async e => {
     e.preventDefault()

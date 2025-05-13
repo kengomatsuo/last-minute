@@ -11,7 +11,7 @@ import {
 } from 'firebase/auth'
 import { auth, db, functions } from '../../firebaseConfig'
 import { httpsCallable } from 'firebase/functions'
-import { doc, setDoc } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, setDoc, serverTimestamp, increment } from 'firebase/firestore'
 import Auth from '../screens/Auth'
 import { AnimatePresence } from 'framer-motion'
 import { ScreenContext, ScreenContextProvider } from './ScreenContext'
@@ -326,6 +326,56 @@ const UserContextProvider = ({ children }) => {
     setIsAuthModalOpen(false)
   }
 
+  const addBalanceDoc = async () => {
+    if (!user) {
+      console.error('No authenticated user found.')
+      return
+    }
+    try {
+      await setDoc(doc(db, 'balance', user.uid), { last_updated: serverTimestamp(), money: 0 })
+      console.log('Balance document created successfully.')
+    } catch (error) {
+      console.error('Error initializing balance document:', error)
+    }
+  }
+
+  const updateBalance = async (addedBalance) => {
+    if (!user) {
+      console.error('No authenticated user found.')
+      return
+    }
+    try {
+      const balanceRef = doc(db, 'balance', user.uid)
+      await updateDoc(balanceRef, {
+        money: increment(addedBalance),
+        last_updated: serverTimestamp(),
+      })
+      addAlert({ type: 'success', title: 'Balance Updated', message: `Balance increased by $${parseFloat(addedBalance, 2)}.` })
+    } catch (error) {
+      addAlert({ type: 'error', title: 'Error', message: 'Error updating balance.' })
+      console.error('Error updating balance:', error)
+    }
+  }
+
+  const getBalance = async () => {
+    if (!user) {
+      console.error('No authenticated user found.')
+      return null
+    }
+    try {
+      const snap = await getDoc(doc(db, 'balance', user.uid))
+      if (snap.exists()) {
+        return /** @type {BalanceData} */ (snap.data())
+      } else {
+        return null
+      }
+    } catch (error) {
+      addAlert({ type: 'error', title: 'Error', message: 'Failed to fetch balance.' })
+      console.error(error)
+      return null
+    }
+  }
+
   return (
     <UserContext.Provider
       value={{
@@ -340,6 +390,9 @@ const UserContextProvider = ({ children }) => {
         addAdmin,
         openAuthModal,
         closeAuthModal,
+        addBalanceDoc,
+        updateBalance,
+        getBalance,
       }}
     >
       <AnimatePresence>
