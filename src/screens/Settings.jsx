@@ -11,6 +11,7 @@ import { ScreenContext } from '../contexts/ScreenContext'
 import EditProfile from './Settings/EditProfile'
 import AccountManagement from './Settings/AccountManagement'
 import Theme from './settings/Theme'
+import PaymentManagement from './settings/PaymentManagement'
 
 /**
  * Settings screen component with tabbed navigation
@@ -34,6 +35,11 @@ const Settings = () => {
       id: 'accManagement',
       name: 'Account Management',
       component: <AccountManagement />,
+    },
+    {
+      id: 'paymentManagement',
+      name: 'Payment Management',
+      component: <PaymentManagement />,
     },
     {
       id: 'themeSelect',

@@ -7,6 +7,7 @@ import { ScreenContext } from '../contexts/ScreenContext'
 import CustomInteractive from './CustomInteractive'
 import RightArrowIcon from '../assets/icons/angle-small-right.svg?react'
 import SideBarIcon from '../assets/icons/sidebar.svg?react'
+import User from '../assets/icons/user.svg?react'
 import { UserContext } from '../contexts/UserContext'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
@@ -23,6 +24,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
   const { user, openAuthModal } = use(UserContext)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [showSignOut, setShowSignOut] = useState(false)
   const { isSmallScreen } = use(ScreenContext)
   const navigate = useNavigate()
 
@@ -191,15 +193,37 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                       <RightArrowIcon width={32} height={32} />
                     </CustomInteractive>
 
-                      <CustomButton
-                        filled
-                        onClick={() => {
-                          setIsMenuOpen(false)
-                          user ? handleSignOut() : openAuthModal()
-                        }}
+                    <motion.div
+                      className='flex gap-2 flex-row items-center mb-4'
+                      onClick={() => setShowSignOut(!showSignOut)}
+                    >
+                      <motion.div
+                        className='border-1 rounded-full bg-background-secondary/50 p-1 w-10 h-10 flex items-center justify-center'
                       >
-                        {user ? 'Sign out' : 'Sign in / Register'}
-                      </CustomButton>
+                        {/* Placeholder for user image */}
+                        {user?.photoURL ? (
+                          <img src={user?.photoURL} />
+                        ) : (
+                          <User width={40} height={40} />
+                        )}
+                      </motion.div>
+                      <motion.div
+                        className='flex flex-col items-start'
+                      >
+                        <p className='text-sm font-semibold text-primary-text'>{user?.displayName || 'User'}</p>
+                        <p className='text-xs'>{user?.email || 'xxx@gmail.com'}</p>
+                      </motion.div>
+                    </motion.div>
+
+                    <CustomButton
+                      filled
+                      onClick={() => {
+                        setIsMenuOpen(false)
+                        user ? handleSignOut() : openAuthModal()
+                      }}
+                    >
+                      {user ? 'Sign out' : 'Sign in / Register'}
+                    </CustomButton>
 
 
                     <p className='text-lg font-semibold mr-3 mt-6 mb-2'>
@@ -265,17 +289,40 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
               {user ? (
                 <motion.div
                   key='user-auth'
-                  className='flex gap-2 flex-row'
+                  className='flex gap-2 flex-row items-center relative'
                   initial='hidden'
                   animate='visible'
                   exit='exit'
                   variants={authContainerVariants}
                 >
-                  <motion.div variants={authButtonVariants}>
-                    <CustomButton onClick={() => handleSignOut()}>
-                      Sign out
-                    </CustomButton>
+                  <motion.div
+                    className='flex gap-2 flex-row items-center'
+                    onClick={() => setShowSignOut(!showSignOut)}
+                  >
+                    <motion.div
+                      className='border-1 rounded-full bg-background-secondary/50 p-1 w-10 h-10 flex items-center justify-center'
+                    >
+                      {/* Placeholder for user image */}
+                      {user?.photoURL ? (
+                        <img src={user?.photoURL} />
+                      ) : (
+                        <User width={40} height={40} />
+                      )}
+                    </motion.div>
+                    <motion.div
+                      className='flex flex-col'
+                    >
+                      <p className='text-sm font-semibold text-primary-text'>{user?.displayName || 'User'}</p>
+                      <p className='text-xs'>{user?.email || 'xxx@gmail.com'}</p>
+                    </motion.div>
                   </motion.div>
+                  {showSignOut && (
+                    <motion.div variants={authButtonVariants} className='absolute bg-background top-12 right-0 mt-1 z-10'>
+                      <CustomButton onClick={() => handleSignOut()}>
+                        Sign out
+                      </CustomButton>
+                    </motion.div>
+                  )}
                 </motion.div>
               ) : (
                 <motion.div
