@@ -335,7 +335,7 @@ const UserContextProvider = ({ children }) => {
       await setDoc(doc(db, 'balance', user.uid), { last_updated: serverTimestamp(), money: 0 })
       console.log('Balance document created successfully.')
     } catch (error) {
-      console.error('Error initializing balance document:', error)
+      console.error('Error initializing balance document:', error) 
     }
   }
 
