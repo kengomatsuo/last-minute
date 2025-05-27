@@ -70,12 +70,13 @@ const Dashboard = () => {
     const StudentDashboard = () => (
         <>
             {/* Main "My Courses" Panel - Full Width */}
-            <div className="bg-white border border-[#bdb9a7] rounded-lg px-10 py-8 shadow-sm h-full">
+            <div className="bg-white border border-[#bdb9a7] rounded-lg px-6 md:px-10 py-8 shadow-sm h-full">
                 <h2 className="text-2xl font-bold mb-6">My Courses</h2>
                 <div className="divide-y divide-[#e0dcc8]">
                     {courses && courses.length > 0 ? (
                         courses.map(course => (
-                            <div key={course.id} className="flex items-center py-5 gap-6">
+                            // RESPONSIVE UPDATE: Items stack on mobile, go to row on small screens+
+                            <div key={course.id} className="flex flex-col sm:flex-row sm:items-center py-5 gap-4">
                                 <div className="flex-1">
                                     <div className="font-bold text-lg">{course.subject}</div>
                                     <div className="font-semibold text-base">{course.topic}</div>
@@ -83,11 +84,12 @@ const Dashboard = () => {
                                         {course.details || 'No description'}
                                     </div>
                                 </div>
-                                <div className="flex flex-col gap-2 min-w-[160px]">
-                                    <button className="py-2 border border-[#bdb9a7] rounded text-[#bdb9a7] font-semibold bg-transparent hover:bg-[#f3f1e3] transition">
+                                {/* RESPONSIVE UPDATE: Buttons stack vertically and take full width on mobile */}
+                                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:min-w-[160px]">
+                                    <button className="py-2 px-4 border border-[#bdb9a7] rounded text-[#bdb9a7] font-semibold bg-transparent hover:bg-[#f3f1e3] transition">
                                         Chat
                                     </button>
-                                    <button className="py-2 rounded font-semibold bg-[#bdb9a7] text-white hover:bg-[#a7a083] transition">
+                                    <button className="py-2 px-4 rounded font-semibold bg-[#bdb9a7] text-white hover:bg-[#a7a083] transition">
                                         Start Session
                                     </button>
                                 </div>
@@ -99,7 +101,7 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* Widget Grid - 3 Columns on large screens */}
+            {/* Widget Grid - already responsive */}
             <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <UpcomingSchedule courses={courses} />
                 <ProgressTracker courses={courses} />
@@ -118,9 +120,10 @@ const Dashboard = () => {
 
     return (
         <div className="min-h-screen bg-[#f8f7f4] font-[Montserrat]">
-            <nav className="flex items-center justify-between px-12 py-6">
+            {/* RESPONSIVE UPDATE: Navbar stacks on small screens */}
+            <nav className="flex flex-col sm:flex-row items-center justify-between px-6 md:px-12 py-6 gap-4 sm:gap-0">
                 <span className="text-2xl font-bold">Last Minute</span>
-                <div className="flex gap-10 text-lg">
+                <div className="flex items-center gap-6 md:gap-10 text-lg">
                     <a href="/dashboard" className="underline font-semibold">Dashboard</a>
                     <a href="/booking" className="hover:underline">Booking</a>
                     <a href="/history" className="hover:underline">History</a>
@@ -140,7 +143,8 @@ const Dashboard = () => {
                 </div>
             </nav>
 
-            <div className="w-full px-12 py-6">
+            {/* RESPONSIVE UPDATE: Padding is smaller on mobile */}
+            <div className="w-full px-6 md:px-12 py-6">
                 {notifications.map(notification => (
                     <NotificationBar
                         key={`${notification.id}-${notification.reminderType}`}
