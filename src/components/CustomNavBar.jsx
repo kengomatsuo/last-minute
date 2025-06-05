@@ -214,7 +214,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                         </p>
                         <p className='text-xs flex gap-2 text-primary-text'>
                           <CoinsIcon width={16} height={16} className="fill-primary-text"/>
-                          {balance}
+                          {balance !== undefined ? balance.toFixed(2) : '0.00'}
                         </p>
                       </motion.div>
                     </motion.div>
@@ -307,7 +307,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                     <motion.div className='flex gap-4 items-center'>
                       <motion.div className='flex items-center'>
                         <p className='text-md font-semibold text-primary-text text-nowrap flex gap-2'>
-                          {balance} <CoinsIcon width={24} height={24} className="fill-primary-text"/>
+                          <CoinsIcon width={24} height={24} className="fill-primary-text"/>{balance !== undefined ? balance.toFixed(2) : '0.00'}
                         </p>
                       </motion.div>
                       <motion.div className='border-1 rounded-full bg-background-secondary/50 p-1 w-10 h-10 flex items-center justify-center'>

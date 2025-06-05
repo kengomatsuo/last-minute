@@ -1,7 +1,9 @@
 import { useContext, useState } from 'react'
-import Wallet from '../../assets/icons/ic_wallet.svg?react'
-import Plus from '../../assets/icons/ic_plus.svg?react'
+import WalletIcon from '../../assets/icons/wallet-money.svg?react'
+import PlusIcon from '../../assets/icons/ic_plus.svg?react'
 import { UserContext } from '../../contexts/UserContext'
+import CustomInput from '../../components/CustomInput'
+import CustomButton from '../../components/CustomButton'
 
 /**
  * Payment management screen for viewing and topping up user balance.
@@ -28,67 +30,69 @@ const PaymentManagement = () => {
         Payment Management
       </h2>
       {/* Balance Card */}
-      <div className='bg-white p-6 rounded-lg shadow-sm border-2 border-card-outline'>
+      <div className='bg-card-background p-6 rounded-lg shadow-sm border-2 border-card-outline'>
         <div className='flex items-center justify-between mb-6'>
           <div className='flex items-center'>
             <div className='bg-primary p-3 rounded-full mr-4'>
-              <Wallet width={24} height={24} />
+              <WalletIcon width={24} height={24} className="fill-primary-text"/>
             </div>
             <div>
-              <h2 className='text-lg font-medium text-gray-700'>
+              <h2 className='text-lg font-medium text-primary-text'>
                 Current Balance
               </h2>
-              <p className='text-gray-500 text-sm'>Available funds</p>
+              <p className='text-primary-text text-sm'>Available funds</p>
             </div>
           </div>
           <div className='text-right'>
-            <p className='text-3xl font-bold text-gray-800'>
-              ${balance !== undefined ? balance.toFixed(2) : '0.00'}
+            <p className='text-3xl font-bold text-primary-text'>
+              {balance !== undefined ? balance.toFixed(2) : '0.00'}
             </p>
           </div>
         </div>
-        <button
+        <CustomButton
+          filled
           onClick={() => setShowTopUpModal(true)}
           className='w-full py-3 px-4 bg-primary text-white rounded-md flex items-center justify-center hover:bg-filled-button-hover transition-colors'
         >
-          <Plus width={24} height={24} className='mr-2' />
+          <PlusIcon width={24} height={24} className='mr-2 fill-primary-text' />
           Top Up Balance
-        </button>
+        </CustomButton>
       </div>
       {/* Top Up Modal */}
       {showTopUpModal && (
         <div className='fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50'>
-          <div className='bg-white p-6 rounded-lg shadow-lg w-full max-w-md'>
+          <div className='bg-card-background p-6 rounded-lg shadow-lg w-full max-w-md'>
             <h3 className='text-xl font-semibold mb-4'>Top Up Balance</h3>
             <div className='mb-4'>
               <label
                 htmlFor='amount'
-                className='block text-gray-700 mb-2'
+                className='block text-primary-text mb-2'
               >
-                Amount ($)
+                Amount
               </label>
-              <input
+              <CustomInput
                 type='number'
-                id='amount'
+                name='amount'
                 value={topUpAmount}
                 onChange={e => setTopUpAmount(e.target.value)}
                 placeholder='Enter amount'
-                className='w-full p-3 border rounded-md'
+                inputClassName='w-full p-3 border rounded-md'
               />
             </div>
             <div className='flex justify-between gap-4'>
-              <button
+              <CustomButton
                 onClick={() => setShowTopUpModal(false)}
                 className='flex-1 py-2 px-4 border rounded-md hover:bg-gray-50'
               >
                 Cancel
-              </button>
-              <button
+              </CustomButton>
+              <CustomButton
+                filled
                 onClick={handleTopUp}
                 className='flex-1 py-2 px-4 bg-primary text-white rounded-md hover:bg-filled-button-hover'
               >
                 Confirm
-              </button>
+              </CustomButton>
             </div>
           </div>
         </div>

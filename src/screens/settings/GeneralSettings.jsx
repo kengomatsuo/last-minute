@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Theme from './Theme'
+import CustomInput from '../../components/CustomInput'
 
 /**
  * General settings screen for configuring language, notifications, timezone, and theme.
@@ -10,6 +11,17 @@ const GeneralSettings = () => {
   const [language, setLanguage] = useState('en')
   const [notificationsEnabled, setNotificationsEnabled] = useState(true)
   const [timezone, setTimezone] = useState('UTC')
+
+  const languageOptions = [
+    { label: 'English', value: 'en' },
+    { label: 'Bahasa Indonesia', value: 'id' }
+  ]
+
+  const timezoneOptions = [
+    { label: 'UTC', value: 'UTC' },
+    { label: 'Asia/Jakarta', value: 'Asia/Jakarta' },
+    { label: 'America/New_York', value: 'America/New_York' }
+  ]
 
   const handleLanguageChange = e => {
     setLanguage(e.target.value)
@@ -30,26 +42,29 @@ const GeneralSettings = () => {
     <div className='space-y-6'>
       <div>
         <label className='block font-medium mb-1'>Language</label>
-        <select
-          value={language}
-          onChange={handleLanguageChange}
-          className='border rounded p-2 w-full'
-        >
-          <option value='en'>English</option>
-          <option value='id'>Bahasa Indonesia</option>
-        </select>
+        <CustomInput
+          name='language'
+          type='suggest'
+          value={languageOptions.find(opt => opt.value === language)?.label || ''}
+          options={languageOptions}
+          onChange={e => handleLanguageChange({ target: { value: e.target.value } })}
+          onOptionSelect={val => setLanguage(val)}
+          forceSuggestions={true}
+          placeholder='Select language'
+        />
       </div>
       <div>
         <label className='block font-medium mb-1'>Timezone</label>
-        <select
-          value={timezone}
-          onChange={handleTimezoneChange}
-          className='border rounded p-2 w-full'
-        >
-          <option value='UTC'>UTC</option>
-          <option value='Asia/Jakarta'>Asia/Jakarta</option>
-          <option value='America/New_York'>America/New_York</option>
-        </select>
+        <CustomInput
+          name='timezone'
+          type='suggest'
+          value={timezoneOptions.find(opt => opt.value === timezone)?.label || ''}
+          options={timezoneOptions}
+          onChange={e => handleTimezoneChange({ target: { value: e.target.value } })}
+          onOptionSelect={val => setTimezone(val)}
+          forceSuggestions={true}
+          placeholder='Select timezone'
+        />
       </div>
       <div className='flex items-center'>
         <input

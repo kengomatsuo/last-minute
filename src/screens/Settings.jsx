@@ -100,7 +100,7 @@ const Settings = () => {
             key={tab.id}
             className={`p-4 cursor-pointer border-l-4 transition-colors ${
               activeTab.id === tab.id
-                ? 'border-card-outline bg-white text-primary-text'
+                ? 'border-card-outline bg-interactive-hover text-primary-text'
                 : 'border-transparent bg-card-background text-primary-text hover:bg-interactive-hover'
             }`}
             onClick={() => handleTabClick(tab)}
