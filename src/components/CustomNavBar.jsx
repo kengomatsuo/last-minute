@@ -2,18 +2,18 @@ import { use, useEffect, useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { motion, AnimatePresence } from 'framer-motion'
 import CustomButton from './CustomButton'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, Link } from 'react-router-dom'
 import { ScreenContext } from '../contexts/ScreenContext'
 import CustomInteractive from './CustomInteractive'
 import RightArrowIcon from '../assets/icons/angle-small-right.svg?react'
 import SideBarIcon from '../assets/icons/sidebar.svg?react'
 import UserIcon from '../assets/icons/user.svg?react'
 import CoinsIcon from '../assets/icons/coins.svg?react'
+import SettingsIcon from '../assets/icons/settings.svg?react'
 import { UserContext } from '../contexts/UserContext'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
 import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
-import CustomCard from './CustomCard'
 
 /**
  * Custom navigation bar component with responsive design and animations.
@@ -189,7 +189,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                     transition={MOVEMENT_TRANSITION}
                   >
                     <CustomInteractive
-                      className='w-min aspect-square flex !p-1 items-center mb-2 justify-center ml-auto'
+                      className='w-min aspect-square flex !p-2 items-center mb-2 justify-center ml-auto'
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <RightArrowIcon width={32} height={32} />
@@ -318,14 +318,47 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                     </motion.div>
                   </CustomInteractive>
                   {showUserPopUp && (
-                      <motion.div
-                        variants={authButtonVariants}
-                        className='absolute bg-background top-12 right-0 mt-1 z-10'
-                      >
-                        <CustomButton onClick={() => handleSignOut()}>
-                          Sign out
-                        </CustomButton>
-                      </motion.div>
+                    <div
+                      className='absolute right-0'
+                      style={{ top: 'calc(100% + 8px)' }}
+                    >
+                      <div className='w-56 bg-white border border-gray-200 rounded shadow-lg z-50 py-2'>
+                        <Link
+                          to='/settings'
+                          className='w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2'
+                          onClick={() => setShowUserPopUp(false)}
+                        >
+                          <SettingsIcon width={20} height={20} />
+                          Settings
+                        </Link>
+                        <Link
+                          to={{ pathname: '/settings', hash: 'profile' }}
+                          className='w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2'
+                          onClick={() => setShowUserPopUp(false)}
+                        >
+                          <UserIcon width={20} height={20} />
+                          Profile
+                        </Link>
+                        <Link
+                          to={{ pathname: '/settings', hash: 'payment' }}
+                          className='w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2'
+                          onClick={() => setShowUserPopUp(false)}
+                        >
+                          <CoinsIcon width={20} height={20} />
+                          Balance
+                        </Link>
+                        <div className='border-t my-2' />
+                        <button
+                          className='w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2 text-red-600'
+                          onClick={async () => {
+                            setShowUserPopUp(false)
+                            await handleSignOut()
+                          }}
+                        >
+                          Log out
+                        </button>
+                      </div>
+                    </div>
                   )}
                 </motion.div>
               ) : (

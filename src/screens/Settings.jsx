@@ -3,7 +3,7 @@
 // Change button leads to nothing
 // Re-check buttonnya SEMUA
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { NAVBAR_HEIGHT } from '../constants/visualConstants'
 // import { UserContext } from '../contexts/UserContext'
 // import { useConsoleLog } from '../hooks'
@@ -12,6 +12,7 @@ import EditProfile from './Settings/EditProfile'
 import AccountManagement from './Settings/AccountManagement'
 import Theme from './settings/Theme'
 import PaymentManagement from './settings/PaymentManagement'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 /**
  * Settings screen component with tabbed navigation
@@ -27,29 +28,58 @@ const Settings = () => {
   // Define tabs array with id, name, and component
   const tabs = [
     {
-      id: 'editProfile',
+      id: 'profile',
       name: 'Edit Profile',
       component: <EditProfile />,
     },
     {
-      id: 'accManagement',
+      id: 'account',
       name: 'Account Management',
       component: <AccountManagement />,
     },
     {
-      id: 'paymentManagement',
+      id: 'payment',
       name: 'Payment Management',
       component: <PaymentManagement />,
     },
     {
-      id: 'themeSelect',
+      id: 'themes',
       name: 'Theme',
       component: <Theme />,
     },
   ]
 
+  const location = useLocation()
+  const navigate = useNavigate()
+
   // State for active tab
-  const [activeTab, setActiveTab] = useState(tabs[0])
+  const [activeTab, setActiveTab] = useState(() => {
+    const hash = window.location.hash.replace('#', '')
+    const foundTab = tabs.find(
+      tab => tab.id.toLowerCase() === hash.toLowerCase()
+    )
+    return foundTab || tabs[0]
+  })
+
+  // Sync tab with hash in URL using react-router
+  useEffect(() => {
+    const hash = location.hash.replace('#', '')
+    if (hash) {
+      const foundTab = tabs.find(
+        tab => tab.id.toLowerCase() === hash.toLowerCase()
+      )
+      if (foundTab && foundTab.id !== activeTab.id) {
+        setActiveTab(foundTab)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.hash, tabs])
+
+  // Update hash when tab changes
+  const handleTabClick = tab => {
+    setActiveTab(tab)
+    navigate(`#${tab.id}`, { replace: true })
+  }
 
   return (
     <div style={{ marginTop: NAVBAR_HEIGHT }} className='flex w-screen border-t border-card-outline/50'>
@@ -63,7 +93,7 @@ const Settings = () => {
                 ? 'border-card-outline bg-white'
                 : 'border-transparent'
             }`}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => handleTabClick(tab)}
           >
             <span className='font-medium'>{tab.name}</span>
           </div>
