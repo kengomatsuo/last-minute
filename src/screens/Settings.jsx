@@ -29,7 +29,7 @@ const Settings = () => {
   // Define tabs array with id, name, and component
   const tabs = [
     {
-      id: '',
+      id: 'general',
       name: 'General',
       component: <GeneralSettings />,
     },
@@ -89,16 +89,19 @@ const Settings = () => {
   }
 
   return (
-    <div style={{ marginTop: NAVBAR_HEIGHT }} className='flex w-screen border-t border-card-outline/50'>
+    <div
+      style={{ marginTop: NAVBAR_HEIGHT }}
+      className='flex w-screen border-t border-card-outline/50 bg-background text-primary-text'
+    >
       {/* Sidebar */}
       <div className='min-w-fit h-full mb-2 relative border-r border-card-outline/50 bg-card-background'>
         {tabs.map(tab => (
           <div
             key={tab.id}
-            className={`p-4 cursor-pointer border-l-4 ${
+            className={`p-4 cursor-pointer border-l-4 transition-colors ${
               activeTab.id === tab.id
-                ? 'border-card-outline bg-white'
-                : 'border-transparent'
+                ? 'border-card-outline bg-white text-primary-text'
+                : 'border-transparent bg-card-background text-primary-text hover:bg-interactive-hover'
             }`}
             onClick={() => handleTabClick(tab)}
           >
@@ -108,7 +111,9 @@ const Settings = () => {
       </div>
 
       {/* Main content */}
-      <div className='p-6 flex-1 overflow-y-scroll'>{activeTab?.component}</div>
+      <div className='p-6 flex-1 overflow-y-scroll bg-background text-primary-text'>
+        {activeTab?.component}
+      </div>
     </div>
   )
 }

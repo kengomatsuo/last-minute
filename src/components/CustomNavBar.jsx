@@ -43,6 +43,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
   useEffect(() => {
     if (isSmallScreen) {
       setIsMenuOpen(false)
+      setShowUserPopUp(false)
     }
   }, [isSmallScreen])
 
@@ -70,7 +71,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
           ? { name: 'Requests', path: '/requests' }
           : { name: 'Booking', path: '/booking' },
         { name: 'History', path: '/history' },
-        { name: 'Settings', path: '/settings' },
+        // { name: 'Settings', path: '/settings' },
       ]
     : [
         { name: 'Home', path: '/' },
@@ -298,7 +299,9 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                   variants={authContainerVariants}
                 >
                   <CustomInteractive
-                    className='flex flex-row items-center justify-center'
+                    className={`flex flex-row items-center justify-center ${
+                      showUserPopUp ? 'bg-interactive-hover' : ''
+                    }`}
                     onClick={() => setShowUserPopUp(!showUserPopUp)}
                   >
                     <motion.div className='flex gap-4 items-center'>
@@ -321,18 +324,19 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                     <>
                       {/* Overlay to close popup when clicking outside */}
                       <div
-                        className='fixed inset-0 z-40'
+                        className='fixed inset-0 z-40 bg-transparent'
                         onClick={() => setShowUserPopUp(false)}
-                        style={{ background: 'transparent' }}
                       />
                       <div
                         className='absolute right-0 z-50'
                         style={{ top: 'calc(100% + 8px)' }}
                       >
-                        <div className='w-56 bg-white border border-gray-200 rounded shadow-lg py-2'>
+                        <div
+                          className='w-56 border rounded shadow-lg bg-card-background border-card-outline text-primary-text'
+                        >
                           <Link
                             to='/settings'
-                            className='w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2'
+                            className='w-full text-left px-4 py-3 flex items-center gap-2 hover:bg-interactive-hover'
                             onClick={() => setShowUserPopUp(false)}
                           >
                             <SettingsIcon width={20} height={20} />
@@ -340,7 +344,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                           </Link>
                           <Link
                             to={{ pathname: '/settings', hash: 'profile' }}
-                            className='w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2'
+                            className='w-full text-left px-4 py-3 flex items-center gap-2 hover:bg-interactive-hover'
                             onClick={() => setShowUserPopUp(false)}
                           >
                             <UserIcon width={20} height={20} />
@@ -348,15 +352,15 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                           </Link>
                           <Link
                             to={{ pathname: '/settings', hash: 'payment' }}
-                            className='w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2'
+                            className='w-full text-left px-4 py-3 flex items-center gap-2 hover:bg-interactive-hover'
                             onClick={() => setShowUserPopUp(false)}
                           >
                             <CoinsIcon width={20} height={20} />
                             Balance
                           </Link>
-                          <div className='border-t my-2' />
+                          <div className='border-t border-card-outline/50' />
                           <button
-                            className='w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2 text-red-600'
+                            className='w-full text-left px-4 py-3 flex items-center gap-2 hover:bg-interactive-hover text-error'
                             onClick={async () => {
                               setShowUserPopUp(false)
                               await handleSignOut()
