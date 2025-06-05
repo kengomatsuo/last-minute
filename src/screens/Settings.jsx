@@ -12,6 +12,7 @@ import EditProfile from './Settings/EditProfile'
 import AccountManagement from './Settings/AccountManagement'
 import Theme from './settings/Theme'
 import PaymentManagement from './settings/PaymentManagement'
+import GeneralSettings from './settings/GeneralSettings'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 /**
@@ -28,6 +29,11 @@ const Settings = () => {
   // Define tabs array with id, name, and component
   const tabs = [
     {
+      id: 'general',
+      name: 'General Settings',
+      component: <GeneralSettings />,
+    },
+    {
       id: 'profile',
       name: 'Edit Profile',
       component: <EditProfile />,
@@ -42,11 +48,12 @@ const Settings = () => {
       name: 'Payment Management',
       component: <PaymentManagement />,
     },
-    {
-      id: 'themes',
-      name: 'Theme',
-      component: <Theme />,
-    },
+    // Remove the themes tab
+    // {
+    //   id: 'themes',
+    //   name: 'Theme',
+    //   component: <Theme />,
+    // },
   ]
 
   const location = useLocation()
