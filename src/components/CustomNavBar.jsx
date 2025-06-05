@@ -7,11 +7,13 @@ import { ScreenContext } from '../contexts/ScreenContext'
 import CustomInteractive from './CustomInteractive'
 import RightArrowIcon from '../assets/icons/angle-small-right.svg?react'
 import SideBarIcon from '../assets/icons/sidebar.svg?react'
-import User from '../assets/icons/user.svg?react'
+import UserIcon from '../assets/icons/user.svg?react'
+import CoinsIcon from '../assets/icons/coins.svg?react'
 import { UserContext } from '../contexts/UserContext'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
 import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
+import CustomCard from './CustomCard'
 
 /**
  * Custom navigation bar component with responsive design and animations.
@@ -21,10 +23,10 @@ import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
  * @returns {JSX.Element} The rendered navigation bar
  */
 const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
-  const { user, openAuthModal } = use(UserContext)
+  const { user, openAuthModal, balance } = use(UserContext)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [showSignOut, setShowSignOut] = useState(false)
+  const [showUserPopUp, setShowUserPopUp] = useState(false)
   const { isSmallScreen } = use(ScreenContext)
   const navigate = useNavigate()
 
@@ -195,23 +197,24 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
 
                     <motion.div
                       className='flex gap-2 flex-row items-center mb-4'
-                      onClick={() => setShowSignOut(!showSignOut)}
+                      onClick={() => setShowUserPopUp(!showUserPopUp)}
                     >
-                      <motion.div
-                        className='border-1 rounded-full bg-background-secondary/50 p-1 w-10 h-10 flex items-center justify-center'
-                      >
+                      <motion.div className='border-1 rounded-full bg-background-secondary/50 p-1 w-10 h-10 flex items-center justify-center'>
                         {/* Placeholder for user image */}
                         {user?.photoURL ? (
                           <img src={user?.photoURL} />
                         ) : (
-                          <User width={40} height={40} />
+                          <UserIcon width={40} height={40} />
                         )}
                       </motion.div>
-                      <motion.div
-                        className='flex flex-col items-start'
-                      >
-                        <p className='text-sm font-semibold text-primary-text'>{user?.displayName || 'User'}</p>
-                        <p className='text-xs'>{user?.email || 'xxx@gmail.com'}</p>
+                      <motion.div className='flex flex-col items-start'>
+                        <p className='text-sm font-semibold text-primary-text'>
+                          {user?.displayName || 'User'}
+                        </p>
+                        <p className='text-xs flex gap-2 text-primary-text'>
+                          <CoinsIcon width={16} height={16} />
+                          {balance}
+                        </p>
                       </motion.div>
                     </motion.div>
 
@@ -224,7 +227,6 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                     >
                       {user ? 'Sign out' : 'Sign in / Register'}
                     </CustomButton>
-
 
                     <p className='text-lg font-semibold mr-3 mt-6 mb-2'>
                       Navigation
@@ -295,33 +297,35 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                   exit='exit'
                   variants={authContainerVariants}
                 >
-                  <motion.div
-                    className='flex gap-2 flex-row items-center'
-                    onClick={() => setShowSignOut(!showSignOut)}
+                  <CustomInteractive
+                    className='flex flex-row items-center justify-center'
+                    onClick={() => setShowUserPopUp(!showUserPopUp)}
                   >
-                    <motion.div
-                      className='border-1 rounded-full bg-background-secondary/50 p-1 w-10 h-10 flex items-center justify-center'
-                    >
-                      {/* Placeholder for user image */}
-                      {user?.photoURL ? (
-                        <img src={user?.photoURL} />
-                      ) : (
-                        <User width={40} height={40} />
-                      )}
+                    <motion.div className='flex gap-4 items-center'>
+                      <motion.div className='flex items-center'>
+                        <p className='text-md font-semibold text-primary-text text-nowrap flex gap-2'>
+                          {balance} <CoinsIcon width={24} height={24} />
+                        </p>
+                      </motion.div>
+                      <motion.div className='border-1 rounded-full bg-background-secondary/50 p-1 w-10 h-10 flex items-center justify-center'>
+                        {/* Placeholder for user image */}
+                        {user?.photoURL ? (
+                          <img src={user?.photoURL} />
+                        ) : (
+                          <UserIcon width={40} height={40} />
+                        )}
+                      </motion.div>
                     </motion.div>
-                    <motion.div
-                      className='flex flex-col'
-                    >
-                      <p className='text-sm font-semibold text-primary-text'>{user?.displayName || 'User'}</p>
-                      <p className='text-xs'>{user?.email || 'xxx@gmail.com'}</p>
-                    </motion.div>
-                  </motion.div>
-                  {showSignOut && (
-                    <motion.div variants={authButtonVariants} className='absolute bg-background top-12 right-0 mt-1 z-10'>
-                      <CustomButton onClick={() => handleSignOut()}>
-                        Sign out
-                      </CustomButton>
-                    </motion.div>
+                  </CustomInteractive>
+                  {showUserPopUp && (
+                      <motion.div
+                        variants={authButtonVariants}
+                        className='absolute bg-background top-12 right-0 mt-1 z-10'
+                      >
+                        <CustomButton onClick={() => handleSignOut()}>
+                          Sign out
+                        </CustomButton>
+                      </motion.div>
                   )}
                 </motion.div>
               ) : (
@@ -334,10 +338,17 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                   variants={authContainerVariants}
                 >
                   <motion.div variants={authButtonVariants}>
-                      <CustomButton onClick={() => openAuthModal('register')}>Register</CustomButton>
+                    <CustomButton onClick={() => openAuthModal('register')}>
+                      Register
+                    </CustomButton>
                   </motion.div>
                   <motion.div variants={authButtonVariants}>
-                      <CustomButton onClick={() => openAuthModal('signin')} filled>Sign in</CustomButton>
+                    <CustomButton
+                      onClick={() => openAuthModal('signin')}
+                      filled
+                    >
+                      Sign in
+                    </CustomButton>
                   </motion.div>
                 </motion.div>
               )}
