@@ -432,7 +432,7 @@ const CustomInput = ({
       ? 'fill-primary'
       : 'fill-input-icon'
   } 
-    ${inputClassName ? inputClassName : 'p-2'} mt-0.5 flex flex-1 bg-white border-2 border-primary/50 transition-all rounded focus:outline-none focus:ring-2 focus:ring-primary font-medium`
+    ${inputClassName ? inputClassName : 'p-2'} mt-0.5 flex flex-1 bg-input-background border-2 border-primary/50 transition-all rounded focus:outline-none focus:ring-2 focus:ring-primary font-medium`
 
   // console.log("type:", type)
 
@@ -508,7 +508,7 @@ const CustomInput = ({
               animate={{ opacity: 1, y: 0, transition: { duration: 0.1 } }}
               exit={{ opacity: 0, y: -10, transition: { duration: 0.1 } }}
               transition={MOVEMENT_TRANSITION}
-              className='absolute left-0 right-0 top-full mt-1 max-h-60 overflow-y-auto rounded-md border border-primary/30 bg-white shadow-lg z-10'
+              className='absolute left-0 right-0 top-full mt-1 max-h-60 overflow-y-auto rounded-md border border-primary/30 bg-input-background shadow-lg z-10'
               ref={dropdownRef}
             >
               {filteredOptions.map((option, index) => {

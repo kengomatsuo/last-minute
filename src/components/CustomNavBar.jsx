@@ -155,7 +155,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
               className='w-min aspect-square flex !p-1.5 items-center justify-center'
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              <SideBarIcon width={28} height={28} />
+              <SideBarIcon width={28} height={28} className="fill-primary-text"/>
             </CustomInteractive>
 
             {/* Animate Presence for smooth entry and exit */}
@@ -190,10 +190,10 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                     transition={MOVEMENT_TRANSITION}
                   >
                     <CustomInteractive
-                      className='w-min aspect-square flex !p-2 items-center mb-2 justify-center ml-auto'
+                      className='w-min aspect-square flex !p-1 items-center mb-2 justify-center ml-auto'
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <RightArrowIcon width={32} height={32} />
+                      <RightArrowIcon width={32} height={32} className="fill-primary-text"/>
                     </CustomInteractive>
 
                     <motion.div
@@ -205,7 +205,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                         {user?.photoURL ? (
                           <img src={user?.photoURL} />
                         ) : (
-                          <UserIcon width={40} height={40} />
+                          <UserIcon width={40} height={40} className="fill-primary-text"/>
                         )}
                       </motion.div>
                       <motion.div className='flex flex-col items-start'>
@@ -213,7 +213,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                           {user?.displayName || 'User'}
                         </p>
                         <p className='text-xs flex gap-2 text-primary-text'>
-                          <CoinsIcon width={16} height={16} />
+                          <CoinsIcon width={16} height={16} className="fill-primary-text"/>
                           {balance}
                         </p>
                       </motion.div>
@@ -307,7 +307,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                     <motion.div className='flex gap-4 items-center'>
                       <motion.div className='flex items-center'>
                         <p className='text-md font-semibold text-primary-text text-nowrap flex gap-2'>
-                          {balance} <CoinsIcon width={24} height={24} />
+                          {balance} <CoinsIcon width={24} height={24} className="fill-primary-text"/>
                         </p>
                       </motion.div>
                       <motion.div className='border-1 rounded-full bg-background-secondary/50 p-1 w-10 h-10 flex items-center justify-center'>
@@ -315,7 +315,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                         {user?.photoURL ? (
                           <img src={user?.photoURL} />
                         ) : (
-                          <UserIcon width={40} height={40} />
+                          <UserIcon width={40} height={40} className="fill-primary-text"/>
                         )}
                       </motion.div>
                     </motion.div>
@@ -339,7 +339,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                             className='w-full text-left px-4 py-3 flex items-center gap-2 hover:bg-interactive-hover'
                             onClick={() => setShowUserPopUp(false)}
                           >
-                            <SettingsIcon width={20} height={20} />
+                            <SettingsIcon width={20} height={20} className="fill-primary-text"/>
                             Settings
                           </Link>
                           <Link
@@ -347,7 +347,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                             className='w-full text-left px-4 py-3 flex items-center gap-2 hover:bg-interactive-hover'
                             onClick={() => setShowUserPopUp(false)}
                           >
-                            <UserIcon width={20} height={20} />
+                            <UserIcon width={20} height={20} className="fill-primary-text"/>
                             Profile
                           </Link>
                           <Link
@@ -355,12 +355,12 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                             className='w-full text-left px-4 py-3 flex items-center gap-2 hover:bg-interactive-hover'
                             onClick={() => setShowUserPopUp(false)}
                           >
-                            <CoinsIcon width={20} height={20} />
+                            <CoinsIcon width={20} height={20} className="fill-primary-text"/>
                             Balance
                           </Link>
                           <div className='border-t border-card-outline/50' />
                           <button
-                            className='w-full text-left px-4 py-3 flex items-center gap-2 hover:bg-interactive-hover text-error'
+                            className='w-full text-left px-4 py-3 flex items-center gap-2 hover:bg-interactive-hover text-error cursor-pointer'
                             onClick={async () => {
                               setShowUserPopUp(false)
                               await handleSignOut()

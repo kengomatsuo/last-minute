@@ -1,8 +1,29 @@
-import { useState } from 'react'
+import { useContext } from 'react'
+import { ScreenContext } from '../../contexts/ScreenContext'
 
+/**
+ * Theme switcher for the app.
+ *
+ * @returns {JSX.Element} The rendered theme switcher component
+ */
 const Theme = () => {
-  // State for theme selection
-  const [selectedTheme, setSelectedTheme] = useState('theme1')
+  const { selectedTheme, setSelectedTheme } = useContext(ScreenContext)
+  const THEMES = [
+    {
+      key: 'default',
+      label: 'Default',
+      colorClass: 'bg-yellow-50',
+      border: 'border-card-outline',
+      checkColor: 'text-card-outline',
+    },
+    {
+      key: 'dark',
+      label: 'Dark',
+      colorClass: 'bg-neutral-700',
+      border: 'border-white',
+      checkColor: 'text-white',
+    },
+  ]
 
   return (
     <div className='bg-card rounded-xl box-border border-2 border-card-outline shadow p-6 min-w-fit'>
@@ -10,82 +31,20 @@ const Theme = () => {
       <p className='text-sm text-primary-text mb-2'>
         Customize the color of your interface to your liking
       </p>
-
       <div className='flex items-center space-x-4'>
-        {/* Theme 1 */}
-        <div
-          onClick={() => setSelectedTheme('theme1')}
-          className={`w-12 h-12 rounded-full flex items-center justify-center bg-yellow-50 border-2
-                    ${
-                      selectedTheme === 'theme1'
-                        ? 'border-card-outline'
-                        : 'border-transparent'
-                    } cursor-pointer transition-all duration-200`}
-        >
-          {selectedTheme === 'theme1' && (
-            <span className='text-card-outline text-lg'>✓</span>
-          )}
-        </div>
-
-        {/* Theme 2 */}
-        <div
-          onClick={() => setSelectedTheme('theme2')}
-          className={`w-12 h-12 rounded-full flex items-center justify-center bg-red-200 border-2
-                    ${
-                      selectedTheme === 'theme2'
-                        ? 'border-white'
-                        : 'border-transparent'
-                    } cursor-pointer transition-all duration-200`}
-        >
-          {selectedTheme === 'theme2' && (
-            <span className='text-white text-lg'>✓</span>
-          )}
-        </div>
-
-        {/* Theme 3 */}
-        <div
-          onClick={() => setSelectedTheme('theme3')}
-          className={`w-12 h-12 rounded-full flex items-center justify-center bg-green-700 border-2
-                    ${
-                      selectedTheme === 'theme3'
-                        ? 'border-white'
-                        : 'border-transparent'
-                    } cursor-pointer transition-all duration-200`}
-        >
-          {selectedTheme === 'theme3' && (
-            <span className='text-white text-lg'>✓</span>
-          )}
-        </div>
-
-        {/* Theme 4 */}
-        <div
-          onClick={() => setSelectedTheme('theme4')}
-          className={`w-12 h-12 rounded-full flex items-center justify-center bg-blue-900 border-2
-                    ${
-                      selectedTheme === 'theme4'
-                        ? 'border-white'
-                        : 'border-transparent'
-                    } cursor-pointer transition-all duration-200`}
-        >
-          {selectedTheme === 'theme4' && (
-            <span className='text-white text-lg'>✓</span>
-          )}
-        </div>
-
-        {/* Theme 5 */}
-        <div
-          onClick={() => setSelectedTheme('theme5')}
-          className={`w-12 h-12 rounded-full flex items-center justify-center bg-gray-900 border-2
-                    ${
-                      selectedTheme === 'theme5'
-                        ? 'border-white'
-                        : 'border-transparent'
-                    } cursor-pointer transition-all duration-200`}
-        >
-          {selectedTheme === 'theme5' && (
-            <span className='text-white text-lg'>✓</span>
-          )}
-        </div>
+        {THEMES.map((theme) => (
+          <div
+            key={theme.key}
+            onClick={() => setSelectedTheme(theme.key)}
+            className={`w-12 h-12 rounded-full flex items-center justify-center ${theme.colorClass} border-2 ${
+              selectedTheme === theme.key ? theme.border : 'border-transparent'
+            } cursor-pointer transition-all duration-200`}
+          >
+            {selectedTheme === theme.key && (
+              <span className={`${theme.checkColor} text-lg`}>✓</span>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   )

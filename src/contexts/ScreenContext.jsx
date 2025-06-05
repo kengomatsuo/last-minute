@@ -75,6 +75,32 @@ const ScreenContextProvider = ({ children }) => {
     setAlertQueue([])
   }
 
+  // Theme state and persistence
+  /**
+   * @type {['default' | 'dark', function]}
+   */
+  const [selectedTheme, setSelectedTheme] = useState(() => {
+    try {
+      return localStorage.getItem('theme') || 'default'
+    } catch {
+      return 'default'
+    }
+  })
+
+  useEffect(() => {
+    try {
+      if (selectedTheme === 'default') {
+        document.documentElement.removeAttribute('data-theme')
+      } else {
+        document.documentElement.setAttribute('data-theme', selectedTheme)
+      }
+      localStorage.setItem('theme', selectedTheme)
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to set theme:', err)
+    }
+  }, [selectedTheme])
+
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth
@@ -116,6 +142,9 @@ const ScreenContextProvider = ({ children }) => {
         removeAlert,
         popAlertHead,
         clearAlerts,
+
+        selectedTheme,
+        setSelectedTheme,
       }}
     >
       {children}
