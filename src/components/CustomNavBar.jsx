@@ -318,47 +318,55 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                     </motion.div>
                   </CustomInteractive>
                   {showUserPopUp && (
-                    <div
-                      className='absolute right-0'
-                      style={{ top: 'calc(100% + 8px)' }}
-                    >
-                      <div className='w-56 bg-white border border-gray-200 rounded shadow-lg z-50 py-2'>
-                        <Link
-                          to='/settings'
-                          className='w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2'
-                          onClick={() => setShowUserPopUp(false)}
-                        >
-                          <SettingsIcon width={20} height={20} />
-                          Settings
-                        </Link>
-                        <Link
-                          to={{ pathname: '/settings', hash: 'profile' }}
-                          className='w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2'
-                          onClick={() => setShowUserPopUp(false)}
-                        >
-                          <UserIcon width={20} height={20} />
-                          Profile
-                        </Link>
-                        <Link
-                          to={{ pathname: '/settings', hash: 'payment' }}
-                          className='w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2'
-                          onClick={() => setShowUserPopUp(false)}
-                        >
-                          <CoinsIcon width={20} height={20} />
-                          Balance
-                        </Link>
-                        <div className='border-t my-2' />
-                        <button
-                          className='w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2 text-red-600'
-                          onClick={async () => {
-                            setShowUserPopUp(false)
-                            await handleSignOut()
-                          }}
-                        >
-                          Log out
-                        </button>
+                    <>
+                      {/* Overlay to close popup when clicking outside */}
+                      <div
+                        className='fixed inset-0 z-40'
+                        onClick={() => setShowUserPopUp(false)}
+                        style={{ background: 'transparent' }}
+                      />
+                      <div
+                        className='absolute right-0 z-50'
+                        style={{ top: 'calc(100% + 8px)' }}
+                      >
+                        <div className='w-56 bg-white border border-gray-200 rounded shadow-lg py-2'>
+                          <Link
+                            to='/settings'
+                            className='w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2'
+                            onClick={() => setShowUserPopUp(false)}
+                          >
+                            <SettingsIcon width={20} height={20} />
+                            Settings
+                          </Link>
+                          <Link
+                            to={{ pathname: '/settings', hash: 'profile' }}
+                            className='w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2'
+                            onClick={() => setShowUserPopUp(false)}
+                          >
+                            <UserIcon width={20} height={20} />
+                            Profile
+                          </Link>
+                          <Link
+                            to={{ pathname: '/settings', hash: 'payment' }}
+                            className='w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2'
+                            onClick={() => setShowUserPopUp(false)}
+                          >
+                            <CoinsIcon width={20} height={20} />
+                            Balance
+                          </Link>
+                          <div className='border-t my-2' />
+                          <button
+                            className='w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2 text-red-600'
+                            onClick={async () => {
+                              setShowUserPopUp(false)
+                              await handleSignOut()
+                            }}
+                          >
+                            Log out
+                          </button>
+                        </div>
                       </div>
-                    </div>
+                    </>
                   )}
                 </motion.div>
               ) : (

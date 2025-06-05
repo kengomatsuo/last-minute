@@ -29,8 +29,8 @@ const Settings = () => {
   // Define tabs array with id, name, and component
   const tabs = [
     {
-      id: 'general',
-      name: 'General Settings',
+      id: '',
+      name: 'General',
       component: <GeneralSettings />,
     },
     {
