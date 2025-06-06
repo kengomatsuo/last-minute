@@ -4,6 +4,7 @@ import { convertRemToPixels } from '../utils/calculations'
 import { useConsoleLog, useDebounce } from '../hooks'
 import AlertDialog from '../components/AlertDialog'
 import useLocalStorage from '../hooks/useLocalStorage'
+import i18n from '../i18n'
 
 /**
  * @typedef {Object} ScreenContextType
@@ -11,6 +12,10 @@ import useLocalStorage from '../hooks/useLocalStorage'
  * @property {{ width: number; height: number }} dimensions - The current screen dimensions.
  * @property {boolean} isOnline - Whether the user is currently online.
  * @property {function} refreshIsSmallScreen - Function to refresh the isSmallScreen state.
+ * @property {'default' | 'dark'} selectedTheme - The current theme
+ * @property {function} setSelectedTheme - Setter for theme
+ * @property {'en' | 'id'} language - The current language
+ * @property {function} setLanguage - Setter for language
  */
 
 const smallScreenThreshold = 52
@@ -78,12 +83,23 @@ const ScreenContextProvider = ({ children }) => {
 
   // Theme state and persistence
   /**
-   * @type {['default' | 'dark', function]}
+   * @type {[('default' | 'dark'), function]}
    */
   const [selectedTheme, setSelectedTheme] = useLocalStorage(
     'theme',
     'default'
   )
+
+  /**
+   * @type {[('en' | 'id'), function]}
+   */
+  const [language, setLanguage] = useLocalStorage('language', 'en')
+
+  useEffect(() => {
+    if (i18n.language !== language) {
+      i18n.changeLanguage(language)
+    }
+  }, [language])
 
   useEffect(() => {
     try {
@@ -94,7 +110,6 @@ const ScreenContextProvider = ({ children }) => {
         document.documentElement.setAttribute('data-theme', selectedTheme)
       }
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Failed to set theme:', err)
     }
   }, [selectedTheme])
@@ -135,14 +150,14 @@ const ScreenContextProvider = ({ children }) => {
         refreshIsSmallScreen,
         dimensions,
         isOnline,
-
         addAlert,
         removeAlert,
         popAlertHead,
         clearAlerts,
-
         selectedTheme,
         setSelectedTheme,
+        language,
+        setLanguage
       }}
     >
       {children}
