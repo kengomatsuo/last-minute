@@ -1,6 +1,5 @@
 import React from 'react';
 
-// Helper to format the date nicely
 const formatDate = (date) => {
     const today = new Date();
     const tomorrow = new Date(today);
@@ -16,7 +15,6 @@ const formatDate = (date) => {
 };
 
 const UpcomingSchedule = ({ courses }) => {
-    // Get the next 3 upcoming courses that have a booking time
     const upcomingCourses = courses && courses
         .filter(course => course.bookingTime?.toDate)
         .sort((a, b) => a.bookingTime.toDate() - b.bookingTime.toDate())
@@ -34,8 +32,8 @@ const UpcomingSchedule = ({ courses }) => {
                                     {formatDate(course.bookingTime.toDate())}
                                 </p>
                             </div>
-                            <div>
-                                <p className="font-semibold text-base text-[#3e3c36]">{course.topic}</p>
+                            <div className="min-w-0">
+                                <p className="font-semibold text-base text-[#3e3c36] truncate max-w-xs" title={course.topic}>{course.topic}</p>
                                 <p className="text-sm text-[#7d7865]">
                                     {course.bookingTime.toDate().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
                                 </p>

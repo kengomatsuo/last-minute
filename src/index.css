@@ -122,3 +122,10 @@ body {
   display: flex;
   place-items: center;
 }
+
+.course-description {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3; /* This will truncate the text to 3 lines */
+}
