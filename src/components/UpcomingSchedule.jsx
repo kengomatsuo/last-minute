@@ -1,5 +1,14 @@
 import React from 'react'
+import CustomCard from './CustomCard'
+import PropTypes from 'prop-types'
 
+/**
+ * Displays the user's upcoming scheduled sessions.
+ *
+ * @param {Object} props - Component props
+ * @param {Array} props.courses - List of course objects
+ * @returns {JSX.Element} The upcoming schedule card
+ */
 const formatDate = date => {
   const today = new Date()
   const tomorrow = new Date(today)
@@ -23,28 +32,30 @@ const UpcomingSchedule = ({ courses }) => {
       .slice(0, 3)
 
   return (
-    <div className='w-full bg-white border border-[#bdb9a7] rounded-lg px-6 py-6 shadow-sm'>
-      <h3 className='text-xl font-bold mb-4'>Upcoming Sessions</h3>
+    <CustomCard className='w-full px-6 py-6'>
+      <h3 className='text-xl font-bold mb-4 text-[var(--color-primary-text)]'>
+        Upcoming Sessions
+      </h3>
       {upcomingCourses && upcomingCourses.length > 0 ? (
         <ul className='space-y-4'>
           {upcomingCourses.map(course => (
             <li
               key={course.id}
-              className='flex items-center gap-4 p-3 bg-[#f9f8f2] rounded-md'
+              className='flex items-center gap-4 p-3 bg-[var(--color-background-secondary)] rounded-md'
             >
-              <div className='flex-shrink-0 text-center bg-[#e0dcc8] p-2 rounded-md w-16'>
-                <p className='font-bold text-sm text-[#57534e]'>
+              <div className='flex-shrink-0 text-center bg-[var(--color-card-outline)] p-2 rounded-md w-16'>
+                <p className='font-bold text-sm text-[var(--color-primary-text)]'>
                   {formatDate(course.bookingTime.toDate())}
                 </p>
               </div>
               <div className='min-w-0'>
                 <p
-                  className='font-semibold text-base text-[#3e3c36] truncate max-w-xs'
+                  className='font-semibold text-base text-[var(--color-primary-text)] truncate max-w-xs'
                   title={course.topic}
                 >
                   {course.topic}
                 </p>
-                <p className='text-sm text-[#7d7865]'>
+                <p className='text-sm text-[var(--color-primary)]'>
                   {course.bookingTime
                     .toDate()
                     .toLocaleTimeString('en-US', {
@@ -58,12 +69,24 @@ const UpcomingSchedule = ({ courses }) => {
           ))}
         </ul>
       ) : (
-        <p className='text-sm text-center text-[#7d7865] py-4'>
+        <p className='text-sm text-center text-[var(--color-primary)] py-4'>
           No sessions scheduled.
         </p>
       )}
-    </div>
+    </CustomCard>
   )
+}
+
+UpcomingSchedule.propTypes = {
+  courses: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      topic: PropTypes.string,
+      bookingTime: PropTypes.shape({
+        toDate: PropTypes.func,
+      }),
+    })
+  ),
 }
 
 export default UpcomingSchedule

@@ -1,6 +1,14 @@
 import React, { useState, useMemo } from 'react'
-// import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/solid';
+import CustomCard from './CustomCard'
+import PropTypes from 'prop-types'
 
+/**
+ * Displays the user's weekly progress and goal tracker.
+ *
+ * @param {Object} props - Component props
+ * @param {Array} props.courses - List of course objects
+ * @returns {JSX.Element} The progress tracker card
+ */
 const ProgressTracker = ({ courses }) => {
   const [goal, setGoal] = useState(3)
 
@@ -37,41 +45,55 @@ const ProgressTracker = ({ courses }) => {
   const decrementGoal = () => setGoal(g => Math.max(1, g - 1))
 
   return (
-    <div className='w-full bg-white border border-[#bdb9a7] rounded-lg px-6 py-6 shadow-sm mt-8'>
-      <h3 className='text-xl font-bold mb-1'>Weekly Goal</h3>
-      <p className='text-sm text-[#7d7865] mb-4'>
+    <CustomCard className='w-full px-6 py-6 mt-8'>
+      <h3 className='text-xl font-bold mb-1 text-[var(--color-primary-text)]'>
+        Weekly Goal
+      </h3>
+      <p className='text-sm text-[var(--color-primary)] mb-4'>
         You&apos;ve completed {completedThisWeek} of {goal} sessions this week.
       </p>
 
-      <div className='w-full bg-[#f3f1e3] rounded-full h-3 mb-4'>
+      <div className='w-full bg-[var(--color-background-secondary)] rounded-full h-3 mb-4'>
         <div
-          className='bg-green-500 h-3 rounded-full transition-all duration-500'
+          className='bg-[var(--color-success)] h-3 rounded-full transition-all duration-500'
           style={{ width: `${progressPercentage}%` }}
         ></div>
       </div>
 
       <div className='flex items-center justify-center gap-4'>
-        <p className='text-sm font-semibold text-[#57534e]'>Set Goal:</p>
-        <div className='flex items-center gap-2 border border-[#e0dcc8] rounded-md p-1'>
+        <p className='text-sm font-semibold text-[var(--color-primary-text)]'>Set Goal:</p>
+        <div className='flex items-center gap-2 border border-[var(--color-card-outline)] rounded-md p-1'>
           <button
             onClick={decrementGoal}
-            className='p-1 rounded hover:bg-[#f3f1e3]'
+            className='p-1 rounded hover:bg-[var(--color-interactive-hover)]'
           >
             {/* <ChevronDownIcon className='h-5 w-5 text-[#7d7865]' /> */}
+            <span className='text-lg'>-</span>
           </button>
-          <span className='font-bold text-lg text-[#3e3c36] w-6 text-center'>
+          <span className='font-bold text-lg text-[var(--color-primary-text)] w-6 text-center'>
             {goal}
           </span>
           <button
             onClick={incrementGoal}
-            className='p-1 rounded hover:bg-[#f3f1e3]'
+            className='p-1 rounded hover:bg-[var(--color-interactive-hover)]'
           >
             {/* <ChevronUpIcon className='h-5 w-5 text-[#7d7865]' /> */}
+            <span className='text-lg'>+</span>
           </button>
         </div>
       </div>
-    </div>
+    </CustomCard>
   )
+}
+
+ProgressTracker.propTypes = {
+  courses: PropTypes.arrayOf(
+    PropTypes.shape({
+      bookingTime: PropTypes.shape({
+        toDate: PropTypes.func,
+      }),
+    })
+  ),
 }
 
 export default ProgressTracker
