@@ -226,17 +226,15 @@ const Auth = ({ initialAction }) => {
               className='p-[min(3rem,6%)] w-full flex flex-col h-full'
             >
               <CustomInteractive
-                className='!p-1 !pr-4 !size-min items-center flex'
+                className='!p-1 !pr-4 !size-min items-center flex text-primary-text'
                 loading={isAuthLoading}
                 onClick={() => signOut()}
-                style={{ color: 'var(--color-primary-text, #000)' }}
               >
                 <div className='flex items-center gap-2 text-nowrap'>
                   <ArrowRightIcon
                     width={36}
                     height={36}
-                    className='rotate-180'
-                    style={{ fill: 'var(--color-primary, #ada991)' }}
+                    className='rotate-180 text-primary'
                   />
                   Sign Out
                 </div>
@@ -245,31 +243,27 @@ const Auth = ({ initialAction }) => {
                 <div className='flex flex-col items-center justify-center gap-4 text-center max-w-md'>
                   <motion.div
                     animate={{
-                      rotate: [0, -7, 7, -7, 7, 0], // Wiggle pattern
+                      rotate: [0, -7, 7, -7, 7, 0],
                     }}
                     transition={{
                       duration: 2.5,
                       times: [0, 0.05, 0.1, 0.15, 0.2, 0.25],
                       ease: 'easeInOut',
                       repeat: Infinity,
-                      repeatDelay: 0.75, // 1 second pause between animations
+                      repeatDelay: 0.75,
                     }}
                   >
                     <EmailUpIcon
                       width={160}
                       height={160}
-                      style={{ fill: 'var(--color-primary, #ada991)' }}
                       className='fill-primary'
                     />
                   </motion.div>
                   <motion.div className='flex flex-col gap-2'>
-                    <h2
-                      className='text-primary font-semibold gap-4 flex w-full text-xl'
-                      style={{ color: 'var(--color-primary, #ada991)' }}
-                    >
+                    <h2 className='text-primary font-semibold gap-4 flex w-full text-xl'>
                       A verification email has been sent to {user.email}.
                     </h2>
-                    <p style={{ color: 'var(--color-primary-text, #000)' }}>
+                    <p className='text-primary-text'>
                       Please verify your email address to continue.
                     </p>
                   </motion.div>
@@ -287,37 +281,28 @@ const Auth = ({ initialAction }) => {
                 animate={{ x: 0 }}
                 exit={shouldAnimateChildren ? { x: '100%' } : false}
                 transition={MOVEMENT_TRANSITION}
-                className={
-                  'p-[min(3rem,6%)] justify-between min-w-fit flex flex-col flex-6'
-                }
-                style={{ color: 'var(--color-primary-text, #000)' }}
+                className='p-[min(3rem,6%)] justify-between min-w-fit flex flex-col flex-6 text-primary-text'
               >
-                <div className={'flex items-center justify-between'}>
+                <div className='flex items-center justify-between'>
                   <CustomInteractive
-                    className='!p-1 !pr-4 !size-min items-center flex'
+                    className='!p-1 !pr-4 !size-min items-center flex text-primary-text'
                     onClick={() => closeAuthModal()}
-                    style={{ color: 'var(--color-primary-text, #000)' }}
                   >
                     <div className='flex items-center gap-2'>
                       <ArrowRightIcon
                         width={36}
                         height={36}
-                        className='rotate-180'
-                        style={{ fill: 'var(--color-primary, #ada991)' }}
+                        className='rotate-180 text-primary'
                       />
                       Back
                     </div>
                   </CustomInteractive>
                   {!isSmallScreen && (
-                    <div
-                      className='inline-flex items-center'
-                      style={{ color: 'var(--color-primary-text, #000)' }}
-                    >
+                    <div className='inline-flex items-center text-primary-text'>
                       {'Already a member?'}
                       <CustomInteractive
                         onClick={() => setAction('signin')}
                         className='font-semibold !p-1 ml-2 w-min !text-primary text-nowrap'
-                        style={{ color: 'var(--color-primary, #ada991)' }}
                       >
                         Sign In
                       </CustomInteractive>
@@ -332,21 +317,12 @@ const Auth = ({ initialAction }) => {
                   >
                     <Logo width={80} height={80} />
                     <div>
-                      <h1
-                        className='pb-1 text-primary-text'
-                        style={{ color: 'var(--color-primary-text, #000)' }}
-                      >
+                      <h1 className='pb-1 text-primary-text'>
                         Sign Up
                       </h1>
-                      <h3
-                        className='text-gray-400 text-nowrap'
-                        style={{ color: 'var(--color-card-outline, #aca991)' }}
-                      >
+                      <h3 className='text-card-outline text-nowrap'>
                         Secure your grades with{' '}
-                        <b
-                          className='italic'
-                          style={{ color: 'var(--color-primary, #ada991)' }}
-                        >
+                        <b className='italic text-primary'>
                           Last Minute
                         </b>
                       </h3>
@@ -449,7 +425,7 @@ const Auth = ({ initialAction }) => {
                   transition={MOVEMENT_TRANSITION}
                   className='flex-4'
                 >
-                  <SignInDecoration className="fill-signin-decoration"/>
+                  <SignInDecoration className='fill-primary' />
                 </motion.div>
               )}
             </>
@@ -461,35 +437,28 @@ const Auth = ({ initialAction }) => {
                 animate={{ x: 0 }}
                 exit={shouldAnimateChildren ? { x: '-100%' } : false}
                 transition={MOVEMENT_TRANSITION}
-                className='w-full flex flex-col min-w-fit p-[min(3rem,6%)]'
-                style={{ color: 'var(--color-primary-text, #000)' }}
+                className='w-full flex flex-col min-w-fit p-[min(3rem,6%)] text-primary-text'
               >
-                <div className={'flex items-center justify-between'}>
+                <div className='flex items-center justify-between'>
                   <CustomInteractive
-                    className='!p-1 !pr-4 !size-min items-center flex'
+                    className='!p-1 !pr-4 !size-min items-center flex text-primary-text'
                     onClick={() => closeAuthModal()}
-                    style={{ color: 'var(--color-primary-text, #000)' }}
                   >
                     <div className='flex items-center gap-2'>
                       <ArrowRightIcon
                         width={36}
                         height={36}
-                        className='rotate-180'
-                        style={{ fill: 'var(--color-primary, #ada991)' }}
+                        className='rotate-180 text-primary'
                       />
                       Back
                     </div>
                   </CustomInteractive>
                   {!isSmallScreen && (
-                    <div
-                      className='inline-flex items-center text-nowrap'
-                      style={{ color: 'var(--color-primary-text, #000)' }}
-                    >
+                    <div className='inline-flex items-center text-primary-text'>
                       Don&apos;t have an account?
                       <CustomInteractive
                         onClick={() => setAction('register')}
                         className='font-semibold !p-1 !size-min ml-2 w-min !text-primary'
-                        style={{ color: 'var(--color-primary, #ada991)' }}
                       >
                         Sign Up
                       </CustomInteractive>
@@ -504,21 +473,12 @@ const Auth = ({ initialAction }) => {
                   >
                     <Logo width={80} height={80} />
                     <div>
-                      <h1
-                        className='pb-1 text-primary-text'
-                        style={{ color: 'var(--color-primary-text, #000)' }}
-                      >
+                      <h1 className='pb-1 text-primary-text'>
                         Sign In
                       </h1>
-                      <h3
-                        className='text-gray-400 text-nowrap'
-                        style={{ color: 'var(--color-card-outline, #aca991)' }}
-                      >
+                      <h3 className='text-card-outline text-nowrap'>
                         Secure your grades with{' '}
-                        <b
-                          className='italic'
-                          style={{ color: 'var(--color-primary, #ada991)' }}
-                        >
+                        <b className='italic text-primary'>
                           Last Minute
                         </b>
                       </h3>
@@ -592,7 +552,7 @@ const Auth = ({ initialAction }) => {
                   transition={MOVEMENT_TRANSITION}
                   className='flex-4'
                 >
-                  <SignInDecoration className="fill-signin-decoration" style={{ transform: 'scaleX(-1)' }} />
+                  <SignInDecoration className='fill-primary' style={{ transform: 'scaleX(-1)' }} />
                 </motion.div>
               )}
             </>

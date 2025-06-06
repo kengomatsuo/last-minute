@@ -51,7 +51,7 @@ const defaultContext = {
 const UserContext = createContext(defaultContext)
 
 const UserContextProvider = ({ children }) => {
-  const { addAlert } = useContext(ScreenContext)
+  const { addAlert, setSelectedTheme } = useContext(ScreenContext)
   const [user, setUser] = useState(auth.currentUser || undefined)
   useConsoleLog('UserContextProvider', user)
   const [balance, setBalance] = useState(0)
@@ -212,7 +212,9 @@ const UserContextProvider = ({ children }) => {
     setIsAuthLoading(true)
     try {
       clearVerificationInterval()
+      setSelectedTheme('default')
       await firebaseSignOut(auth)
+      console.log('Signed out successfully!')
     } catch (error) {
       setIsAuthLoading(false)
       throw error
