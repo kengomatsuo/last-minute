@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useEffect, useState } from 'react'
 import Theme from './Theme'
 import CustomInput from '../../components/CustomInput'
 
@@ -8,13 +9,14 @@ import CustomInput from '../../components/CustomInput'
  * @returns {JSX.Element} The rendered general settings component
  */
 const GeneralSettings = () => {
-  const [language, setLanguage] = useState('en')
+  const { t, i18n } = useTranslation()
+  const [language, setLanguage] = useState(i18n.language || 'en')
   const [notificationsEnabled, setNotificationsEnabled] = useState(true)
   const [timezone, setTimezone] = useState('UTC')
 
   const languageOptions = [
-    { label: 'English', value: 'en' },
-    { label: 'Bahasa Indonesia', value: 'id' }
+    { label: t('thisLanguage', { lng: 'en' }), value: 'en' },
+    { label: t('thisLanguage', { lng: 'id' }), value: 'id' }
   ]
 
   const timezoneOptions = [
@@ -23,25 +25,26 @@ const GeneralSettings = () => {
     { label: 'America/New_York', value: 'America/New_York' }
   ]
 
+  useEffect(() => {
+    i18n.changeLanguage(language)
+  }, [language, i18n])
+
   const handleLanguageChange = e => {
     setLanguage(e.target.value)
-    // TODO: persist language preference
   }
 
   const handleTimezoneChange = e => {
     setTimezone(e.target.value)
-    // TODO: persist timezone preference
   }
 
   const handleNotificationToggle = () => {
     setNotificationsEnabled(v => !v)
-    // TODO: persist notification preference
   }
 
   return (
     <div className='space-y-6'>
       <div>
-        <label className='block font-medium mb-1'>Language</label>
+        <label className='block font-medium mb-1'>{t('label.language')}</label>
         <CustomInput
           name='language'
           type='suggest'
@@ -50,11 +53,12 @@ const GeneralSettings = () => {
           onChange={e => handleLanguageChange({ target: { value: e.target.value } })}
           onOptionSelect={val => setLanguage(val)}
           forceSuggestions={true}
-          placeholder='Select language'
+          placeholder={t('placeholder.language')}
+          value={language}
         />
       </div>
       <div>
-        <label className='block font-medium mb-1'>Timezone</label>
+        <label className='block font-medium mb-1'>{t('label.timezone')}</label>
         <CustomInput
           name='timezone'
           type='suggest'
@@ -63,7 +67,8 @@ const GeneralSettings = () => {
           onChange={e => handleTimezoneChange({ target: { value: e.target.value } })}
           onOptionSelect={val => setTimezone(val)}
           forceSuggestions={true}
-          placeholder='Select timezone'
+          placeholder={t('placeholder.timezone')}
+          value={timezone}
         />
       </div>
       <div className='flex items-center'>
@@ -75,15 +80,15 @@ const GeneralSettings = () => {
           className='mr-2'
         />
         <label htmlFor='notifications' className='font-medium'>
-          Enable notifications
+          {t('Enable notifications')}
         </label>
       </div>
       <div>
-        <label className='block font-medium mb-1'>Theme</label>
+        <label className='block font-medium mb-1'>{t('label.theme')}</label>
         <Theme />
       </div>
       <div>
-        <label className='block font-medium mb-1'>App Version</label>
+        <label className='block font-medium mb-1'>{t('label.appVersion')}</label>
         <div className='text-gray-500'>1.0.0</div>
       </div>
     </div>

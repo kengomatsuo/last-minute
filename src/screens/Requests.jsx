@@ -3,6 +3,7 @@ import { CourseContext } from '../contexts/CourseContext'
 import { NAVBAR_HEIGHT } from '../constants/visualConstants'
 import { CustomButton, CustomCard, CustomInteractive } from '../components'
 import { firestampToString } from '../utils/conversions'
+import { useTranslation } from 'react-i18next'
 
 /**
  * Requests component that displays a list of course requests.
@@ -10,13 +11,14 @@ import { firestampToString } from '../utils/conversions'
  * @returns {JSX.Element} The rendered Requests component
  */
 const Requests = () => {
+  const { t } = useTranslation()
   const { requests, acceptRequest } = useContext(CourseContext)
   
   return (
     <div className='w-screen flex flex-col items-center justify-center'>
       <CustomCard
         scrolling
-        header='Requests'
+        header={t('requests.header', { defaultValue: 'Requests' })}
         className='w-[min(48rem,11/12*100%)] flex max-h-2/3 p-[min(3rem,4%)]'
       >
           <div className='divide-y flex-1 flex-col divide-primary'>
@@ -33,19 +35,19 @@ const Requests = () => {
                       !course.details ? 'italic opacity-75' : ''
                     } truncate`}
                   >
-                    {course.details || 'No description'}
+                    {course.details || t('requests.noDescription')}
                   </p>
                   <p>
                     {course.bookingTime
                       ? firestampToString(course.bookingTime)
-                      : `Ordered at: ${firestampToString(course.createdAt)}`}
+                      : t('requests.orderedAt', { date: firestampToString(course.createdAt) })}
                   </p>
                 </div>
                 <CustomButton
                   className='ml-auto'
                   onClick={() => acceptRequest(course)}
                 >
-                  Accept
+                  {t('button.accept')}
                 </CustomButton>
               </div>
             ))}

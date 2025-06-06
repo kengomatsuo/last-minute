@@ -14,6 +14,7 @@ import Theme from './settings/Theme'
 import PaymentManagement from './settings/PaymentManagement'
 import GeneralSettings from './settings/GeneralSettings'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 /**
  * Settings screen component with tabbed navigation
@@ -21,6 +22,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
  * @returns {JSX.Element} The Settings screen component
  */
 const Settings = () => {
+  const { t } = useTranslation()
   // const { user, addTutor, addAdmin } = useContext(UserContext)
   // const { addAlert } = useContext(ScreenContext)
   // const [textInput, setTextInput] = useState('')
@@ -30,22 +32,22 @@ const Settings = () => {
   const tabs = [
     {
       id: 'general',
-      name: 'General',
+      name: t('settings.general'),
       component: <GeneralSettings />,
     },
     {
       id: 'profile',
-      name: 'Edit Profile',
+      name: t('settings.editProfile'),
       component: <EditProfile />,
     },
     {
       id: 'account',
-      name: 'Account Management',
+      name: t('settings.accountManagement'),
       component: <AccountManagement />,
     },
     {
       id: 'payment',
-      name: 'Payment Management',
+      name: t('settings.paymentManagement'),
       component: <PaymentManagement />,
     },
     // Remove the themes tab

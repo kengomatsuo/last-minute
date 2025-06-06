@@ -3,6 +3,7 @@ import { ScreenContext } from '../contexts/ScreenContext'
 import { AnimatePresence, motion } from 'framer-motion'
 import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 
 /**
  * A dialog component that displays alerts with various button options.
@@ -32,6 +33,7 @@ const AlertDialog = ({
   detailsButton,
   primary,
 }) => {
+  const { t } = useTranslation()
   const { popAlertHead } = useContext(ScreenContext)
 
   const handleCancel = () => {
@@ -62,7 +64,7 @@ const AlertDialog = ({
 
   return (
     <AnimatePresence>
-      { (message || title) && (
+      {(message || title) && (
         <div className='fixed top-0 left-0 w-screen h-screen flex items-center justify-center z-30'>
           <motion.div
             className='absolute top-0 left-0 inset-0 bg-background-secondary/30 z-30'
@@ -81,43 +83,43 @@ const AlertDialog = ({
           >
             <div className='flex flex-col flex-1 px-4 py-2 gap-0 items-center justify-center text-primary-text'>
               <h2 className='text-lg font-semibold'>
-                {title || 'Alert'}
+                {title || t('alert.alert')}
               </h2>
               <p className='text-sm flex items-center justify-center'>
-                {message || 'Oi set the message prop'}
+                {message || t('alert.defaultMessage', { defaultValue: 'Oi set the message prop' })}
               </p>
             </div>
             <div className='flex justify-center divide-neutral-200 divide-x border-t border-neutral-200'>
               {closeButton && (
                 <div
-                  className={`${primary === 'close' ? 'font-bold' : ''} px-4 py-2 text-blue-500 flex-1 cursor-pointer active:bg-neutral-400/10 transition-all`}
+                  className={`$${primary === 'close' ? 'font-bold' : ''} px-4 py-2 text-blue-500 flex-1 cursor-pointer active:bg-neutral-400/10 transition-all`}
                   onClick={handleClose}
                 >
-                  Close
+                  {t('alert.close')}
                 </div>
               )}
               {cancelButton && (
                 <div
-                  className={`${primary === 'cancel' ? 'font-bold' : ''} px-4 py-2 text-red-500 flex-1 cursor-pointer active:bg-neutral-400/10 transition-all`}
+                  className={`$${primary === 'cancel' ? 'font-bold' : ''} px-4 py-2 text-red-500 flex-1 cursor-pointer active:bg-neutral-400/10 transition-all`}
                   onClick={handleCancel}
                 >
-                  Cancel
+                  {t('alert.cancel')}
                 </div>
               )}
               {detailsButton && (
                 <div
-                  className={`${primary === 'details' ? 'font-bold' : ''} px-4 py-2 text-blue-500 flex-1 cursor-pointer active:bg-neutral-400/10 transition-all`}
+                  className={`$${primary === 'details' ? 'font-bold' : ''} px-4 py-2 text-blue-500 flex-1 cursor-pointer active:bg-neutral-400/10 transition-all`}
                   onClick={handleOkay}
                 >
-                  Details
+                  {t('alert.details')}
                 </div>
               )}
               {okayButton && (
                 <div
-                  className={`${primary === 'okay' ? 'font-bold' : ''} px-4 py-2 text-blue-500 flex-1 cursor-pointer active:bg-neutral-400/10 transition-all`}
+                  className={`$${primary === 'okay' ? 'font-bold' : ''} px-4 py-2 text-blue-500 flex-1 cursor-pointer active:bg-neutral-400/10 transition-all`}
                   onClick={handleClose}
                 >
-                  Okay
+                  {t('alert.okay')}
                 </div>
               )}
             </div>

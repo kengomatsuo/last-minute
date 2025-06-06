@@ -1,0 +1,131 @@
+{
+  "appName": "Last Minute",
+  "thisLanguage": "English",
+  "button": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "change": "Change",
+    "deactivate": "Deactivate",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "accept": "Accept",
+    "book": "Book",
+    "instantBooking": "Instant Booking",
+    "scheduleBooking": "Schedule Booking",
+    "topUp": "Top Up Balance"
+  },
+  "label": {
+    "email": "Email",
+    "password": "Password",
+    "retypePassword": "Re-Type Password",
+    "name": "Name",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "dob": "Date of Birth",
+    "details": "Details",
+    "subject": "Subject",
+    "topic": "Topic",
+    "timezone": "Timezone",
+    "language": "Language",
+    "theme": "Theme",
+    "appVersion": "App Version",
+    "currentBalance": "Current Balance",
+    "availableFunds": "Available funds",
+    "amount": "Amount"
+  },
+  "placeholder": {
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "dob": "Enter Date of Birth",
+    "details": "I need help with this particular question...",
+    "subject": "Select a subject",
+    "topic": "Topics, keywords, etc.",
+    "timezone": "Select timezone",
+    "language": "Select language",
+    "amount": "Enter amount"
+  },
+  "auth": {
+    "alreadyMember": "Already a member?",
+    "dontHaveAccount": "Don't have an account?",
+    "secureGrades": "Secure your grades with <1>Last Minute</1>",
+    "verifyEmailSent": "A verification email has been sent to {{email}}.",
+    "verifyEmailInstruction": "Please verify your email address to continue.",
+    "errorSigningUp": "Error signing up",
+    "errorSigningIn": "Error signing in"
+  },
+  "settings": {
+    "general": "General",
+    "editProfile": "Edit Profile",
+    "accountManagement": "Account Management",
+    "paymentManagement": "Payment Management",
+    "signOut": "Sign Out",
+    "deactivateAccount": "Deactivate Account",
+    "deactivateAccountDesc": "Temporary disable your account",
+    "deleteAccount": "Delete Account",
+    "deleteAccountDesc": "Permanently delete your account and all its data"
+  },
+  "booking": {
+    "instantBooking": "Instant Booking",
+    "scheduleBooking": "Schedule Booking",
+    "dateTime": "Date and Time",
+    "dateFuture": "Date and time must be in the future",
+    "dateWithin14": "Date and time must be within the next 14 days"
+  },
+  "chat": {
+    "header": "Chat",
+    "loading": "Loading messages...",
+    "noMessages": "No messages yet. Start the conversation!"
+  },
+  "alert": {
+    "alert": "Alert",
+    "close": "Close",
+    "cancel": "Cancel",
+    "details": "Details",
+    "okay": "Okay"
+  },
+  "mainLoading": {
+    "loading": "Loading...",
+    "offline": "You are offline"
+  },
+  "faq": {
+    "header": "Frequently Asked Questions"
+  },
+  "landing": {
+    "yourCourses": "Your courses. At your demand.",
+    "button": "I am a button"
+  },
+  "requests": {
+    "noDescription": "No description",
+    "orderedAt": "Ordered at: {{date}}"
+  },
+  "errors": {
+    "nameMin": "Name must be at least 3 characters",
+    "password8": "At least 8 characters",
+    "passwordUpper": "At least 1 uppercase letter",
+    "passwordLower": "At least 1 lowercase letter",
+    "passwordNumber": "At least 1 number",
+    "passwordSpecial": "At least 1 special character"
+  },
+  "navbar": {
+    "dashboard": "Dashboard",
+    "requests": "Requests",
+    "booking": "Booking",
+    "history": "History",
+    "home": "Home",
+    "contact": "Contact",
+    "faq": "FAQ",
+    "signOut": "Sign out",
+    "signInRegister": "Sign in / Register",
+    "navigation": "Navigation",
+    "settings": "Settings",
+    "profile": "Profile",
+    "balance": "Balance",
+    "logOut": "Log out",
+    "register": "Register"
+  }
+}
