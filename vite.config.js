@@ -29,6 +29,7 @@ const manifestForPlugin = {
 export default defineConfig({
   base: '/last-minute/',
   plugins: [react(), tailwindcss(), svgr(), VitePWA(manifestForPlugin)],
+  assetsInclude: ['**/*.lottie'],
   build: {
     rollupOptions: {
       output: {

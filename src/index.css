@@ -127,7 +127,7 @@ html::-webkit-scrollbar {
 
 @layer theme {
   [data-theme='dark'] {
-    --color-primary: rgba(120, 117, 100);
+    --color-primary: rgb(120, 117, 100);
     --color-background: rgba(30, 30, 28);
     --color-background-secondary: rgba(60, 58, 50);
     --color-signin-background: rgb(32, 32, 29);
