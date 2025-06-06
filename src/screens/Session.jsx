@@ -37,14 +37,10 @@ const Session = () => {
   return (
     <div
       style={{ paddingTop: NAVBAR_HEIGHT }}
-      className='w-screen flex flex-row'
+      className='w-screen flex flex-row max-h-full overflow-hidden'
     >
-      <div className='flex-1 flex'>
-        <div className='flex-1 flex flex-col'>
-          <div className='flex-1 flex justify-center items-center bg-black'>
-            <VideoCall courseId={courseId} />
-          </div>
-        </div>
+      <div className='flex-1 flex justify-center p-4 top-30 items-center bg-black'>
+        <VideoCall courseId={courseId} />
       </div>
       <ChatComponent courseId={courseId} courseData={courseData} />
     </div>

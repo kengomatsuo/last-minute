@@ -957,25 +957,25 @@ const VideoCall = ({ courseId }) => {
   }
 
   return (
-    <div className='bg-black flex-1 h-full w-full relative flex flex-col justify-center items-center'>
-      <div className='flex flex-wrap gap-4 justify-center items-center w-full p-8'>
+    <div className=' flex-1 h-full w-full relative flex flex-col justify-center items-center'>
+      <div className='flex flex-1 flex-wrap gap-4 absolute justify-center items-center w-full p-8'>
         <video
           ref={localVideoRef}
           id='localVideo'
           autoPlay
           playsInline
           muted
-          className='rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
+          className='flex rounded-lg w-135 xl:w-[45%] aspect-video h-auto'
         />
         <video
           ref={remoteVideoRef}
           id='remoteVideo'
           autoPlay
           playsInline
-          className='rounded-lg min-w-135 w-135 xl:w-[45%] aspect-video h-auto'
+          className='flex rounded-lg w-135 xl:w-[45%] aspect-video h-auto'
         />
       </div>
-      <div className='absolute bottom-4 flex gap-1 bg-[#faf9f5] p-2 rounded-lg min-w-fit max-w-11/12'>
+      <div className='absolute bottom-0 flex gap-1 bg-[#faf9f5] p-2 rounded-lg min-w-fit max-w-11/12'>
         <CustomButton
           onClick={() => handleAudioToggle()}
           loading={isAudioStreamingLoading}
