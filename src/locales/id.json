@@ -62,8 +62,8 @@
   "settings": {
     "general": "Umum",
     "editProfile": "Ubah Profil",
-    "accountManagement": "Manajemen Akun",
-    "paymentManagement": "Manajemen Pembayaran",
+    "account": "Akun",
+    "payment": "Pembayaran",
     "signOut": "Keluar",
     "deactivateAccount": "Nonaktifkan Akun",
     "deactivateAccountDesc": "Nonaktifkan akun Anda sementara",
@@ -101,6 +101,7 @@
     "button": "Saya sebuah tombol"
   },
   "requests": {
+    "header": "Permintaan",
     "noDescription": "Tidak ada deskripsi",
     "orderedAt": "Dipesan pada: {{date}}"
   },

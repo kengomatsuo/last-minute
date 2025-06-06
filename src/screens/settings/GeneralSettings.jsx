@@ -19,11 +19,11 @@ const GeneralSettings = () => {
     { label: t('thisLanguage', { lng: 'id' }), value: 'id' }
   ]
 
-  const timezoneOptions = [
-    { label: 'UTC', value: 'UTC' },
-    { label: 'Asia/Jakarta', value: 'Asia/Jakarta' },
-    { label: 'America/New_York', value: 'America/New_York' }
-  ]
+  // const timezoneOptions = [
+  //   { label: 'UTC', value: 'UTC' },
+  //   { label: 'Asia/Jakarta', value: 'Asia/Jakarta' },
+  //   { label: 'America/New_York', value: 'America/New_York' }
+  // ]
 
   useEffect(() => {
     i18n.changeLanguage(language)
@@ -33,9 +33,9 @@ const GeneralSettings = () => {
     setLanguage(e.target.value)
   }
 
-  const handleTimezoneChange = e => {
-    setTimezone(e.target.value)
-  }
+  // const handleTimezoneChange = e => {
+  //   setTimezone(e.target.value)
+  // }
 
   const handleNotificationToggle = () => {
     setNotificationsEnabled(v => !v)
@@ -57,7 +57,7 @@ const GeneralSettings = () => {
           value={language}
         />
       </div>
-      <div>
+      {/* <div>
         <label className='block font-medium mb-1'>{t('label.timezone')}</label>
         <CustomInput
           name='timezone'
@@ -70,7 +70,7 @@ const GeneralSettings = () => {
           placeholder={t('placeholder.timezone')}
           value={timezone}
         />
-      </div>
+      </div> */}
       <div className='flex items-center'>
         <input
           id='notifications'

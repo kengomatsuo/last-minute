@@ -61,8 +61,8 @@
   "settings": {
     "general": "General",
     "editProfile": "Edit Profile",
-    "accountManagement": "Account Management",
-    "paymentManagement": "Payment Management",
+    "account": "Account",
+    "payment": "Payment",
     "signOut": "Sign Out",
     "deactivateAccount": "Deactivate Account",
     "deactivateAccountDesc": "Temporary disable your account",
@@ -100,6 +100,7 @@
     "button": "I am a button"
   },
   "requests": {
+    "header": "Requests",
     "noDescription": "No description",
     "orderedAt": "Ordered at: {{date}}"
   },

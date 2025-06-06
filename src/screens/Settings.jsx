@@ -42,12 +42,12 @@ const Settings = () => {
     },
     {
       id: 'account',
-      name: t('settings.accountManagement'),
+      name: t('settings.account'),
       component: <AccountManagement />,
     },
     {
       id: 'payment',
-      name: t('settings.paymentManagement'),
+      name: t('settings.payment'),
       component: <PaymentManagement />,
     },
     // Remove the themes tab
@@ -96,7 +96,7 @@ const Settings = () => {
       className='flex w-screen border-t border-card-outline/50 bg-background text-primary-text'
     >
       {/* Sidebar */}
-      <div className='min-w-fit h-full mb-2 relative border-r border-card-outline/50 bg-card-background'>
+      <div className='min-w-3xs h-full mb-2 relative border-r border-card-outline/50 bg-card-background'>
         {tabs.map(tab => (
           <div
             key={tab.id}
