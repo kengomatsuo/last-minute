@@ -2,6 +2,9 @@ import { useContext, useState, useRef, useEffect } from 'react'
 import { CustomButton, CustomInput } from '../../components'
 import { ScreenContext } from '../../contexts/ScreenContext'
 import { UserContext } from '../../contexts/UserContext'
+import { useNavigate } from 'react-router-dom'
+import { signOut } from 'firebase/auth'
+import { auth } from '../../../firebaseConfig'
 import placeholder from '../../assets/placeholders/image.png'
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
@@ -13,7 +16,8 @@ const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
  */
 const EditProfile = () => {
   const { addAlert } = useContext(ScreenContext)
-  const { user, updateUserProfile, isAuthLoading } = useContext(UserContext)
+  const { user, updateUserProfile, isAuthLoading, changePassword, sendResetPassword } = useContext(UserContext)
+  const navigate = useNavigate()
 
   // Form refs for validation
   const firstNameRef = useRef(null)
@@ -31,6 +35,14 @@ const EditProfile = () => {
     profilePictureFile: null, // Ensure this is always present in state
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Password change state
+  const [passwords, setPasswords] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  })
+  const [isChangingPassword, setIsChangingPassword] = useState(false)
 
   useEffect(() => {
     setProfile({
@@ -170,6 +182,51 @@ const EditProfile = () => {
     }
   }
 
+  // Password change handlers
+  const handlePasswordChangeInput = e => {
+    const { name, value } = e.target
+    setPasswords(prev => ({ ...prev, [name]: value }))
+  }
+  const handleChangePassword = async e => {
+    e.preventDefault()
+    setIsChangingPassword(true)
+    try {
+      if (!passwords.currentPassword || !passwords.newPassword) {
+        addAlert({
+          type: 'error',
+          title: 'Missing Fields',
+          message: 'Please fill in all password fields.',
+        })
+        setIsChangingPassword(false)
+        return
+      }
+      if (passwords.newPassword !== passwords.confirmPassword) {
+        addAlert({
+          type: 'error',
+          title: 'Password Mismatch',
+          message: 'New passwords do not match.',
+        })
+        setIsChangingPassword(false)
+        return
+      }
+      const result = await changePassword(
+        passwords.currentPassword,
+        passwords.newPassword
+      )
+      if (result === 'success') {
+        setPasswords({ currentPassword: '', newPassword: '', confirmPassword: '' })
+      } else if (result === 'reauth-required') {
+        await signOut(auth)
+        navigate('/auth')
+      }
+    } finally {
+      setIsChangingPassword(false)
+    }
+  }
+  const handleResetPassword = async () => {
+    await sendResetPassword()
+  }
+
   return (
     <form
       className='bg-card-background rounded-xl box-border border-2 border-card-outline shadow p-6 flex flex-col gap-6 min-w-fit'
@@ -268,6 +325,56 @@ const EditProfile = () => {
           autoComplete='tel'
         />
       </div> */}
+
+      {/* Password Change */}
+      <div className='mb-6'>
+        <h3 className='text-lg font-bold text-primary-text mb-2'>Change Password</h3>
+        <form className='flex flex-col gap-3' onSubmit={handleChangePassword}>
+          <CustomInput
+            name='currentPassword'
+            label='Current Password'
+            type='password'
+            value={passwords.currentPassword}
+            onChange={handlePasswordChangeInput}
+            required
+            autoComplete='current-password'
+          />
+          <CustomInput
+            name='newPassword'
+            label='New Password'
+            type='password'
+            value={passwords.newPassword}
+            onChange={handlePasswordChangeInput}
+            required
+            autoComplete='new-password'
+          />
+          <CustomInput
+            name='confirmPassword'
+            label='Confirm New Password'
+            type='password'
+            value={passwords.confirmPassword}
+            onChange={handlePasswordChangeInput}
+            required
+            autoComplete='new-password'
+          />
+          <div className='flex gap-2 justify-end'>
+            <CustomButton
+              type='button'
+              onClick={handleResetPassword}
+              disabled={isChangingPassword || isAuthLoading}
+            >
+              Reset Password
+            </CustomButton>
+            <CustomButton
+              type='submit'
+              filled
+              loading={isChangingPassword || isAuthLoading}
+            >
+              Change Password
+            </CustomButton>
+          </div>
+        </form>
+      </div>
 
       {/* Reset-Save Button */}
       <div className='flex justify-end space-x-4'>

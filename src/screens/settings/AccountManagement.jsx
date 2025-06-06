@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from 'react'
+import { useCallback, useContext, useRef, useState } from 'react'
 import { CustomButton, CustomInput } from '../../components'
 import { UserContext } from '../../contexts/UserContext'
 import { signOut } from 'firebase/auth'
@@ -7,12 +7,45 @@ import { auth } from '../../../firebaseConfig'
 
 const AccountManagement = () => {
   const navigate = useNavigate()
-  const { deleteAccount } = useContext(UserContext)
+  const { deleteAccount, changePassword, sendResetPassword } =
+    useContext(UserContext)
   // Remove unused addAlert and setAccount
   const [account] = useState({
     password: '',
     dob: '',
   })
+
+  // Password change state and refs for validation
+  const currentPasswordRef = useRef(null)
+  const newPasswordRef = useRef(null)
+  const confirmPasswordRef = useRef(null)
+  const [passwords, setPasswords] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  })
+  const [isChangingPassword, setIsChangingPassword] = useState(false)
+
+  // Password requirements for validation (same as Auth.jsx)
+  const passwordRequirements = [
+    { complete: false, text: 'At least 8 characters', regEx: '.{8,}' },
+    { complete: false, text: 'At least one uppercase letter', regEx: '(?=.*[A-Z])' },
+    { complete: false, text: 'At least one lowercase letter', regEx: '(?=.*[a-z])' },
+    { complete: false, text: 'At least one number', regEx: '(?=.*[0-9])' },
+  ]
+  const [passwordRequirementsFiltered, setPasswordRequirementsFiltered] = useState([])
+
+  // Password validation function (same logic as Auth.jsx)
+  const validatePassword = password => {
+    let requirements = [...passwordRequirements]
+    requirements.forEach(req => {
+      req.complete = new RegExp(req.regEx).test(password)
+    })
+    setPasswordRequirementsFiltered(requirements)
+    if (!requirements.every(req => req.complete)) {
+      throw new Error('Password does not meet all requirements')
+    }
+  }
 
   const handleSignOut = useCallback(async () => {
     try {
@@ -41,26 +74,124 @@ const AccountManagement = () => {
     // All alerts are handled in context
   }, [deleteAccount, navigate])
 
+  // Password change handlers
+  const handlePasswordChangeInput = e => {
+    const { name, value } = e.target
+    setPasswords(prev => ({ ...prev, [name]: value }))
+  }
+  const handleChangePassword = async e => {
+    e.preventDefault()
+    setIsChangingPassword(true)
+    try {
+      let isValid = true
+      if (currentPasswordRef.current) {
+        isValid = (await currentPasswordRef.current.validate()) && isValid
+      }
+      if (newPasswordRef.current) {
+        isValid = (await newPasswordRef.current.validate()) && isValid
+      }
+      if (confirmPasswordRef.current) {
+        isValid = (await confirmPasswordRef.current.validate()) && isValid
+      }
+      if (!isValid) {
+        window.alert('Please check your password fields.')
+        setIsChangingPassword(false)
+        return
+      }
+      if (passwords.newPassword !== passwords.confirmPassword) {
+        window.alert('New passwords do not match.')
+        setIsChangingPassword(false)
+        return
+      }
+      const result = await changePassword(
+        passwords.currentPassword,
+        passwords.newPassword
+      )
+      if (result === 'success') {
+        setPasswords({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: '',
+        })
+      } else if (result === 'reauth-required') {
+        await signOut(auth)
+        navigate('/auth')
+      }
+    } finally {
+      setIsChangingPassword(false)
+    }
+  }
+  const handleResetPassword = async () => {
+    await sendResetPassword()
+  }
+
   return (
     <div className='p-4 bg-card-background rounded-xl box-border border-2 border-card-outline flex flex-col gap-6 min-w-fit'>
       <h2 className='text-2xl font-bold text-primary-text'>
         Personal Information
       </h2>
 
-      {/* Password */}
-      <div className=''>
-        <div className='flex items-end'>
+      {/* Password Change */}
+      <div className='mb-6'>
+        <h3 className='text-lg font-bold text-primary-text mb-2'>
+          Change Password
+        </h3>
+        <form className='flex flex-col gap-5' onSubmit={handleChangePassword}>
           <CustomInput
-            name='password'
-            label='Password'
-            value={account.password}
-            placeholder='Enter Password'
+            name='currentPassword'
+            label='Current Password'
             type='password'
+            value={passwords.currentPassword}
+            onChange={handlePasswordChangeInput}
+            ref={currentPasswordRef}
+            required
+            autoComplete='current-password'
+            placeholder='Enter your current password'
           />
-
-          <CustomButton className='ml-2 bg-primary'>Change</CustomButton>
-        </div>
-      </div>
+          <CustomInput
+            name='newPassword'
+            label='New Password'
+            type='password'
+            value={passwords.newPassword}
+            onChange={handlePasswordChangeInput}
+            ref={newPasswordRef}
+            className='mb-[-1.5rem]'
+            required
+            autoComplete='new-password'
+            placeholder='Enter a new password'
+            validateFunction={validatePassword}
+            requirements={passwordRequirementsFiltered}
+          />
+          <CustomInput
+            name='confirmPassword'
+            label='Confirm New Password'
+            type='password'
+            value={passwords.confirmPassword}
+            onChange={handlePasswordChangeInput}
+            ref={confirmPasswordRef}
+            required
+            autoComplete='new-password'
+            placeholder='Re-enter new password'
+            validateFunction={val => {
+              if (val !== passwords.newPassword) {
+                throw new Error('Passwords do not match')
+              }
+            }}
+          />
+          <div className='flex gap-2 justify-end'>
+            <CustomButton
+              type='button'
+              onClick={handleResetPassword}
+              disabled={isChangingPassword}
+            >
+              Reset Password
+            </CustomButton>
+            <CustomButton type='submit' filled loading={isChangingPassword}>
+              Change Password
+            </CustomButton>
+          </div>
+        </form>
+      </div>  
 
       {/* DOB */}
       {/* <div className=''>
@@ -121,9 +252,7 @@ const AccountManagement = () => {
           <p className='text-sm text-primary-text mb-2'>
             Permanently delete your account and all its data
           </p>
-          <CustomButton
-            onClick={() => handleDeleteAccount()}
-          >
+          <CustomButton onClick={() => handleDeleteAccount()}>
             Delete
           </CustomButton>
         </div>

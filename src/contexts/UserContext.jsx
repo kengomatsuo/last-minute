@@ -558,6 +558,110 @@ const UserContextProvider = ({ children }) => {
     }
   }
 
+  /**
+   * Changes the current user's password.
+   *
+   * @param {string} currentPassword - The user's current password
+   * @param {string} newPassword - The new password to set
+   * @returns {Promise<'success' | 'reauth-required' | 'error'>} Result status
+   */
+  const changePassword = async (currentPassword, newPassword) => {
+    try {
+      if (!auth.currentUser || !auth.currentUser.email) {
+        if (typeof addAlert === 'function') {
+          addAlert({
+            message: 'No user is currently signed in',
+            type: 'error',
+          })
+        }
+        return 'error'
+      }
+      // Re-authenticate user
+      const credential = window.firebase.auth.EmailAuthProvider.credential(
+        auth.currentUser.email,
+        currentPassword
+      )
+      await auth.currentUser.reauthenticateWithCredential(credential)
+      await auth.currentUser.updatePassword(newPassword)
+      if (typeof addAlert === 'function') {
+        addAlert({
+          message: 'Password changed successfully',
+          type: 'success',
+        })
+      }
+      return 'success'
+    } catch (error) {
+      if (
+        error.code === 'auth/requires-recent-login' ||
+        error.message?.includes('recent')
+      ) {
+        if (typeof addAlert === 'function') {
+          addAlert({
+            message:
+              'Please sign in again to change your password for security reasons.',
+            type: 'error',
+          })
+        }
+        return 'reauth-required'
+      } else if (
+        error.code === 'auth/wrong-password' ||
+        error.message?.toLowerCase().includes('password')
+      ) {
+        if (typeof addAlert === 'function') {
+          addAlert({
+            message: 'Current password is incorrect.',
+            type: 'error',
+          })
+        }
+        return 'error'
+      } else {
+        if (typeof addAlert === 'function') {
+          addAlert({
+            message: 'Failed to change password: ' + error.message,
+            type: 'error',
+          })
+        }
+        console.error('Error changing password:', error)
+        return 'error'
+      }
+    }
+  }
+
+  /**
+   * Sends a password reset email to the current user's email.
+   *
+   * @returns {Promise<'success' | 'error'>} Result status
+   */
+  const sendResetPassword = async () => {
+    try {
+      if (!auth.currentUser?.email) {
+        if (typeof addAlert === 'function') {
+          addAlert({
+            message: 'No user email found for reset.',
+            type: 'error',
+          })
+        }
+        return 'error'
+      }
+      await sendPasswordResetEmail(auth, auth.currentUser.email)
+      if (typeof addAlert === 'function') {
+        addAlert({
+          message: 'Password reset email sent.',
+          type: 'success',
+        })
+      }
+      return 'success'
+    } catch (error) {
+      if (typeof addAlert === 'function') {
+        addAlert({
+          message: 'Failed to send reset email: ' + error.message,
+          type: 'error',
+        })
+      }
+      return 'error'
+    }
+  }
+
   return (
     <UserContext.Provider
       value={{
@@ -579,6 +683,8 @@ const UserContextProvider = ({ children }) => {
         handleForgotPassword,
         updateUserProfile,
         deleteAccount,
+        changePassword,
+        sendResetPassword,
       }}
     >
       <AnimatePresence>
