@@ -97,8 +97,7 @@
     "header": "Pertanyaan yang Sering Diajukan"
   },
   "landing": {
-    "yourCourses": "Kursus Anda. Sesuai permintaan.",
-    "button": "Saya sebuah tombol"
+    "yourCourses": "Kursus Anda. Sesuai permintaan."
   },
   "requests": {
     "header": "Permintaan",
@@ -129,5 +128,16 @@
     "balance": "Saldo",
     "logOut": "Keluar",
     "register": "Daftar"
+  },
+  "subject": {
+    "math": "Matematika",
+    "science": "Ilmu Pengetahuan Alam",
+    "english": "Bahasa Inggris",
+    "history": "Sejarah",
+    "computerScience": "Ilmu Komputer",
+    "art": "Seni",
+    "music": "Musik",
+    "physicalEducation": "Pendidikan Jasmani",
+    "other": "Lainnya"
   }
 }

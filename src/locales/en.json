@@ -96,8 +96,7 @@
     "header": "Frequently Asked Questions"
   },
   "landing": {
-    "yourCourses": "Your courses. At your demand.",
-    "button": "I am a button"
+    "yourCourses": "Your courses. At your demand."
   },
   "requests": {
     "header": "Requests",
@@ -128,5 +127,16 @@
     "balance": "Balance",
     "logOut": "Log out",
     "register": "Register"
+  },
+  "subject": {
+    "math": "Mathematics",
+    "science": "Science",
+    "english": "English",
+    "history": "History",
+    "computerScience": "Computer Science",
+    "art": "Art",
+    "music": "Music",
+    "physicalEducation": "Physical Education",
+    "other": "Other"
   }
 }

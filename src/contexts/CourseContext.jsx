@@ -20,6 +20,7 @@ import PropTypes from 'prop-types'
 import { UserContext } from './UserContext'
 import { stringToFirestamp } from '../utils/conversions'
 import { useConsoleLog } from '../hooks'
+import { ScreenContext } from './ScreenContext'
 
 /**
  * @typedef {Object} CourseContextType
@@ -58,6 +59,9 @@ const CourseContext = createContext(defaultContext)
  * @returns {JSX.Element} The CourseContext provider
  */
 const CourseContextProvider = ({ children }) => {
+  const { addAlert } = useContext(ScreenContext)
+  const { user } = useContext(UserContext)
+
   const [courses, setCourses] = useState([])
   const [requests, setRequests] = useState([])
   const [isRequestPending, setIsRequestPending] = useState(false)
@@ -66,7 +70,6 @@ const CourseContextProvider = ({ children }) => {
   const [isCancelPending, setIsCancelPending] = useState(false)
   const [lastVisibleRequest, setLastVisibleRequest] = useState(null)
 
-  const { user } = useContext(UserContext)
   const isTutor = user?.claims?.isTutor
 
   // useConsoleLog('courses', courses)
@@ -223,10 +226,18 @@ const CourseContextProvider = ({ children }) => {
       })
       
       console.log('Request accepted successfully:', result.data)
-      alert('Request accepted successfully!')
+      addAlert({
+        type: 'success',
+        title: 'Success',
+        message: 'Request accepted successfully!',
+      })
     } catch (error) {
       console.error('Error accepting request:', error)
-      alert(`Error accepting request: ${error.message}`)
+      addAlert({
+        type: 'error',
+        title: 'Error accepting request',
+        message: error.message || String(error),
+      })
     } finally {
       setIsAcceptPending(false)
     }
@@ -266,9 +277,17 @@ const CourseContextProvider = ({ children }) => {
         createdAt: serverTimestamp(),
         ...courseForm,
       })
-      alert('Course added successfully!')
+      addAlert({
+        type: 'success',
+        title: 'Success',
+        message: 'Course added successfully!',
+      })
     } catch (error) {
-      alert('Error requesting course:', error)
+      addAlert({
+        type: 'error',
+        title: 'Error requesting course',
+        message: error.message || String(error),
+      })
       throw error
     } finally {
       setIsRequestPending(false)

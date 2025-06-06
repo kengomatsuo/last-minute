@@ -2,9 +2,12 @@ import ket from '../assets/ket.png'
 import { CustomButton, CustomFooter, FAQComponent } from '../components'
 import { NAVBAR_HEIGHT } from '../constants/visualConstants'
 import { useTranslation } from 'react-i18next'
+import { ScreenContext } from '../contexts/ScreenContext'
+import { useContext } from 'react'
 
 const Landing = () => {
   const { t } = useTranslation()
+  const { addAlert } = useContext(ScreenContext)
   return (
     <div
       className='flex flex-col flex-1 items-center w-screen justify-center'
@@ -17,7 +20,15 @@ const Landing = () => {
       </div>
       <div className='flex flex-col items-center justify-center'>
         <p>{t('landing.yourCourses')}</p>
-        <CustomButton onClick={null}>{t('landing.button')}</CustomButton>
+        <CustomButton
+          onClick={() => addAlert({
+            title: 'test',
+            message: 'hehe',
+            type: '',
+          })}
+        >
+          I am a button
+        </CustomButton>
       </div>
       {/* Clear everything between these comments to start fresh */}
 

@@ -30,61 +30,61 @@ const Booking = () => {
   const subjectOptions = [
     {
       label:
-        t('label.subject') + ' - ' + t('label.math', { defaultValue: 'Math' }),
+        t('label.subject') + ' - ' + t('subject.math', { defaultValue: 'Math' }),
       value: 'math',
     },
     {
       label:
         t('label.subject') +
         ' - ' +
-        t('label.science', { defaultValue: 'Science' }),
+        t('subject.science', { defaultValue: 'Science' }),
       value: 'science',
     },
     {
       label:
         t('label.subject') +
         ' - ' +
-        t('label.english', { defaultValue: 'English' }),
+        t('subject.english', { defaultValue: 'English' }),
       value: 'english',
     },
     {
       label:
         t('label.subject') +
         ' - ' +
-        t('label.history', { defaultValue: 'History' }),
+        t('subject.history', { defaultValue: 'History' }),
       value: 'history',
     },
     {
       label:
         t('label.subject') +
         ' - ' +
-        t('label.computerScience', { defaultValue: 'Computer Science' }),
+        t('subject.computerScience', { defaultValue: 'Computer Science' }),
       value: 'computer-science',
     },
     {
       label:
-        t('label.subject') + ' - ' + t('label.art', { defaultValue: 'Art' }),
+        t('label.subject') + ' - ' + t('subject.art', { defaultValue: 'Art' }),
       value: 'art',
     },
     {
       label:
         t('label.subject') +
         ' - ' +
-        t('label.music', { defaultValue: 'Music' }),
+        t('subject.music', { defaultValue: 'Music' }),
       value: 'music',
     },
     {
       label:
         t('label.subject') +
         ' - ' +
-        t('label.physicalEducation', { defaultValue: 'Physical Education' }),
+        t('subject.physicalEducation', { defaultValue: 'Physical Education' }),
       value: 'physical-education',
     },
     {
       label:
         t('label.subject') +
         ' - ' +
-        t('label.other', { defaultValue: 'Other' }),
+        t('subject.other', { defaultValue: 'Other' }),
       value: 'other',
     },
   ]

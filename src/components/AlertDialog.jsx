@@ -67,7 +67,7 @@ const AlertDialog = ({
       {(message || title) && (
         <div className='fixed top-0 left-0 w-screen h-screen flex items-center justify-center z-30'>
           <motion.div
-            className='absolute top-0 left-0 inset-0 bg-background-secondary/30 z-30'
+            className='absolute top-0 left-0 inset-0 bg-background-secondary/90 z-30'
             // onClick={handleClose}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -89,7 +89,7 @@ const AlertDialog = ({
                 {message || t('alert.defaultMessage', { defaultValue: 'Oi set the message prop' })}
               </p>
             </div>
-            <div className='flex justify-center divide-neutral-200 divide-x border-t border-neutral-200'>
+            <div className='flex justify-center divide-neutral-200 divide-x border-t border-primary-text/15'>
               {closeButton && (
                 <div
                   className={`$${primary === 'close' ? 'font-bold' : ''} px-4 py-2 text-blue-500 flex-1 cursor-pointer active:bg-neutral-400/10 transition-all`}
