@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useState, useRef } from 'react'
 import WalletIcon from '../../assets/icons/wallet-money.svg?react'
 import PlusIcon from '../../assets/icons/ic_plus.svg?react'
 import { UserContext } from '../../contexts/UserContext'
@@ -11,12 +11,19 @@ import CustomButton from '../../components/CustomButton'
  * @returns {JSX.Element} The rendered payment management component
  */
 const PaymentManagement = () => {
-  const [topUpAmount, setTopUpAmount] = useState('')
+  const [topUpAmount, setTopUpAmount] = useState('0')
   const [showTopUpModal, setShowTopUpModal] = useState(false)
+  const amountRef = useRef(null)
 
   const { updateBalance, balance } = useContext(UserContext)
 
-  const handleTopUp = async () => {
+  const handleTopUp = async e => {
+    if (e) e.preventDefault()
+    let isValid = true
+    if (amountRef.current) {
+      isValid = (await amountRef.current.validate()) && isValid
+    }
+    if (!isValid) return
     if (topUpAmount && !isNaN(parseFloat(topUpAmount))) {
       await updateBalance(parseFloat(topUpAmount))
       setTopUpAmount('')
@@ -63,37 +70,48 @@ const PaymentManagement = () => {
         <div className='fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50'>
           <div className='bg-card-background p-6 rounded-lg shadow-lg w-full max-w-md'>
             <h3 className='text-xl font-semibold mb-4'>Top Up Balance</h3>
-            <div className='mb-4'>
-              <label
-                htmlFor='amount'
-                className='block text-primary-text mb-2'
-              >
-                Amount
-              </label>
-              <CustomInput
-                type='number'
-                name='amount'
-                value={topUpAmount}
-                onChange={e => setTopUpAmount(e.target.value)}
-                placeholder='Enter amount'
-                inputClassName='w-full p-3 border rounded-md'
-              />
-            </div>
-            <div className='flex justify-between gap-4'>
-              <CustomButton
-                onClick={() => setShowTopUpModal(false)}
-                className='flex-1 py-2 px-4 border rounded-md hover:bg-gray-50'
-              >
-                Cancel
-              </CustomButton>
-              <CustomButton
-                filled
-                onClick={handleTopUp}
-                className='flex-1 py-2 px-4 bg-primary text-white rounded-md hover:bg-filled-button-hover'
-              >
-                Confirm
-              </CustomButton>
-            </div>
+            <form onSubmit={handleTopUp}>
+              <div className='mb-4'>
+                <label
+                  htmlFor='amount'
+                  className='block text-primary-text mb-2'
+                >
+                  Amount
+                </label>
+                <CustomInput
+                  type='number'
+                  name='amount'
+                  value={topUpAmount}
+                  onChange={e => setTopUpAmount(e.target.value)}
+                  placeholder='Enter amount'
+                  inputClassName='w-full p-3 border rounded-md'
+                  // ref={amountRef}
+                  required
+                  min='1'
+                  validateFunction={val => {
+                    if (!val || isNaN(val) || parseFloat(val) <= 0) {
+                      throw new Error('Please enter a valid amount greater than 0')
+                    }
+                  }}
+                />
+              </div>
+              <div className='flex justify-between gap-4 mt-4'>
+                <CustomButton
+                  type='button'
+                  onClick={() => setShowTopUpModal(false)}
+                  className='flex-1 py-2 px-4 border rounded-md hover:bg-gray-50'
+                >
+                  Cancel
+                </CustomButton>
+                <CustomButton
+                  filled
+                  type='submit'
+                  className='flex-1 py-2 px-4 bg-primary text-white rounded-md hover:bg-filled-button-hover'
+                >
+                  Confirm
+                </CustomButton>
+              </div>
+            </form>
           </div>
         </div>
       )}
