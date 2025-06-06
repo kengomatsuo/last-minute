@@ -48,6 +48,8 @@ import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
  * available options for suggest inputs
  * @param {Array<string>} [props.requirements] - Additional requirements for the
  * input field
+ * @param {boolean} [props.selectOnFocus] - Whether to select the input value
+ * when the input field is focused
  */
 const CustomInput = ({
   label = '',
@@ -66,6 +68,7 @@ const CustomInput = ({
   autoSave = false,
   saveDelay = 500,
   ref,
+  selectOnFocus = false,
   ...props
 }) => {
   // Create a storage key based on input name if not provided
@@ -93,6 +96,7 @@ const CustomInput = ({
   const inputContainerRef = useRef(null)
   // Add refs to track highlighted option elements
   const highlightedOptionRef = useRef(null)
+  const inputElementRef = useRef(null)
 
   // Create a debounced save function
   const debouncedSave = useDebounce(valueToSave => {
@@ -180,11 +184,12 @@ const CustomInput = ({
 
   // Update filtered options when options or input value changes
   useEffect(() => {
-    if (type === 'suggest') {
-      filterOptions(inputValue)
+    if (type === 'suggest' && isFocused && inputValue === '') {
+      setFilteredOptions(options)
+      setHighlightedIndex(options.length > 0 ? 0 : -1)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [options, inputValue, type])
+  }, [options])
 
   // Update input value when external value prop changes
   useEffect(() => {
@@ -323,6 +328,13 @@ const CustomInput = ({
    */
   const handleFocus = () => {
     setIsFocused(true)
+    if (type === 'suggest') {
+      setFilteredOptions(options)
+      setHighlightedIndex(options.length > 0 ? 0 : -1)
+    }
+    if (selectOnFocus && inputElementRef.current) {
+      inputElementRef.current.select()
+    }
   }
 
   /**
@@ -477,7 +489,7 @@ const CustomInput = ({
             className={`${
               !image ? commonClassName : 'flex-1 p-2'
             } resize-none min-h-[70px]`}
-            ref={ref}
+            ref={inputElementRef}
           />
         ) : (
           <input
@@ -494,7 +506,7 @@ const CustomInput = ({
             min={props.min}
             max={props.max}
             autoComplete={type === 'suggest' ? 'off' : props.autoComplete}
-            ref={ref}
+            ref={inputElementRef}
             autoFocus={props.autoFocus}
           />
         )}
@@ -716,6 +728,7 @@ CustomInput.propTypes = {
       complete: PropTypes.bool.isRequired,
     })
   ),
+  selectOnFocus: PropTypes.bool,
 }
 
 export default CustomInput

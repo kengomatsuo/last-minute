@@ -45,7 +45,7 @@ const GeneralSettings = () => {
         <CustomInput
           name='language'
           type='suggest'
-          value={languageOptions.find(opt => opt.value === language)?.label || ''}
+          selectOnFocus
           options={languageOptions}
           onChange={e => handleLanguageChange({ target: { value: e.target.value } })}
           onOptionSelect={val => setLanguage(val)}
@@ -58,7 +58,7 @@ const GeneralSettings = () => {
         <CustomInput
           name='timezone'
           type='suggest'
-          value={timezoneOptions.find(opt => opt.value === timezone)?.label || ''}
+          selectOnFocus
           options={timezoneOptions}
           onChange={e => handleTimezoneChange({ target: { value: e.target.value } })}
           onOptionSelect={val => setTimezone(val)}
