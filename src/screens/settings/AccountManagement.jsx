@@ -155,7 +155,6 @@ const AccountManagement = () => {
             value={passwords.newPassword}
             onChange={handlePasswordChangeInput}
             ref={newPasswordRef}
-            className='mb-[-1.5rem]'
             required
             autoComplete='new-password'
             placeholder='Enter a new password'

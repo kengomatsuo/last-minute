@@ -11,6 +11,9 @@ import {
   sendPasswordResetEmail,
   updateEmail,
   updatePhoneNumber,
+  reauthenticateWithCredential,
+  updatePassword,
+  EmailAuthProvider,
 } from 'firebase/auth'
 import { auth, db, functions } from '../../firebaseConfig'
 import { httpsCallable } from 'firebase/functions'
@@ -567,6 +570,7 @@ const UserContextProvider = ({ children }) => {
    */
   const changePassword = async (currentPassword, newPassword) => {
     try {
+      console.log(auth)
       if (!auth.currentUser || !auth.currentUser.email) {
         if (typeof addAlert === 'function') {
           addAlert({
@@ -576,13 +580,16 @@ const UserContextProvider = ({ children }) => {
         }
         return 'error'
       }
+      console.log('Changing password for user:', auth.currentUser.email)
       // Re-authenticate user
-      const credential = window.firebase.auth.EmailAuthProvider.credential(
+      const credential = EmailAuthProvider.credential(
         auth.currentUser.email,
         currentPassword
       )
-      await auth.currentUser.reauthenticateWithCredential(credential)
-      await auth.currentUser.updatePassword(newPassword)
+      console.log('Re-authenticating with credential:', credential)
+      await reauthenticateWithCredential(auth.currentUser, credential)
+      await updatePassword(auth.currentUser, newPassword)
+      console.log('Password changed successfully for user:', auth.currentUser.email)
       if (typeof addAlert === 'function') {
         addAlert({
           message: 'Password changed successfully',
