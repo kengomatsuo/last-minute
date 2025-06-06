@@ -102,6 +102,7 @@ html::-webkit-scrollbar {
   --color-primary: rgba(173, 169, 145);
   --color-background: rgba(252, 250, 241);
   --color-background-secondary: rgba(191, 187, 169);
+  --color-signin-background: rgba(255, 255, 255);
   --color-accent: rgba(152, 216, 239);
   --color-primary-text: rgba(0, 0, 0);
   --color-secondary-text: rgba(252, 250, 241);
@@ -128,6 +129,7 @@ html::-webkit-scrollbar {
     --color-primary: rgba(120, 117, 100);
     --color-background: rgba(30, 30, 28);
     --color-background-secondary: rgba(60, 58, 50);
+    --color-signin-background: rgb(32, 32, 29);
     --color-accent: rgba(100, 180, 220);
     --color-primary-text: rgba(255, 255, 255);
     --color-secondary-text: rgba(30, 30, 28);

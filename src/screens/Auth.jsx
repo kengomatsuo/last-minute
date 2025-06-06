@@ -204,10 +204,6 @@ const Auth = ({ initialAction }) => {
           opacity: 0,
           transition: { delay: 0.3, duration: 0.3 },
         }}
-        style={{
-          backgroundColor:
-            'var(--color-background-secondary, rgba(191, 187, 169, 0.3))',
-        }}
       />
       <motion.div
         key={'auth-modal'}
@@ -217,10 +213,9 @@ const Auth = ({ initialAction }) => {
         transition={MOVEMENT_TRANSITION}
         className={`flex z-30 ${
           isSmallScreen ? 'w-[min(48rem,100%)]' : 'w-[min(75rem,11/12*100%)]'
-        } bg-white ${
+        } bg-signin-background ${
           action === 'register' ? 'flex-row' : 'flex-row-reverse'
         } my-auto rounded-4xl max-w-[75rem] h-[45rem] overflow-clip justify-between`}
-        style={{ backgroundColor: 'var(--color-card-background, #fcfaf1)' }}
       >
         <AnimatePresence>
           {user && !user.emailVerified ? (
@@ -367,7 +362,7 @@ const Auth = ({ initialAction }) => {
                       name='displayName'
                       inputClassName={inputClassName}
                       image={<UserIcon width={24} height={24} />}
-                      placeholder={t('placeholders.name')}
+                      placeholder={t('placeholder.name')}
                       disabled={isAuthLoading}
                       validateFunction={e => {
                         if (e.length < 3)
@@ -380,7 +375,7 @@ const Auth = ({ initialAction }) => {
                       name='email'
                       inputClassName={inputClassName}
                       image={<EmailIcon width={24} height={24} />}
-                      placeholder={t('placeholders.email')}
+                      placeholder={t('placeholder.email')}
                       disabled={isAuthLoading}
                       validateFunction={e => validateEmail(e)}
                       required
@@ -390,7 +385,7 @@ const Auth = ({ initialAction }) => {
                       name='password'
                       inputClassName={inputClassName}
                       image={<PasswordIcon width={24} height={24} />}
-                      placeholder={t('placeholders.password')}
+                      placeholder={t('placeholder.password')}
                       disabled={isAuthLoading}
                       validateFunction={e => validatePassword(e)}
                       type='password'
@@ -403,7 +398,7 @@ const Auth = ({ initialAction }) => {
                         name='retypePassword'
                         inputClassName={inputClassName}
                         image={<PasswordIcon width={24} height={24} />}
-                        placeholder={t('placeholders.retypePassword')}
+                        placeholder={t('placeholder.retypePassword')}
                         disabled={isAuthLoading}
                         validateFunction={e => validateRetypePassword(e)}
                         type='password'
@@ -431,7 +426,7 @@ const Auth = ({ initialAction }) => {
                       className='w-[14rem] mt-2'
                     >
                       <div className='flex items-center gap-4'>
-                        <p>{t('buttons.signUp')}</p>
+                        <p>{t('button.signUp')}</p>
                         <div className='p-2 rounded-full'>
                           <ArrowRightIcon
                             style={{
@@ -539,7 +534,7 @@ const Auth = ({ initialAction }) => {
                       name='email'
                       inputClassName={inputClassName}
                       image={<EmailIcon width={24} height={24} />}
-                      placeholder={t('placeholders.email')}
+                      placeholder={t('placeholder.email')}
                       disabled={isAuthLoading}
                       validateFunction={e => validateEmail(e)}
                       required
@@ -549,7 +544,7 @@ const Auth = ({ initialAction }) => {
                       name='password'
                       inputClassName={inputClassName}
                       image={<PasswordIcon width={24} height={24} />}
-                      placeholder={t('placeholders.password')}
+                      placeholder={t('placeholder.password')}
                       disabled={isAuthLoading}
                       type='password'
                       required
@@ -574,7 +569,7 @@ const Auth = ({ initialAction }) => {
                       className='w-[14rem] mt-2'
                     >
                       <div className='flex items-center gap-4'>
-                        <p>{t('buttons.signIn')}</p>
+                        <p>{t('button.signIn')}</p>
                         <div className='p-2 rounded-full'>
                           <ArrowRightIcon
                             style={{
