@@ -31,6 +31,7 @@ const Auth = ({ initialAction }) => {
     addBalanceDoc,
     isCheckingEmailVerification,
     isAuthLoading,
+    handleForgotPassword,
   } = useContext(UserContext)
   const { isSmallScreen, refreshIsSmallScreen, addAlert } =
     useContext(ScreenContext)
@@ -170,6 +171,29 @@ const Auth = ({ initialAction }) => {
         message: error.message,
       })
       console.error('Error signing up:', error.message)
+    }
+  }
+
+  /**
+   * Handles the forgot password button click.
+   *
+   * @returns {Promise<void>}
+   */
+  const onForgotPassword = async () => {
+    try {
+      if (!emailRef.current.validate) {
+        throw new Error('Email input is not valid')
+      }
+      const formData = new FormData(formRef.current)
+      const data = Object.fromEntries(formData.entries())
+      console.log(data.email)
+      await handleForgotPassword(data.email)
+    } catch (error) {
+      addAlert({
+        type: 'info',
+        title: 'Error sending reset email',
+        message: error.message,
+      })
     }
   }
 
@@ -322,9 +346,7 @@ const Auth = ({ initialAction }) => {
                       </h1>
                       <h3 className='text-card-outline text-nowrap'>
                         Secure your grades with{' '}
-                        <b className='italic text-primary'>
-                          Last Minute
-                        </b>
+                        <b className='italic text-primary'>Last Minute</b>
                       </h3>
                     </div>
                   </div>
@@ -478,9 +500,7 @@ const Auth = ({ initialAction }) => {
                       </h1>
                       <h3 className='text-card-outline text-nowrap'>
                         Secure your grades with{' '}
-                        <b className='italic text-primary'>
-                          Last Minute
-                        </b>
+                        <b className='italic text-primary'>Last Minute</b>
                       </h3>
                     </div>
                   </div>
@@ -510,7 +530,12 @@ const Auth = ({ initialAction }) => {
                       required
                       ref={passwordRef}
                     />
-
+                    <CustomInteractive
+                      onClick={() => onForgotPassword()}
+                      className='font-semibold !p-1 ml-2 w-min !text-primary text-nowrap'
+                    >
+                      Forgot Password?
+                    </CustomInteractive>
                     {isSmallScreen && (
                       <div className='inline-flex items-center text-nowrap'>
                         Don&apos;t have an account?
@@ -552,7 +577,10 @@ const Auth = ({ initialAction }) => {
                   transition={MOVEMENT_TRANSITION}
                   className='flex-4'
                 >
-                  <SignInDecoration className='fill-primary' style={{ transform: 'scaleX(-1)' }} />
+                  <SignInDecoration
+                    className='fill-primary'
+                    style={{ transform: 'scaleX(-1)' }}
+                  />
                 </motion.div>
               )}
             </>
