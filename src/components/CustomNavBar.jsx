@@ -15,6 +15,7 @@ import { signOut } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
 import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
 import { useTranslation } from 'react-i18next'
+import placeholder from '../assets/placeholders/image.png'
 
 /**
  * Custom navigation bar component with responsive design and animations.
@@ -156,7 +157,11 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
               className='w-min aspect-square flex !p-1.5 items-center justify-center'
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              <SideBarIcon width={28} height={28} className="fill-primary-text"/>
+              <SideBarIcon
+                width={28}
+                height={28}
+                className='fill-primary-text'
+              />
             </CustomInteractive>
 
             {/* Animate Presence for smooth entry and exit */}
@@ -194,29 +199,60 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                       className='w-min aspect-square flex !p-1 items-center mb-2 justify-center ml-auto'
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <RightArrowIcon width={32} height={32} className="fill-primary-text"/>
+                      <RightArrowIcon
+                        width={32}
+                        height={32}
+                        className='fill-primary-text'
+                      />
                     </CustomInteractive>
 
                     <motion.div
                       className='flex gap-2 flex-row items-center mb-4'
                       onClick={() => setShowUserPopUp(!showUserPopUp)}
                     >
-                      <motion.div className='border-1 rounded-full bg-background-secondary/50 p-1 w-10 h-10 flex items-center justify-center'>
+                      <motion.div className='border-1 rounded-full bg-background-secondary/50 w-10 h-10 flex items-center justify-center'>
                         {/* Placeholder for user image */}
                         {user?.photoURL ? (
-                          <img src={user?.photoURL} />
+                          <img
+                            src={user.photoURL}
+                            alt='Profile'
+                            className='w-10 h-10 object-cover rounded-full'
+                            onError={e => {
+                              e.target.onerror = null
+                              e.target.src = placeholder
+                            }}
+                          />
                         ) : (
-                          <UserIcon width={40} height={40} className="fill-primary-text"/>
+                          <UserIcon
+                            width={40}
+                            height={40}
+                            className='fill-primary-text'
+                          />
                         )}
                       </motion.div>
-                      <motion.div className='flex flex-col items-start'>
+                      <motion.div className='flex flex-1 flex-col items-start'>
                         <p className='text-sm font-semibold text-primary-text'>
                           {user?.displayName || 'User'}
                         </p>
                         <p className='text-xs flex gap-2 text-primary-text'>
-                          <CoinsIcon width={16} height={16} className="fill-primary-text"/>
+                          <CoinsIcon
+                            width={16}
+                            height={16}
+                            className='fill-primary-text'
+                          />
                           {balance !== undefined ? balance.toFixed(2) : '0.00'}
                         </p>
+                      </motion.div>
+                      <motion.div className='flex items-center justify-center'>
+                        <Link to={'/settings'}>
+                          <CustomInteractive className='flex aspect-square w-min p-1 items-center justify-center' onClick={() => setIsMenuOpen(false)}>
+                            <SettingsIcon
+                              width={24}
+                              height={24}
+                              className='fill-primary-text'
+                            />
+                          </CustomInteractive>
+                        </Link>
                       </motion.div>
                     </motion.div>
 
@@ -308,15 +344,32 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                     <motion.div className='flex gap-4 items-center'>
                       <motion.div className='flex items-center'>
                         <p className='text-md font-semibold text-primary-text text-nowrap flex gap-2'>
-                          <CoinsIcon width={24} height={24} className="fill-primary-text"/>{balance !== undefined ? balance.toFixed(2) : '0.00'}
+                          <CoinsIcon
+                            width={24}
+                            height={24}
+                            className='fill-primary-text'
+                          />
+                          {balance !== undefined ? balance.toFixed(2) : '0.00'}
                         </p>
                       </motion.div>
-                      <motion.div className='border-1 rounded-full bg-background-secondary/50 p-1 w-10 h-10 flex items-center justify-center'>
+                      <motion.div className='border-1 rounded-full bg-background-secondary/50 w-10 h-10 flex items-center justify-center'>
                         {/* Placeholder for user image */}
                         {user?.photoURL ? (
-                          <img src={user?.photoURL} />
+                          <img
+                            src={user.photoURL}
+                            alt='Profile'
+                            className='w-full h-full object-cover rounded-full'
+                            onError={e => {
+                              e.target.onerror = null
+                              e.target.src = placeholder
+                            }}
+                          />
                         ) : (
-                          <UserIcon width={40} height={40} className="fill-primary-text"/>
+                          <UserIcon
+                            width={40}
+                            height={40}
+                            className='fill-primary-text'
+                          />
                         )}
                       </motion.div>
                     </motion.div>
@@ -332,15 +385,17 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                         className='absolute right-0 z-50'
                         style={{ top: 'calc(100% + 8px)' }}
                       >
-                        <div
-                          className='w-56 border rounded shadow-lg bg-card-background border-card-outline text-primary-text'
-                        >
+                        <div className='w-56 border rounded shadow-lg bg-card-background border-card-outline text-primary-text'>
                           <Link
                             to='/settings'
                             className='w-full text-left px-4 py-3 flex items-center gap-2 hover:bg-interactive-hover'
                             onClick={() => setShowUserPopUp(false)}
                           >
-                            <SettingsIcon width={20} height={20} className="fill-primary-text"/>
+                            <SettingsIcon
+                              width={20}
+                              height={20}
+                              className='fill-primary-text'
+                            />
                             {t('navbar.settings')}
                           </Link>
                           <Link
@@ -348,7 +403,11 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                             className='w-full text-left px-4 py-3 flex items-center gap-2 hover:bg-interactive-hover'
                             onClick={() => setShowUserPopUp(false)}
                           >
-                            <UserIcon width={20} height={20} className="fill-primary-text"/>
+                            <UserIcon
+                              width={20}
+                              height={20}
+                              className='fill-primary-text'
+                            />
                             {t('navbar.profile')}
                           </Link>
                           <Link
@@ -356,7 +415,11 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                             className='w-full text-left px-4 py-3 flex items-center gap-2 hover:bg-interactive-hover'
                             onClick={() => setShowUserPopUp(false)}
                           >
-                            <CoinsIcon width={20} height={20} className="fill-primary-text"/>
+                            <CoinsIcon
+                              width={20}
+                              height={20}
+                              className='fill-primary-text'
+                            />
                             {t('navbar.balance')}
                           </Link>
                           <div className='border-t border-card-outline/50' />

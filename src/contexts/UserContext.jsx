@@ -458,7 +458,8 @@ const UserContextProvider = ({ children }) => {
       }
       await reload(auth.currentUser)
       setUser({ ...auth.currentUser })
-    } catch {
+    } catch (error) {
+      console.error('Error updating user profile:', error)
       throw new Error('Error updating user profile')
     } finally {
       setIsAuthLoading(false)
@@ -506,6 +507,57 @@ const UserContextProvider = ({ children }) => {
     }
   }
 
+  /**
+   * Deletes the current user's account from Firebase Auth.
+   * Handles errors, including re-authentication requirements.
+   *
+   * @returns {Promise<'success' | 'reauth-required' | 'error'>} Result status
+   */
+  const deleteAccount = async () => {
+    try {
+      if (!auth.currentUser) {
+        if (typeof addAlert === 'function') {
+          addAlert({
+            message: 'No user is currently signed in',
+            type: 'error',
+          })
+        }
+        return 'error'
+      }
+      await auth.currentUser.delete()
+      if (typeof addAlert === 'function') {
+        addAlert({
+          message: 'Account deleted successfully',
+          type: 'success',
+        })
+      }
+      return 'success'
+    } catch (error) {
+      if (
+        error.code === 'auth/requires-recent-login' ||
+        error.message?.includes('recent')
+      ) {
+        if (typeof addAlert === 'function') {
+          addAlert({
+            message:
+              'Please sign in again to delete your account for security reasons.',
+            type: 'error',
+          })
+        }
+        return 'reauth-required'
+      } else {
+        if (typeof addAlert === 'function') {
+          addAlert({
+            message: 'Failed to delete account: ' + error.message,
+            type: 'error',
+          })
+        }
+        console.error('Error deleting account:', error)
+        return 'error'
+      }
+    }
+  }
+
   return (
     <UserContext.Provider
       value={{
@@ -526,6 +578,7 @@ const UserContextProvider = ({ children }) => {
         resetPassword,
         handleForgotPassword,
         updateUserProfile,
+        deleteAccount,
       }}
     >
       <AnimatePresence>

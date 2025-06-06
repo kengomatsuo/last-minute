@@ -87,11 +87,6 @@ const EditProfile = () => {
       }
       const displayName = `${profile.firstName} ${profile.lastName}`.trim()
 
-      console.log('photoURL:', profile.profilePictureFile)
-      if (!profile.profilePictureFile) {
-        throw new Error('Profile picture is required.')
-      }
-
       await updateUserProfile({
         displayName,
         email: profile.email,
@@ -260,7 +255,7 @@ const EditProfile = () => {
         />
       </div>
 
-      <div className=''>
+      {/* <div className=''>
         <CustomInput
           name='phoneNumber'
           label='Phone Number'
@@ -272,7 +267,7 @@ const EditProfile = () => {
           required={false}
           autoComplete='tel'
         />
-      </div>
+      </div> */}
 
       {/* Reset-Save Button */}
       <div className='flex justify-end space-x-4'>

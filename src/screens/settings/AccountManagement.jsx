@@ -1,15 +1,15 @@
 import { useCallback, useContext, useState } from 'react'
 import { CustomButton, CustomInput } from '../../components'
-import { ScreenContext } from '../../contexts/ScreenContext'
+import { UserContext } from '../../contexts/UserContext'
 import { signOut } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom'
 import { auth } from '../../../firebaseConfig'
 
 const AccountManagement = () => {
   const navigate = useNavigate()
-  const { addAlert } = useContext(ScreenContext)
-  // State for account management
-  const [account, setAccount] = useState({
+  const { deleteAccount } = useContext(UserContext)
+  // Remove unused addAlert and setAccount
+  const [account] = useState({
     password: '',
     dob: '',
   })
@@ -23,6 +23,23 @@ const AccountManagement = () => {
       console.error('Error signing out:', error)
     }
   }, [navigate])
+
+  /**
+   * Handles account deletion for the current user.
+   *
+   * Attempts to delete the user from Firebase Auth. Handles errors,
+   * provides UI feedback, and signs out/navigates on success.
+   */
+  const handleDeleteAccount = useCallback(async () => {
+    const result = await deleteAccount()
+    if (result === 'success') {
+      navigate('/')
+    } else if (result === 'reauth-required') {
+      await signOut(auth)
+      navigate('/auth')
+    }
+    // All alerts are handled in context
+  }, [deleteAccount, navigate])
 
   return (
     <div className='p-4 bg-card-background rounded-xl box-border border-2 border-card-outline flex flex-col gap-6 min-w-fit'>
@@ -46,7 +63,7 @@ const AccountManagement = () => {
       </div>
 
       {/* DOB */}
-      <div className=''>
+      {/* <div className=''>
         <div className='flex space-x-2'>
           <CustomInput
             label='Date of Birth'
@@ -56,7 +73,7 @@ const AccountManagement = () => {
             className='mb-2'
           />
         </div>
-      </div>
+      </div> */}
 
       <h2 className='text-2xl font-bold text-primary-text'>
         Account Management
@@ -75,7 +92,7 @@ const AccountManagement = () => {
       </div>
 
       {/* Deactivate Account */}
-      <div className=''>
+      {/* <div className=''>
         <h3 className='text-lg font-bold text-primary-text mb-4'>
           Deactivate Account
         </h3>
@@ -92,7 +109,7 @@ const AccountManagement = () => {
             Deactivate
           </CustomButton>
         </div>
-      </div>
+      </div> */}
 
       {/* Delete Account */}
       <div>
@@ -105,7 +122,7 @@ const AccountManagement = () => {
             Permanently delete your account and all its data
           </p>
           <CustomButton
-            onClick={() => addAlert({ message: 'Account has been deleted' })}
+            onClick={() => handleDeleteAccount()}
           >
             Delete
           </CustomButton>
