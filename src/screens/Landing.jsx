@@ -8,6 +8,7 @@ import {
 } from '../components'
 import { NAVBAR_HEIGHT } from '../constants/visualConstants'
 import { UserContext } from '../contexts/UserContext'
+import { ScreenContext } from '../contexts/ScreenContext'
 
 /**
  * Landing page for the Last Minute platform.
@@ -16,6 +17,8 @@ import { UserContext } from '../contexts/UserContext'
  */
 const Landing = () => {
   const { openAuthModal } = useContext(UserContext)
+  const { setSelectedTheme } = useContext(ScreenContext)
+  setSelectedTheme('default')
 
   return (
     <div className=' w-full' style={{ marginTop: NAVBAR_HEIGHT }}>
