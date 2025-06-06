@@ -86,8 +86,8 @@ const CustomButton = ({
         popup ? '!p-0' : ''
       } ${isPopupOpen ? 'active:!ring-0' : ''} px-2.5 py-1 truncate transition-all ${
         filled
-          ? 'bg-primary text-secondary-text'
-          : 'bg-transparent text-primary'
+          ? 'bg-primary text-filled-button-text'
+          : 'bg-transparent text-hollow-button-text'
       } ${
         disabled
           ? 'opacity-50 !cursor-not-allowed !hover:border-primary'

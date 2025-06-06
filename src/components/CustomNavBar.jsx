@@ -2,18 +2,18 @@ import { use, useEffect, useState, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { motion, AnimatePresence } from 'framer-motion'
 import CustomButton from './CustomButton'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, Link } from 'react-router-dom'
 import { ScreenContext } from '../contexts/ScreenContext'
 import CustomInteractive from './CustomInteractive'
 import RightArrowIcon from '../assets/icons/angle-small-right.svg?react'
 import SideBarIcon from '../assets/icons/sidebar.svg?react'
 import UserIcon from '../assets/icons/user.svg?react'
 import CoinsIcon from '../assets/icons/coins.svg?react'
+import SettingsIcon from '../assets/icons/settings.svg?react'
 import { UserContext } from '../contexts/UserContext'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
 import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
-import CustomCard from './CustomCard'
 
 /**
  * Custom navigation bar component with responsive design and animations.
@@ -43,6 +43,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
   useEffect(() => {
     if (isSmallScreen) {
       setIsMenuOpen(false)
+      setShowUserPopUp(false)
     }
   }, [isSmallScreen])
 
@@ -70,7 +71,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
           ? { name: 'Requests', path: '/requests' }
           : { name: 'Booking', path: '/booking' },
         { name: 'History', path: '/history' },
-        { name: 'Settings', path: '/settings' },
+        // { name: 'Settings', path: '/settings' },
       ]
     : [
         { name: 'Home', path: '/' },
@@ -154,7 +155,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
               className='w-min aspect-square flex !p-1.5 items-center justify-center'
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              <SideBarIcon width={28} height={28} />
+              <SideBarIcon width={28} height={28} className="fill-primary-text"/>
             </CustomInteractive>
 
             {/* Animate Presence for smooth entry and exit */}
@@ -192,7 +193,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                       className='w-min aspect-square flex !p-1 items-center mb-2 justify-center ml-auto'
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <RightArrowIcon width={32} height={32} />
+                      <RightArrowIcon width={32} height={32} className="fill-primary-text"/>
                     </CustomInteractive>
 
                     <motion.div
@@ -204,7 +205,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                         {user?.photoURL ? (
                           <img src={user?.photoURL} />
                         ) : (
-                          <UserIcon width={40} height={40} />
+                          <UserIcon width={40} height={40} className="fill-primary-text"/>
                         )}
                       </motion.div>
                       <motion.div className='flex flex-col items-start'>
@@ -212,8 +213,8 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                           {user?.displayName || 'User'}
                         </p>
                         <p className='text-xs flex gap-2 text-primary-text'>
-                          <CoinsIcon width={16} height={16} />
-                          {balance}
+                          <CoinsIcon width={16} height={16} className="fill-primary-text"/>
+                          {balance !== undefined ? balance.toFixed(2) : '0.00'}
                         </p>
                       </motion.div>
                     </motion.div>
@@ -298,13 +299,15 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                   variants={authContainerVariants}
                 >
                   <CustomInteractive
-                    className='flex flex-row items-center justify-center'
+                    className={`flex flex-row items-center justify-center ${
+                      showUserPopUp ? 'bg-interactive-hover' : ''
+                    }`}
                     onClick={() => setShowUserPopUp(!showUserPopUp)}
                   >
                     <motion.div className='flex gap-4 items-center'>
                       <motion.div className='flex items-center'>
                         <p className='text-md font-semibold text-primary-text text-nowrap flex gap-2'>
-                          {balance} <CoinsIcon width={24} height={24} />
+                          <CoinsIcon width={24} height={24} className="fill-primary-text"/>{balance !== undefined ? balance.toFixed(2) : '0.00'}
                         </p>
                       </motion.div>
                       <motion.div className='border-1 rounded-full bg-background-secondary/50 p-1 w-10 h-10 flex items-center justify-center'>
@@ -312,20 +315,62 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                         {user?.photoURL ? (
                           <img src={user?.photoURL} />
                         ) : (
-                          <UserIcon width={40} height={40} />
+                          <UserIcon width={40} height={40} className="fill-primary-text"/>
                         )}
                       </motion.div>
                     </motion.div>
                   </CustomInteractive>
                   {showUserPopUp && (
-                      <motion.div
-                        variants={authButtonVariants}
-                        className='absolute bg-background top-12 right-0 mt-1 z-10'
+                    <>
+                      {/* Overlay to close popup when clicking outside */}
+                      <div
+                        className='fixed inset-0 z-40 bg-transparent'
+                        onClick={() => setShowUserPopUp(false)}
+                      />
+                      <div
+                        className='absolute right-0 z-50'
+                        style={{ top: 'calc(100% + 8px)' }}
                       >
-                        <CustomButton onClick={() => handleSignOut()}>
-                          Sign out
-                        </CustomButton>
-                      </motion.div>
+                        <div
+                          className='w-56 border rounded shadow-lg bg-card-background border-card-outline text-primary-text'
+                        >
+                          <Link
+                            to='/settings'
+                            className='w-full text-left px-4 py-3 flex items-center gap-2 hover:bg-interactive-hover'
+                            onClick={() => setShowUserPopUp(false)}
+                          >
+                            <SettingsIcon width={20} height={20} className="fill-primary-text"/>
+                            Settings
+                          </Link>
+                          <Link
+                            to={{ pathname: '/settings', hash: 'profile' }}
+                            className='w-full text-left px-4 py-3 flex items-center gap-2 hover:bg-interactive-hover'
+                            onClick={() => setShowUserPopUp(false)}
+                          >
+                            <UserIcon width={20} height={20} className="fill-primary-text"/>
+                            Profile
+                          </Link>
+                          <Link
+                            to={{ pathname: '/settings', hash: 'payment' }}
+                            className='w-full text-left px-4 py-3 flex items-center gap-2 hover:bg-interactive-hover'
+                            onClick={() => setShowUserPopUp(false)}
+                          >
+                            <CoinsIcon width={20} height={20} className="fill-primary-text"/>
+                            Balance
+                          </Link>
+                          <div className='border-t border-card-outline/50' />
+                          <button
+                            className='w-full text-left px-4 py-3 flex items-center gap-2 hover:bg-interactive-hover text-error cursor-pointer'
+                            onClick={async () => {
+                              setShowUserPopUp(false)
+                              await handleSignOut()
+                            }}
+                          >
+                            Log out
+                          </button>
+                        </div>
+                      </div>
+                    </>
                   )}
                 </motion.div>
               ) : (
