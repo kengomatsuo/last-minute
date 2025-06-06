@@ -317,7 +317,7 @@ const Auth = ({ initialAction }) => {
                   >
                     <Logo width={80} height={80} />
                     <div>
-                      <h1 className='pb-1 text-primary-text'>
+                      <h1 className='pb-1 text-primary-text text-nowrap'>
                         Sign Up
                       </h1>
                       <h3 className='text-card-outline text-nowrap'>
@@ -389,7 +389,7 @@ const Auth = ({ initialAction }) => {
                         Already a member?
                         <CustomInteractive
                           onClick={() => setAction('signin')}
-                          className='font-semibold !p-1 ml-2 w-min !text-primary'
+                          className='font-semibold !p-1 ml-2 w-min !text-primary text-nowrap'
                         >
                           Sign In
                         </CustomInteractive>
@@ -458,7 +458,7 @@ const Auth = ({ initialAction }) => {
                       Don&apos;t have an account?
                       <CustomInteractive
                         onClick={() => setAction('register')}
-                        className='font-semibold !p-1 !size-min ml-2 w-min !text-primary'
+                        className='font-semibold !p-1 !size-min ml-2 w-min !text-primary text-nowrap'
                       >
                         Sign Up
                       </CustomInteractive>
@@ -473,7 +473,7 @@ const Auth = ({ initialAction }) => {
                   >
                     <Logo width={80} height={80} />
                     <div>
-                      <h1 className='pb-1 text-primary-text'>
+                      <h1 className='pb-1 text-primary-text text-nowrap'>
                         Sign In
                       </h1>
                       <h3 className='text-card-outline text-nowrap'>
@@ -516,7 +516,7 @@ const Auth = ({ initialAction }) => {
                         Don&apos;t have an account?
                         <CustomInteractive
                           onClick={() => setAction('register')}
-                          className='font-semibold !p-1 ml-2 w-min !text-primary'
+                          className='font-semibold !p-1 ml-2 w-min !text-primary text-nowrap'
                         >
                           Sign Up
                         </CustomInteractive>
