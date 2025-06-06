@@ -48,7 +48,8 @@
     "topic": "Topik, kata kunci, dll.",
     "timezone": "Pilih zona waktu",
     "language": "Pilih bahasa",
-    "amount": "Masukkan jumlah"
+    "amount": "Masukkan jumlah",
+    "retypePassword": "Ketik ulang kata sandi"
   },
   "auth": {
     "alreadyMember": "Sudah punya akun?",
@@ -126,8 +127,7 @@
     "settings": "Pengaturan",
     "profile": "Profil",
     "balance": "Saldo",
-    "logOut": "Keluar",
-    "register": "Daftar"
+    "signUp": "Daftar"
   },
   "subject": {
     "math": "Matematika",

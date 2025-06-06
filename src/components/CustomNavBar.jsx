@@ -367,7 +367,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                               await handleSignOut()
                             }}
                           >
-                            {t('navbar.logOut')}
+                            {t('navbar.signOut')}
                           </button>
                         </div>
                       </div>
@@ -385,7 +385,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                 >
                   <motion.div variants={authButtonVariants}>
                     <CustomButton onClick={() => openAuthModal('register')}>
-                      {t('navbar.register')}
+                      {t('navbar.signUp')}
                     </CustomButton>
                   </motion.div>
                   <motion.div variants={authButtonVariants}>

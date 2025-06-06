@@ -47,7 +47,8 @@
     "topic": "Topics, keywords, etc.",
     "timezone": "Select timezone",
     "language": "Select language",
-    "amount": "Enter amount"
+    "amount": "Enter amount",
+    "retypePassword": "Re-type Password"
   },
   "auth": {
     "alreadyMember": "Already a member?",
@@ -125,8 +126,7 @@
     "settings": "Settings",
     "profile": "Profile",
     "balance": "Balance",
-    "logOut": "Log out",
-    "register": "Register"
+    "signUp": "Sign Up"
   },
   "subject": {
     "math": "Mathematics",
