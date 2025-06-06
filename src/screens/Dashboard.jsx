@@ -8,6 +8,7 @@ import CustomButton from '../components/CustomButton'
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import CustomCard from '../components/CustomCard'
+import { useTranslation } from 'react-i18next'
 
 /**
  * Dashboard page for students and tutors.
@@ -15,6 +16,7 @@ import CustomCard from '../components/CustomCard'
  * @returns {JSX.Element} The rendered dashboard
  */
 const Dashboard = () => {
+  const { t } = useTranslation()
   const { user } = useContext(UserContext)
   const { courses } = useContext(CourseContext)
   const [notifications, setNotifications] = useState([])
@@ -111,7 +113,7 @@ const Dashboard = () => {
       <div className='lg:col-span-2'>
         <CustomCard className='px-6 md:px-10 py-8'>
           <h2 className='text-2xl font-bold mb-6 text-[var(--color-primary-text)]'>
-            My Courses
+            {t('dashboard.myCourses', 'My Courses')}
           </h2>
           <div className='divide-y divide-[var(--color-card-outline)]'>
             {courses && courses.length > 0 ? (

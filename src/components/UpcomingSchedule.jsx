@@ -1,6 +1,7 @@
 import React from 'react'
 import CustomCard from './CustomCard'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
 
 /**
  * Displays the user's upcoming scheduled sessions.
@@ -9,21 +10,23 @@ import PropTypes from 'prop-types'
  * @param {Array} props.courses - List of course objects
  * @returns {JSX.Element} The upcoming schedule card
  */
-const formatDate = date => {
+const formatDate = (date, t) => {
   const today = new Date()
   const tomorrow = new Date(today)
   tomorrow.setDate(tomorrow.getDate() + 1)
 
   if (date.toDateString() === today.toDateString()) {
-    return 'Today'
+    return t('upcomingSchedule.today')
   }
   if (date.toDateString() === tomorrow.toDateString()) {
-    return 'Tomorrow'
+    return t('upcomingSchedule.tomorrow')
   }
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
 const UpcomingSchedule = ({ courses }) => {
+  const { t } = useTranslation()
+
   const upcomingCourses =
     courses &&
     courses
@@ -34,7 +37,7 @@ const UpcomingSchedule = ({ courses }) => {
   return (
     <CustomCard className='w-full px-6 py-6'>
       <h3 className='text-xl font-bold mb-4 text-[var(--color-primary-text)]'>
-        Upcoming Sessions
+        {t('upcomingSchedule.header')}
       </h3>
       {upcomingCourses && upcomingCourses.length > 0 ? (
         <ul className='space-y-4'>
@@ -45,7 +48,7 @@ const UpcomingSchedule = ({ courses }) => {
             >
               <div className='flex-shrink-0 text-center bg-[var(--color-card-outline)] p-2 rounded-md w-16'>
                 <p className='font-bold text-sm text-[var(--color-primary-text)]'>
-                  {formatDate(course.bookingTime.toDate())}
+                  {formatDate(course.bookingTime.toDate(), t)}
                 </p>
               </div>
               <div className='min-w-0'>
@@ -70,7 +73,7 @@ const UpcomingSchedule = ({ courses }) => {
         </ul>
       ) : (
         <p className='text-sm text-center text-[var(--color-primary)] py-4'>
-          No sessions scheduled.
+          {t('upcomingSchedule.noSessions')}
         </p>
       )}
     </CustomCard>

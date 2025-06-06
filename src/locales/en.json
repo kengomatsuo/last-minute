@@ -59,6 +59,9 @@
     "errorSigningUp": "Error signing up",
     "errorSigningIn": "Error signing in"
   },
+  "dashboard": {
+    "myCourses": "My Courses"
+  },
   "settings": {
     "general": "General",
     "editProfile": "Edit Profile",
@@ -138,5 +141,20 @@
     "music": "Music",
     "physicalEducation": "Physical Education",
     "other": "Other"
+  },
+  "progressTracker": {
+    "weeklyGoal": "Weekly Goal",
+    "completed": "You've completed {{completed}} of {{goal}} sessions this week.",
+    "setGoal": "Set Goal:"
+  },
+  "quickRebook": {
+    "header": "Re-book a Recent Topic",
+    "rebookButton": "Re-book"
+  },
+  "upcomingSchedule": {
+    "header": "Upcoming Sessions",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "noSessions": "No sessions scheduled."
   }
 }

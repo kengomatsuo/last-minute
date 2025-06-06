@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-// import { BookOpenIcon } from '@heroicons/react/24/outline'
+import { useTranslation } from 'react-i18next'
 
 const QuickRebook = ({ courses }) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   const recentTopics = useMemo(() => {
@@ -34,10 +35,9 @@ const QuickRebook = ({ courses }) => {
   if (!recentTopics || recentTopics.length === 0) {
     return null
   }
-
   return (
     <div className='w-full bg-white border border-[#bdb9a7] rounded-lg px-6 py-6 shadow-sm'>
-      <h3 className='text-xl font-bold mb-4'>Re-book a Recent Topic</h3>
+      <h3 className='text-xl font-bold mb-4'>{t('quickRebook.header')}</h3>
       <ul className='space-y-3'>
         {recentTopics.map(course => (
           <li
@@ -45,7 +45,6 @@ const QuickRebook = ({ courses }) => {
             className='flex items-center justify-between gap-4 p-3 bg-[#f9f8f2] rounded-md'
           >
             <div className='flex items-center gap-4 min-w-0'>
-              {/* <BookOpenIcon className='h-6 w-6 text-[#7d7865] flex-shrink-0' /> */}
               <div className='min-w-0'>
                 <p
                   className='font-semibold text-base text-[#3e3c36] truncate'
@@ -65,7 +64,7 @@ const QuickRebook = ({ courses }) => {
               onClick={() => handleRebook(course)}
               className='py-2 px-4 rounded font-semibold bg-[#bdb9a7] text-white hover:bg-[#a7a083] transition text-sm flex-shrink-0'
             >
-              Re-book
+              {t('quickRebook.rebookButton')}
             </button>
           </li>
         ))}

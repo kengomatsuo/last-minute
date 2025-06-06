@@ -1,6 +1,8 @@
-import React, { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import CustomCard from './CustomCard'
 import PropTypes from 'prop-types'
+import { useTranslation } from 'react-i18next'
+import { useLocalStorage } from '../hooks'
 
 /**
  * Displays the user's weekly progress and goal tracker.
@@ -10,7 +12,8 @@ import PropTypes from 'prop-types'
  * @returns {JSX.Element} The progress tracker card
  */
 const ProgressTracker = ({ courses }) => {
-  const [goal, setGoal] = useState(3)
+  const { t } = useTranslation()
+  const [goal, setGoal] = useLocalStorage('weekly_goal', 3)
 
   const completedThisWeek = useMemo(() => {
     const today = new Date()
@@ -47,10 +50,10 @@ const ProgressTracker = ({ courses }) => {
   return (
     <CustomCard className='w-full px-6 py-6 mt-8'>
       <h3 className='text-xl font-bold mb-1 text-[var(--color-primary-text)]'>
-        Weekly Goal
+        {t('progressTracker.weeklyGoal')}
       </h3>
       <p className='text-sm text-[var(--color-primary)] mb-4'>
-        You&apos;ve completed {completedThisWeek} of {goal} sessions this week.
+        {t('progressTracker.completed', { completed: completedThisWeek, goal })}
       </p>
 
       <div className='w-full bg-[var(--color-background-secondary)] rounded-full h-3 mb-4'>
@@ -61,13 +64,14 @@ const ProgressTracker = ({ courses }) => {
       </div>
 
       <div className='flex items-center justify-center gap-4'>
-        <p className='text-sm font-semibold text-[var(--color-primary-text)]'>Set Goal:</p>
+        <p className='text-sm font-semibold text-[var(--color-primary-text)]'>
+          {t('progressTracker.setGoal')}
+        </p>
         <div className='flex items-center gap-2 border border-[var(--color-card-outline)] rounded-md p-1'>
           <button
             onClick={decrementGoal}
             className='p-1 rounded hover:bg-[var(--color-interactive-hover)]'
           >
-            {/* <ChevronDownIcon className='h-5 w-5 text-[#7d7865]' /> */}
             <span className='text-lg'>-</span>
           </button>
           <span className='font-bold text-lg text-[var(--color-primary-text)] w-6 text-center'>
@@ -77,7 +81,6 @@ const ProgressTracker = ({ courses }) => {
             onClick={incrementGoal}
             className='p-1 rounded hover:bg-[var(--color-interactive-hover)]'
           >
-            {/* <ChevronUpIcon className='h-5 w-5 text-[#7d7865]' /> */}
             <span className='text-lg'>+</span>
           </button>
         </div>

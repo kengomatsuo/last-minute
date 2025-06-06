@@ -60,6 +60,9 @@
     "errorSigningUp": "Gagal mendaftar",
     "errorSigningIn": "Gagal masuk"
   },
+  "dashboard": {
+    "myCourses": "Kursus Saya"
+  },
   "settings": {
     "general": "Umum",
     "editProfile": "Ubah Profil",
@@ -139,5 +142,20 @@
     "music": "Musik",
     "physicalEducation": "Pendidikan Jasmani",
     "other": "Lainnya"
+  },
+  "progressTracker": {
+    "weeklyGoal": "Target Mingguan",
+    "completed": "Anda telah menyelesaikan {{completed}} dari {{goal}} sesi minggu ini.",
+    "setGoal": "Atur Target:"
+  },
+  "quickRebook": {
+    "header": "Pesan Ulang Topik Terbaru",
+    "rebookButton": "Pesan Ulang"
+  },
+  "upcomingSchedule": {
+    "header": "Sesi Mendatang",
+    "today": "Hari Ini",
+    "tomorrow": "Besok",
+    "noSessions": "Tidak ada sesi terjadwal."
   }
 }
