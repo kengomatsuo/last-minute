@@ -45,7 +45,7 @@ const QuickRebook = ({ courses }) => {
             className='flex items-center justify-between gap-4 p-3 bg-[#f9f8f2] rounded-md'
           >
             <div className='flex items-center gap-4 min-w-0'>
-              <BookOpenIcon className='h-6 w-6 text-[#7d7865] flex-shrink-0' />
+              {/* <BookOpenIcon className='h-6 w-6 text-[#7d7865] flex-shrink-0' /> */}
               <div className='min-w-0'>
                 <p
                   className='font-semibold text-base text-[#3e3c36] truncate'

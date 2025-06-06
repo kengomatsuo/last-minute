@@ -40,7 +40,7 @@ const ProgressTracker = ({ courses }) => {
     <div className='w-full bg-white border border-[#bdb9a7] rounded-lg px-6 py-6 shadow-sm mt-8'>
       <h3 className='text-xl font-bold mb-1'>Weekly Goal</h3>
       <p className='text-sm text-[#7d7865] mb-4'>
-        You've completed {completedThisWeek} of {goal} sessions this week.
+        You&apos;ve completed {completedThisWeek} of {goal} sessions this week.
       </p>
 
       <div className='w-full bg-[#f3f1e3] rounded-full h-3 mb-4'>
