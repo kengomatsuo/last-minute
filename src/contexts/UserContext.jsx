@@ -9,14 +9,17 @@ import {
   reload,
   updateProfile,
   sendPasswordResetEmail,
+  updateEmail,
+  updatePhoneNumber,
 } from 'firebase/auth'
 import { auth, db, functions } from '../../firebaseConfig'
 import { httpsCallable } from 'firebase/functions'
-import { doc, getDoc, updateDoc, setDoc, serverTimestamp, increment, onSnapshot } from 'firebase/firestore'
+import { doc, updateDoc, setDoc, increment, onSnapshot } from 'firebase/firestore'
 import Auth from '../screens/Auth'
 import { AnimatePresence } from 'framer-motion'
-import { ScreenContext, ScreenContextProvider } from './ScreenContext'
+import { ScreenContext } from './ScreenContext'
 import { useConsoleLog } from '../hooks'
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 /**
  * @typedef {Object} UserContextType
@@ -62,6 +65,7 @@ const UserContextProvider = ({ children }) => {
     useState(false)
   const [isAuthLoading, setIsAuthLoading] = useState(false)
   const verificationIntervalRef = useRef(null)
+  const storage = getStorage()
 
   // Clear any existing verification interval
   const clearVerificationInterval = () => {
@@ -222,53 +226,6 @@ const UserContextProvider = ({ children }) => {
     }
   }
 
-  /**
-   * Function to apply to be a tutor.
-   * @returns {Promise<void>}
-   */
-  const applyTutor = async () => {
-    try {
-      // check custom claims to see if user is already a tutor
-      if (user.claims?.isTutor) {
-        addAlert({
-          type: 'info',
-          title: 'Already a Tutor',
-          message: 'You are already a tutor!',
-        })
-        return
-      }
-
-      const docRef = doc(db, 'tutorApplications', user.uid)
-      const docSnap = await docRef.get()
-      if (docSnap.exists()) {
-        addAlert({
-          type: 'info',
-          title: 'Already Applied',
-          message: 'You have already applied to be a tutor!',
-        })
-        return
-      }
-      await setDoc(doc(db, 'tutorApplications', user.uid), {
-        email: user.email,
-        uid: user.uid,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-      })
-      addAlert({
-        type: 'info',
-        title: 'Application Sent',
-        message: 'Your application to be a tutor has been sent!',
-      })
-    } catch (error) {
-      addAlert({
-        type: 'info',
-        title: 'Error',
-        message: 'There was an error applying to be a tutor.',
-      })
-      console.error('Error applying to be a tutor:', error)
-    }
-  }
-
   const setTutorClaim = httpsCallable(functions, 'setTutorClaim')
   /**
    * Function to add a tutor.
@@ -276,7 +233,7 @@ const UserContextProvider = ({ children }) => {
    */
   const addTutor = async email => {
     try {
-      const result = await setTutorClaim({ email, isTutor: true })
+      await setTutorClaim({ email, isTutor: true })
       addAlert({
         type: 'info',
         title: 'Tutor Added',
@@ -298,7 +255,7 @@ const UserContextProvider = ({ children }) => {
    */
   const addAdmin = async email => {
     try {
-      const result = await setAdminClaim({ email, isAdmin: true })
+      await setAdminClaim({ email, isAdmin: true })
       addAlert({
         type: 'info',
         title: 'Admin Added',
@@ -446,6 +403,109 @@ const UserContextProvider = ({ children }) => {
     }
   }
 
+  /**
+   * Uploads a file to Firebase Storage and returns the download URL.
+   *
+   * @param {File} file - The file to upload
+   * @param {string} userId - The user's UID
+   * @returns {Promise<string>} The download URL
+   */
+  const uploadProfilePicture = async (file, userId) => {
+    if (!file || !userId) {
+      throw new Error('File and userId are required for upload')
+    }
+    const fileRef = storageRef(storage, `profilePictures/${userId}/${file.name}`)
+    await uploadBytes(fileRef, file)
+    console.log('File uploaded successfully:', getDownloadURL(fileRef))
+    console.log(getDownloadURL(fileRef))
+    return await getDownloadURL(fileRef)
+  }
+
+  /**
+   * Updates the user's profile in Firebase Auth only (not Firestore).
+   *
+   * @param {Object} updates - The profile fields to update
+   * @param {string} [updates.displayName] - The new display name
+   * @param {string} [updates.email] - The new email address
+   * @param {string} [updates.phoneNumber] - The new phone number (ignored)
+   * @param {string} [updates.photoURL] - The new profile picture URL
+   * @param {File} [updates.profilePictureFile] - The new profile picture file
+   * @returns {Promise<void>} Resolves when the update is complete
+   */
+  const updateUserProfile = async updates => {
+    setIsAuthLoading(true)
+    try {
+      if (!auth.currentUser) {
+        throw new Error('No authenticated user found.')
+      }
+      let photoURL = updates.photoURL
+      if (updates.profilePictureFile) {
+        console.log('Uploading profile picture...')
+        photoURL = await uploadProfilePicture(updates.profilePictureFile, auth.currentUser.uid)
+      }
+      const { displayName, email, phoneNumber } = updates
+      if (displayName || photoURL) {
+        await updateProfile(auth.currentUser, {
+          displayName,
+          photoURL,
+        })
+      }
+      if (email && email !== auth.currentUser.email) {
+        await updateEmail(auth.currentUser, email)
+      }
+      if (phoneNumber && phoneNumber !== auth.currentUser.phoneNumber) {
+        await updatePhoneNumber(auth.currentUser, phoneNumber)
+      }
+      await reload(auth.currentUser)
+      setUser({ ...auth.currentUser })
+    } catch {
+      throw new Error('Error updating user profile')
+    } finally {
+      setIsAuthLoading(false)
+    }
+  }
+
+  const applyTutor = async () => {
+    try {
+      // check custom claims to see if user.claims?.isTutor
+      if (user.claims?.isTutor) {
+        addAlert({
+          type: 'info',
+          title: 'Already a Tutor',
+          message: 'You are already a tutor!',
+        })
+        return
+      }
+      const docRef = doc(db, 'tutorApplications', user.uid)
+      const docSnap = await docRef.get()
+      if (docSnap.exists()) {
+        addAlert({
+          type: 'info',
+          title: 'Already Applied',
+          message: 'You have already applied to be a tutor!',
+        })
+        return
+      }
+      await setDoc(doc(db, 'tutorApplications', user.uid), {
+        email: user.email,
+        uid: user.uid,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+      })
+      addAlert({
+        type: 'info',
+        title: 'Application Sent',
+        message: 'Your application to be a tutor has been sent!',
+      })
+    } catch {
+      addAlert({
+        type: 'info',
+        title: 'Error',
+        message: 'There was an error applying to be a tutor.',
+      })
+    }
+  }
+
   return (
     <UserContext.Provider
       value={{
@@ -465,6 +525,7 @@ const UserContextProvider = ({ children }) => {
         updateBalance,
         resetPassword,
         handleForgotPassword,
+        updateUserProfile,
       }}
     >
       <AnimatePresence>
