@@ -11,7 +11,7 @@ import {
 } from 'firebase/auth'
 import { auth, db, functions } from '../../firebaseConfig'
 import { httpsCallable } from 'firebase/functions'
-import { doc, getDoc, updateDoc, setDoc, serverTimestamp, increment } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, setDoc, serverTimestamp, increment, onSnapshot } from 'firebase/firestore'
 import Auth from '../screens/Auth'
 import { AnimatePresence } from 'framer-motion'
 import { ScreenContext, ScreenContextProvider } from './ScreenContext'
@@ -36,6 +36,7 @@ import { useConsoleLog } from '../hooks'
 /** @type {UserContextType} */
 const defaultContext = {
   user: undefined,
+  balance: undefined,
   isCheckingEmailVerification: false,
   signUp: async () => Promise.resolve(),
   signIn: async () => Promise.resolve(),
@@ -50,9 +51,10 @@ const defaultContext = {
 const UserContext = createContext(defaultContext)
 
 const UserContextProvider = ({ children }) => {
-  const { addAlert } = useContext(ScreenContext)
+  const { addAlert, setSelectedTheme } = useContext(ScreenContext)
   const [user, setUser] = useState(auth.currentUser || undefined)
   useConsoleLog('UserContextProvider', user)
+  const [balance, setBalance] = useState(0)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const initialActionRef = useRef(null)
   const [isCheckingEmailVerification, setIsCheckingEmailVerification] =
@@ -210,7 +212,9 @@ const UserContextProvider = ({ children }) => {
     setIsAuthLoading(true)
     try {
       clearVerificationInterval()
+      setSelectedTheme('default')
       await firebaseSignOut(auth)
+      console.log('Signed out successfully!')
     } catch (error) {
       setIsAuthLoading(false)
       throw error
@@ -332,10 +336,10 @@ const UserContextProvider = ({ children }) => {
       return
     }
     try {
-      await setDoc(doc(db, 'balance', user.uid), { last_updated: serverTimestamp(), money: 0 })
+      await setDoc(doc(db, 'balance', user.uid), { money: 0 })
       console.log('Balance document created successfully.')
     } catch (error) {
-      console.error('Error initializing balance document:', error) 
+      console.error('Error initializing balance document:', error)
     }
   }
 
@@ -348,34 +352,45 @@ const UserContextProvider = ({ children }) => {
       const balanceRef = doc(db, 'balance', user.uid)
       await updateDoc(balanceRef, {
         money: increment(addedBalance),
-        last_updated: serverTimestamp(),
       })
-      const action = amount >= 0 ? 'increased' : 'decreased'
-      addAlert({ type: 'success', title: 'Balance Updated', message: `Balance ${action} by $${parseFloat(addedBalance, 2)}.` })
+      const action = addedBalance >= 0 ? 'increased' : 'decreased'
+      addAlert({
+        type: 'success',
+        title: 'Balance Updated',
+        message: `Balance ${action} by $${parseFloat(addedBalance, 2)}.`
+      })
     } catch (error) {
-      addAlert({ type: 'error', title: 'Error', message: 'Error updating balance.' })
+      addAlert({
+        type: 'error',
+        title: 'Error',
+        message: 'Error updating balance.'
+      })
       console.error('Error updating balance:', error)
     }
   }
 
-  const getBalance = async () => {
+  useEffect(() => {
     if (!user) {
-      console.error('No authenticated user found.')
-      return null
+      setBalance(0)
+      return
     }
-    try {
-      const snap = await getDoc(doc(db, 'balance', user.uid))
-      if (snap.exists()) {
-        return /** @type {BalanceData} */ (snap.data())
-      } else {
-        return null
+    const balanceRef = doc(db, 'balance', user.uid)
+    const unsubscribe = onSnapshot(
+      balanceRef,
+      snapshot => {
+        if (snapshot.exists()) {
+          setBalance(snapshot.data().money || 0)
+        } else {
+          setBalance(0)
+        }
+      },
+      error => {
+        console.error('Error listening to balance updates:', error)
+        setBalance(0)
       }
-    } catch (error) {
-      addAlert({ type: 'error', title: 'Error', message: 'Failed to fetch balance.' })
-      console.error(error)
-      return null
-    }
-  }
+    )
+    return () => unsubscribe()
+  }, [user])
 
   return (
     <UserContext.Provider
@@ -383,6 +398,7 @@ const UserContextProvider = ({ children }) => {
         user,
         isAuthLoading,
         isCheckingEmailVerification,
+        balance,
         signUp,
         signIn,
         signOut,
@@ -393,7 +409,6 @@ const UserContextProvider = ({ children }) => {
         closeAuthModal,
         addBalanceDoc,
         updateBalance,
-        getBalance,
       }}
     >
       <AnimatePresence>

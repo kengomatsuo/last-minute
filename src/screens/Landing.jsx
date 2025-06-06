@@ -1,8 +1,13 @@
 import ket from '../assets/ket.png'
 import { CustomButton, CustomFooter, FAQComponent } from '../components'
 import { NAVBAR_HEIGHT } from '../constants/visualConstants'
+import { useTranslation } from 'react-i18next'
+import { ScreenContext } from '../contexts/ScreenContext'
+import { useContext } from 'react'
 
 const Landing = () => {
+  const { t } = useTranslation()
+  const { addAlert } = useContext(ScreenContext)
   return (
     <div
       className='flex flex-col flex-1 items-center w-screen justify-center'
@@ -11,11 +16,19 @@ const Landing = () => {
       {/* Clear everything between these comments to start fresh */}
       <div className='flex flex-col items-center justify-center'>
         <img src={ket} width={100} alt='Ket' />
-        <h1>Last Minute</h1>
+        <h1>{t('appName')}</h1>
       </div>
       <div className='flex flex-col items-center justify-center'>
-        <p>Your courses. At your demand.</p>
-        <CustomButton onClick={null}>I am a button</CustomButton>
+        <p>{t('landing.yourCourses')}</p>
+        <CustomButton
+          onClick={() => addAlert({
+            title: 'test',
+            message: 'hehe',
+            type: '',
+          })}
+        >
+          I am a button
+        </CustomButton>
       </div>
       {/* Clear everything between these comments to start fresh */}
 

@@ -10,8 +10,10 @@ import { ScreenContext } from '../contexts/ScreenContext'
 import CalendarIcon from '../assets/icons/calendar-clock.svg?react'
 import ArrowRightIcon from '../assets/icons/arrow-small-right.svg?react'
 import { useConsoleLog, useLocalStorage } from '../hooks'
+import { useTranslation } from 'react-i18next'
 
 const Booking = () => {
+  const { t } = useTranslation()
   const { isSmallScreen } = use(ScreenContext)
   const { requestCourse, isRequestPending } = use(CourseContext)
   const [isInstantBooking, setIsInstantBooking] = useLocalStorage(
@@ -26,15 +28,65 @@ const Booking = () => {
   useConsoleLog('isInstantBooking', isInstantBooking)
 
   const subjectOptions = [
-    { label: 'Math', value: 'math' },
-    { label: 'Science', value: 'science' },
-    { label: 'English', value: 'english' },
-    { label: 'History', value: 'history' },
-    { label: 'Computer Science', value: 'computer-science' },
-    { label: 'Art', value: 'art' },
-    { label: 'Music', value: 'music' },
-    { label: 'Physical Education', value: 'physical-education' },
-    { label: 'Other', value: 'other' },
+    {
+      label:
+        t('label.subject') + ' - ' + t('subject.math', { defaultValue: 'Math' }),
+      value: 'math',
+    },
+    {
+      label:
+        t('label.subject') +
+        ' - ' +
+        t('subject.science', { defaultValue: 'Science' }),
+      value: 'science',
+    },
+    {
+      label:
+        t('label.subject') +
+        ' - ' +
+        t('subject.english', { defaultValue: 'English' }),
+      value: 'english',
+    },
+    {
+      label:
+        t('label.subject') +
+        ' - ' +
+        t('subject.history', { defaultValue: 'History' }),
+      value: 'history',
+    },
+    {
+      label:
+        t('label.subject') +
+        ' - ' +
+        t('subject.computerScience', { defaultValue: 'Computer Science' }),
+      value: 'computer-science',
+    },
+    {
+      label:
+        t('label.subject') + ' - ' + t('subject.art', { defaultValue: 'Art' }),
+      value: 'art',
+    },
+    {
+      label:
+        t('label.subject') +
+        ' - ' +
+        t('subject.music', { defaultValue: 'Music' }),
+      value: 'music',
+    },
+    {
+      label:
+        t('label.subject') +
+        ' - ' +
+        t('subject.physicalEducation', { defaultValue: 'Physical Education' }),
+      value: 'physical-education',
+    },
+    {
+      label:
+        t('label.subject') +
+        ' - ' +
+        t('subject.other', { defaultValue: 'Other' }),
+      value: 'other',
+    },
   ]
 
   const handleSubmit = async event => {
@@ -82,16 +134,19 @@ const Booking = () => {
       <CustomCard
         header={
           isInstantBooking ? (
-            'Instant Booking'
+            t('booking.instantBooking', {
+              defaultValue: 'Instant Booking',
+            })
           ) : (
             <div className='flex gap-2 items-center'>
               <CustomInteractive
                 className='!p-1 !size-min items-center justify-center flex aspect-square'
                 onClick={() => setIsInstantBooking(true)}
               >
-                <ArrowRightIcon width={32} height={32} className='rotate-180' />
+                <ArrowRightIcon width={32} height={32} className='rotate-180 fill-primary-text' />
               </CustomInteractive>
-              <p>Schedule Booking</p>
+              {t('booking.scheduleBooking', {
+                defaultValue: 'Schedule Booking',})}
             </div>
           )
         }
@@ -109,21 +164,25 @@ const Booking = () => {
                 <CustomInput
                   ref={topicRef}
                   name='topic'
-                  label='Topic'
+                  label={t('label.topic', { defaultValue: 'Topic' })}
                   type='text'
                   disabled={isRequestPending}
-                  placeholder='Topics, keywords, etc.'
+                  placeholder={t('placeholder.topic', {
+                    defaultValue: 'Enter the topic of the booking',
+                  })}
                   required
                   autoSave='BookingDraft_Topic'
                 />
                 <CustomInput
                   ref={subjectRef}
                   name='subject'
-                  label='Subject'
+                  label={t('label.subject', { defaultValue: 'Subject' })}
                   type='suggest'
                   disabled={isRequestPending}
                   options={subjectOptions}
-                  placeholder='Select a subject'
+                  placeholder={t('placeholder.subject', {
+                    defaultValue: 'Select a subject',
+                  })}
                   required
                   forceSuggestions
                   autoSave='BookingDraft_Subject'
@@ -134,7 +193,9 @@ const Booking = () => {
                   label='Details'
                   multiline={5}
                   disabled={isRequestPending}
-                  placeholder='I need help with this particular question...'
+                  placeholder={t('placeholder.details', {
+                    defaultValue: 'Additional details about the booking',
+                  })}
                   autoSave='BookingDraft_Details'
                 />
                 <div className='mt-4 w-full flex gap-2'>
@@ -146,7 +207,9 @@ const Booking = () => {
                     {isSmallScreen ? (
                       <CalendarIcon width={24} height={24} />
                     ) : (
-                      'Schedule Booking'
+                      t('button.scheduleBooking', {
+                        defaultValue: 'Schedule Booking',
+                      })
                     )}
                   </CustomButton>
                   <CustomButton
@@ -155,7 +218,9 @@ const Booking = () => {
                     filled
                     type='submit'
                   >
-                    Instant Booking
+                    {t('button.instantBooking', {
+                      defaultValue: 'Instant Booking',
+                    })}
                   </CustomButton>
                 </div>
               </div>
@@ -202,7 +267,9 @@ const Booking = () => {
                       )
                   }}
                   name='bookingTime'
-                  label='Date and Time'
+                  label={t('booking.dateTime', {
+                    defaultValue: 'Date and Time',
+                  })}
                   type='datetime-local'
                   loading={isRequestPending}
                   required
@@ -210,7 +277,9 @@ const Booking = () => {
                   className='flex-1'
                 />
                 <CustomButton type='submit' filled>
-                  Book
+                  {t('button.book', {
+                    defaultValue: 'Book',
+                  })}
                 </CustomButton>
               </div>
             )}

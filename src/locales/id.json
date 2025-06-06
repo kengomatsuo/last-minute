@@ -1,0 +1,143 @@
+{
+  "appName": "Last Minute",
+  "thisLanguage": "Bahasa Indonesia",
+  "button": {
+    "signIn": "Masuk",
+    "signUp": "Daftar",
+    "signOut": "Keluar",
+    "change": "Ubah",
+    "deactivate": "Nonaktifkan",
+    "delete": "Hapus",
+    "cancel": "Batal",
+    "confirm": "Konfirmasi",
+    "accept": "Terima",
+    "book": "Pesan",
+    "instantBooking": "Pesan Instan",
+    "scheduleBooking": "Jadwalkan Pesanan",
+    "topUp": "Isi Saldo"
+  },
+  "label": {
+    "email": "Email",
+    "password": "Kata Sandi",
+    "retypePassword": "Ketik Ulang Kata Sandi",
+    "name": "Nama",
+    "firstName": "Nama Depan",
+    "lastName": "Nama Belakang",
+    "dob": "Tanggal Lahir",
+    "details": "Detail",
+    "subject": "Mata Pelajaran",
+    "topic": "Topik",
+    "timezone": "Zona Waktu",
+    "language": "Bahasa",
+    "indonesian": "Bahasa Indonesia",
+    "theme": "Tema",
+    "appVersion": "Versi Aplikasi",
+    "currentBalance": "Saldo Saat Ini",
+    "availableFunds": "Dana tersedia",
+    "amount": "Jumlah"
+  },
+  "placeholder": {
+    "email": "Email",
+    "password": "Kata Sandi",
+    "name": "Nama",
+    "firstName": "Nama Depan",
+    "lastName": "Nama Belakang",
+    "dob": "Masukkan Tanggal Lahir",
+    "details": "Saya butuh bantuan dengan pertanyaan ini...",
+    "subject": "Pilih mata pelajaran",
+    "topic": "Topik, kata kunci, dll.",
+    "timezone": "Pilih zona waktu",
+    "language": "Pilih bahasa",
+    "amount": "Masukkan jumlah"
+  },
+  "auth": {
+    "alreadyMember": "Sudah punya akun?",
+    "dontHaveAccount": "Belum punya akun?",
+    "secureGrades": "Amankan nilaimu dengan <1>Last Minute</1>",
+    "verifyEmailSent": "Email verifikasi telah dikirim ke {{email}}.",
+    "verifyEmailInstruction": "Silakan verifikasi email Anda untuk melanjutkan.",
+    "errorSigningUp": "Gagal mendaftar",
+    "errorSigningIn": "Gagal masuk"
+  },
+  "settings": {
+    "general": "Umum",
+    "editProfile": "Ubah Profil",
+    "account": "Akun",
+    "payment": "Pembayaran",
+    "signOut": "Keluar",
+    "deactivateAccount": "Nonaktifkan Akun",
+    "deactivateAccountDesc": "Nonaktifkan akun Anda sementara",
+    "deleteAccount": "Hapus Akun",
+    "deleteAccountDesc": "Hapus akun dan semua data secara permanen"
+  },
+  "booking": {
+    "instantBooking": "Pesan Instan",
+    "scheduleBooking": "Jadwalkan Pesanan",
+    "dateTime": "Tanggal dan Waktu",
+    "dateFuture": "Tanggal dan waktu harus di masa depan",
+    "dateWithin14": "Tanggal dan waktu harus dalam 14 hari ke depan"
+  },
+  "chat": {
+    "header": "Obrolan",
+    "loading": "Memuat pesan...",
+    "noMessages": "Belum ada pesan. Mulai percakapan!"
+  },
+  "alert": {
+    "alert": "Peringatan",
+    "close": "Tutup",
+    "cancel": "Batal",
+    "details": "Detail",
+    "okay": "Oke"
+  },
+  "mainLoading": {
+    "loading": "Memuat...",
+    "offline": "Anda sedang offline"
+  },
+  "faq": {
+    "header": "Pertanyaan yang Sering Diajukan"
+  },
+  "landing": {
+    "yourCourses": "Kursus Anda. Sesuai permintaan."
+  },
+  "requests": {
+    "header": "Permintaan",
+    "noDescription": "Tidak ada deskripsi",
+    "orderedAt": "Dipesan pada: {{date}}"
+  },
+  "errors": {
+    "nameMin": "Nama minimal 3 karakter",
+    "password8": "Minimal 8 karakter",
+    "passwordUpper": "Minimal 1 huruf kapital",
+    "passwordLower": "Minimal 1 huruf kecil",
+    "passwordNumber": "Minimal 1 angka",
+    "passwordSpecial": "Minimal 1 karakter khusus"
+  },
+  "navbar": {
+    "dashboard": "Dasbor",
+    "requests": "Permintaan",
+    "booking": "Pemesanan",
+    "history": "Riwayat",
+    "home": "Beranda",
+    "contact": "Kontak",
+    "faq": "FAQ",
+    "signOut": "Keluar",
+    "signInRegister": "Masuk / Daftar",
+    "navigation": "Navigasi",
+    "settings": "Pengaturan",
+    "profile": "Profil",
+    "balance": "Saldo",
+    "logOut": "Keluar",
+    "register": "Daftar"
+  },
+  "subject": {
+    "math": "Matematika",
+    "science": "Ilmu Pengetahuan Alam",
+    "english": "Bahasa Inggris",
+    "history": "Sejarah",
+    "computerScience": "Ilmu Komputer",
+    "art": "Seni",
+    "music": "Musik",
+    "physicalEducation": "Pendidikan Jasmani",
+    "other": "Lainnya"
+  }
+}
