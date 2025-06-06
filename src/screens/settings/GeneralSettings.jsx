@@ -50,7 +50,6 @@ const GeneralSettings = () => {
           type='suggest'
           selectOnFocus
           options={languageOptions}
-          onChange={e => handleLanguageChange({ target: { value: e.target.value } })}
           onOptionSelect={val => setLanguage(val)}
           forceSuggestions={true}
           placeholder={t('placeholder.language')}

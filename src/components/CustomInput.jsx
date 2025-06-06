@@ -62,7 +62,7 @@ const CustomInput = ({
   options = [],
   onOptionSelect = () => {},
   type,
-  value = '',
+  value, // remove = '' here
   forceSuggestions = false,
   requirements = [],
   autoSave = false,
@@ -86,9 +86,13 @@ const CustomInput = ({
   const [filteredOptions, setFilteredOptions] = useState(options)
 
   // Initialize input value from localStorage if autoSave is enabled,
-  // otherwise use prop value
+  // otherwise use prop value if provided, else default to ''
   const [inputValue, setInputValue] = useState(
-    autoSave && savedValue ? savedValue : value
+    autoSave && savedValue
+      ? savedValue
+      : value !== undefined
+      ? value
+      : ''
   )
 
   const [selectedFromOptions, setSelectedFromOptions] = useState(false)
@@ -193,8 +197,8 @@ const CustomInput = ({
 
   // Update input value when external value prop changes
   useEffect(() => {
-    // Don't override with empty values if we're using autoSave
-    if (value !== '' || !autoSave) {
+    // Only update if value is defined (controlled)
+    if (value !== undefined) {
       // For suggest type, always show label if possible
       if (type === 'suggest') {
         let label = value
