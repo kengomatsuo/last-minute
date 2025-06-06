@@ -36,7 +36,7 @@ const UpcomingSchedule = ({ courses }) => {
 
   return (
     <CustomCard className='w-full px-6 py-6'>
-      <h3 className='text-xl font-bold mb-4 text-[var(--color-primary-text)]'>
+      <h3 className='text-xl font-bold mb-4 text-primary-text'>
         {t('upcomingSchedule.header')}
       </h3>
       {upcomingCourses && upcomingCourses.length > 0 ? (
@@ -47,7 +47,7 @@ const UpcomingSchedule = ({ courses }) => {
               className='flex items-center gap-4 p-3 bg-background-secondary/50 rounded-md'
             >
               <div className='flex-shrink-0 text-center bg-card-outline p-2 rounded-md w-16'>
-                <p className='font-bold text-sm text-[var(--color-primary-text)]'>
+                <p className='font-bold text-sm text-primary-text'>
                   {formatDate(course.bookingTime.toDate(), t)}
                 </p>
               </div>
@@ -72,7 +72,7 @@ const UpcomingSchedule = ({ courses }) => {
           ))}
         </ul>
       ) : (
-        <p className='text-sm text-center text-[var(--color-primary)] py-4'>
+        <p className='text-sm text-center text-primary py-4'>
           {t('upcomingSchedule.noSessions')}
         </p>
       )}

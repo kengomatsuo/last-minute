@@ -27,7 +27,7 @@ const QuickRebook = ({ courses }) => {
   const handleRebook = course => {
     localStorage.setItem('BookingDraft_Subject', course.subject)
     localStorage.setItem('BookingDraft_Topic', course.topic)
-    localStorage.setItem('BookingDraft_Details', '')
+    localStorage.setItem('BookingDraft_Details', course.details || '')
     localStorage.setItem('BookingDraft_Instant', 'true')
     navigate('/booking')
   }
@@ -36,24 +36,24 @@ const QuickRebook = ({ courses }) => {
     return null
   }
   return (
-    <div className='w-full bg-white border border-[#bdb9a7] rounded-lg px-6 py-6 shadow-sm'>
+    <div className='w-full bg-white border border-card-outline rounded-lg px-6 py-6 shadow-sm'>
       <h3 className='text-xl font-bold mb-4'>{t('quickRebook.header')}</h3>
       <ul className='space-y-3'>
         {recentTopics.map(course => (
           <li
             key={`rebook-${course.id}`}
-            className='flex items-center justify-between gap-4 p-3 bg-[#f9f8f2] rounded-md'
+            className='flex items-center justify-between gap-4 p-3 bg-background-secondary/50 rounded-md'
           >
             <div className='flex items-center gap-4 min-w-0'>
               <div className='min-w-0'>
                 <p
-                  className='font-semibold text-base text-[#3e3c36] truncate'
+                  className='font-semibold text-base text-primary-text truncate'
                   title={course.topic}
                 >
                   {course.topic}
                 </p>
                 <p
-                  className='text-sm text-[#7d7865] truncate'
+                  className='text-sm text-secondary-text truncate'
                   title={course.subject}
                 >
                   {course.subject}
@@ -62,7 +62,7 @@ const QuickRebook = ({ courses }) => {
             </div>
             <button
               onClick={() => handleRebook(course)}
-              className='py-2 px-4 rounded font-semibold bg-[#bdb9a7] text-white hover:bg-[#a7a083] transition text-sm flex-shrink-0'
+              className='py-2 px-4 rounded font-semibold bg-card-outline text-white hover:bg-card-outline/80 transition text-sm flex-shrink-0'
             >
               {t('quickRebook.rebookButton')}
             </button>

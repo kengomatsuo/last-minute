@@ -60,7 +60,11 @@
     "errorSigningIn": "Error signing in"
   },
   "dashboard": {
-    "myCourses": "My Courses"
+    "myCourses": "My Courses",
+    "welcomeTutor": "Welcome, Tutor!",
+    "visitRequests": "Please visit the",
+    "requestsPage": "Requests Page",
+    "pendingSessions": "to see pending sessions."
   },
   "settings": {
     "general": "General",

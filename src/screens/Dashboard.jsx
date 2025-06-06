@@ -80,12 +80,12 @@ const Dashboard = () => {
 
     return (
       <div
-        className='bg-[var(--color-alert-background)] border border-[var(--color-card-outline)] rounded-md p-4 mb-8 shadow-sm'
+        className='bg-alert-background border border-card-outline rounded-md p-4 mb-8 shadow-sm'
       >
-        <h3 className='font-semibold text-lg text-[var(--color-primary-text)]'>
+        <h3 className='font-semibold text-lg text-primary-text'>
           Reminder ⏰
         </h3>
-        <p className='text-base text-[var(--color-primary-text)]'>{reminderText}</p>
+        <p className='text-base text-primary-text'>{reminderText}</p>
       </div>
     )
   }
@@ -112,10 +112,10 @@ const Dashboard = () => {
     <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
       <div className='lg:col-span-2'>
         <CustomCard className='px-6 md:px-10 py-8'>
-          <h2 className='text-2xl font-bold mb-6 text-[var(--color-primary-text)]'>
+          <h2 className='text-2xl font-bold mb-6 text-primary-text'>
             {t('dashboard.myCourses', 'My Courses')}
           </h2>
-          <div className='divide-y divide-[var(--color-card-outline)]'>
+          <div className='divide-y divide-card-outline'>
             {courses && courses.length > 0 ? (
               courses.map(course => (
                 <div
@@ -123,17 +123,17 @@ const Dashboard = () => {
                   className='flex flex-col sm:flex-row sm:items-center py-5 gap-4'
                 >
                   <div className='flex-1 min-w-0'>
-                    <div className='font-bold text-lg text-[var(--color-primary-text)]'>
+                    <div className='font-bold text-lg text-primary-text'>
                       {course.subject}
                     </div>
                     <div
-                      className='font-semibold text-base break-words truncate max-w-full text-[var(--color-primary-text)]'
+                      className='font-semibold text-base break-words truncate max-w-full text-primary-text'
                       title={course.topic}
                     >
                       {course.topic}
                     </div>
                     <div
-                      className='mt-1 text-[var(--color-primary)] course-description truncate max-w-full'
+                      className='mt-1 text-primary course-description truncate max-w-full'
                       title={course.details}
                     >
                       {course.details || 'No description'}
@@ -158,7 +158,7 @@ const Dashboard = () => {
                 </div>
               ))
             ) : (
-              <p className='text-center text-[var(--color-primary)] py-4'>
+              <p className='text-center text-primary py-4'>
                 You have no upcoming courses. Book one from the Booking page!
               </p>
             )}
@@ -182,18 +182,19 @@ const Dashboard = () => {
     <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
       <div className='lg:col-span-2'>
         <CustomCard className='px-6 md:px-10 py-8'>
-          <h2 className='text-2xl font-bold mb-6 text-[var(--color-primary-text)]'>
+          <h2 className='text-2xl font-bold mb-6 text-primary-text'>
             Tutor Dashboard
           </h2>
-          <div className='divide-y divide-[var(--color-card-outline)]'>
-            <p className='mb-4 text-[var(--color-primary-text)]'>
-              Welcome, Tutor! Please visit the{' '}
-              <a href='/requests' className='underline font-semibold text-[var(--color-accent)]'>
-                Requests Page
-              </a>{' '}
-              to see pending sessions.
-            </p>
-            <div className='divide-y divide-[var(--color-card-outline)]'>
+          <div className='divide-y divide-card-outline'>
+            {/* <p className='mb-4 text-primary-text'>
+              {t('dashboard.welcomeTutor', 'Welcome, Tutor!')}{' '}
+              {t('dashboard.visitRequests', 'Please visit the')}{' '}
+              <Link to='/requests' className='underline font-semibold text-accent'>
+                {t('dashboard.requestsPage', 'Requests Page')}
+              </Link>{' '}
+              {t('dashboard.pendingSessions', 'to see pending sessions.')}
+            </p> */}
+            <div className='divide-y divide-card-outline'>
               {courses && courses.length > 0 ? (
                 courses.map(course => (
                   <div
@@ -201,17 +202,17 @@ const Dashboard = () => {
                     className='flex flex-col sm:flex-row sm:items-center py-5 gap-4'
                   >
                     <div className='flex-1 min-w-0'>
-                      <div className='font-bold text-lg text-[var(--color-primary-text)]'>
+                      <div className='font-bold text-lg text-primary-text'>
                         {course.subject}
                       </div>
                       <div
-                        className='font-semibold text-base break-words truncate max-w-full text-[var(--color-primary-text)]'
+                        className='font-semibold text-base break-words truncate max-w-full text-primary-text'
                         title={course.topic}
                       >
                         {course.topic}
                       </div>
                       <div
-                        className='mt-1 text-[var(--color-primary)] course-description truncate max-w-full'
+                        className='mt-1 text-primary course-description truncate max-w-full'
                         title={course.details}
                       >
                         {course.details || 'No description'}
@@ -236,7 +237,7 @@ const Dashboard = () => {
                   </div>
                 ))
               ) : (
-                <p className='text-center text-[var(--color-primary)] py-4'>
+                <p className='text-center text-primary py-4'>
                   You have no upcoming courses. Book one from the Booking page!
                 </p>
               )}
@@ -245,7 +246,6 @@ const Dashboard = () => {
         </CustomCard>
       </div>
       <div className='flex flex-col gap-0'>
-        {/* Optionally add tutor-specific widgets here */}
         <UpcomingSchedule courses={courses}/>
         <ProgressTracker courses={courses} />
       </div>
@@ -253,15 +253,15 @@ const Dashboard = () => {
   )
 
   return (
-    <div className='flex flex-col flex-1 min-h-screen bg-[var(--color-background)] font-[Montserrat]'>
+    <div className='flex flex-col flex-1 min-h-screen bg-background font-[Montserrat]'>
       <main className='w-full px-6 md:px-12 pt-23 pb-6'>
-        {notifications.map(notification => (
+        {/* {notifications.map(notification => (
           <NotificationBar
             key={`${notification.id}-${notification.reminderType}`}
             course={notification}
             reminderType={notification.reminderType}
           />
-        ))}
+        ))} */}
         {!isTutor ? <TutorDashboard /> : <StudentDashboard />}
       </main>
     </div>

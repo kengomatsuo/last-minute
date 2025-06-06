@@ -61,7 +61,11 @@
     "errorSigningIn": "Gagal masuk"
   },
   "dashboard": {
-    "myCourses": "Kursus Saya"
+    "myCourses": "Kursus Saya",
+    "welcomeTutor": "Selamat datang, Tutor!",
+    "visitRequests": "Silakan kunjungi",
+    "requestsPage": "Halaman Permintaan",
+    "pendingSessions": "untuk melihat sesi yang menunggu."
   },
   "settings": {
     "general": "Umum",

@@ -49,37 +49,37 @@ const ProgressTracker = ({ courses }) => {
 
   return (
     <CustomCard className='w-full px-6 py-6 mt-8'>
-      <h3 className='text-xl font-bold mb-1 text-[var(--color-primary-text)]'>
+      <h3 className='text-xl font-bold mb-1 text-primary-text'>
         {t('progressTracker.weeklyGoal')}
       </h3>
-      <p className='text-sm text-[var(--color-primary)] mb-4'>
+      <p className='text-sm text-primary mb-4'>
         {t('progressTracker.completed', { completed: completedThisWeek, goal })}
       </p>
 
-      <div className='w-full bg-[var(--color-background-secondary)] rounded-full h-3 mb-4'>
+      <div className='w-full bg-background-secondary rounded-full h-3 mb-4'>
         <div
-          className='bg-[var(--color-success)] h-3 rounded-full transition-all duration-500'
+          className='bg-success h-3 rounded-full transition-all duration-500'
           style={{ width: `${progressPercentage}%` }}
         ></div>
       </div>
 
       <div className='flex items-center justify-center gap-4'>
-        <p className='text-sm font-semibold text-[var(--color-primary-text)]'>
+        <p className='text-sm font-semibold text-primary-text'>
           {t('progressTracker.setGoal')}
         </p>
-        <div className='flex items-center gap-2 border border-[var(--color-card-outline)] rounded-md p-1'>
+        <div className='flex items-center gap-2 border border-card-outline rounded-md p-1'>
           <button
             onClick={decrementGoal}
-            className='p-1 rounded hover:bg-[var(--color-interactive-hover)]'
+            className='p-1 rounded hover:bg-interactive-hover'
           >
             <span className='text-lg'>-</span>
           </button>
-          <span className='font-bold text-lg text-[var(--color-primary-text)] w-6 text-center'>
+          <span className='font-bold text-lg text-primary-text w-6 text-center'>
             {goal}
           </span>
           <button
             onClick={incrementGoal}
-            className='p-1 rounded hover:bg-[var(--color-interactive-hover)]'
+            className='p-1 rounded hover:bg-interactive-hover'
           >
             <span className='text-lg'>+</span>
           </button>

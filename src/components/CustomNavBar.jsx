@@ -266,7 +266,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                       {user ? t('navbar.signOut') : t('navbar.signInRegister')}
                     </CustomButton>
 
-                    <p className='text-lg font-semibold mr-3 mt-6 mb-2'>
+                    <p className='text-xl text-primary-text font-semibold mr-3 mt-6 mb-2'>
                       {t('navbar.navigation')}
                     </p>
 
