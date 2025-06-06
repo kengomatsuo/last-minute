@@ -15,7 +15,7 @@ import {
 } from 'firebase/firestore'
 import { httpsCallable } from 'firebase/functions'
 import { auth, db, functions } from '../../firebaseConfig'
-import { createContext, useEffect, useState, useContext } from 'react'
+import { createContext, useEffect, useState, useContext, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { UserContext } from './UserContext'
 import { stringToFirestamp } from '../utils/conversions'
@@ -329,6 +329,86 @@ const CourseContextProvider = ({ children }) => {
       setIsCancelPending(false)
     }
   }
+
+  /**
+   * Show a native browser notification if permission is granted.
+   *
+   * @param {string} title - Notification title
+   * @param {string} body - Notification body
+   */
+  const showNotification = (title, body) => {
+    if (window.Notification && Notification.permission === 'granted') {
+      new Notification(title, { body })
+    }
+  }
+
+  const prevCoursesRef = useRef([])
+  const prevRequestsRef = useRef([])
+  const bookingTimersRef = useRef({})
+
+  // Request notification permission on mount
+  useEffect(() => {
+    if (window.Notification && Notification.permission !== 'granted') {
+      Notification.requestPermission()
+    }
+  }, [])
+
+  // Detect course/request changes for notifications
+  useEffect(() => {
+    if (!auth.currentUser || isTutor) return
+    const prevCourses = prevCoursesRef.current
+    const prevRequests = prevRequestsRef.current
+
+    // 1. Request accepted: request removed, course added
+    if (prevRequests.length > 0 && prevCourses.length > 0) {
+      // const prevRequestIds = prevRequests.map(r => r.id) // unused
+      const prevCourseIds = prevCourses.map(c => c.id)
+      const newCourse = courses.find(
+        c => !prevCourseIds.includes(c.id) &&
+          prevRequests.some(r => r.subject === c.subject && r.topic === r.topic)
+      )
+      if (newCourse) {
+        showNotification(
+          'Course Request Accepted',
+          `Your request for ${newCourse.subject} - ${newCourse.topic} was accepted.`
+        )
+      }
+    }
+
+    // 2. Lecturer calls you: offer becomes non-null
+    courses.forEach(course => {
+      const prev = prevCourses.find(c => c.id === course.id)
+      if (prev && !prev.offer && course.offer) {
+        showNotification(
+          'Incoming Call',
+          `Your lecturer is calling for ${course.subject} - ${course.topic}`
+        )
+      }
+    })
+
+    // 3. Booking time in 5 minutes
+    // Clear old timers
+    Object.values(bookingTimersRef.current).forEach(clearTimeout)
+    bookingTimersRef.current = {}
+    courses.forEach(course => {
+      if (course.bookingTime && course.bookingTime.toDate) {
+        const bookingDate = course.bookingTime.toDate()
+        const now = new Date()
+        const msUntil5Min = bookingDate - now - 5 * 60 * 1000
+        if (msUntil5Min > 0) {
+          bookingTimersRef.current[course.id] = setTimeout(() => {
+            showNotification(
+              'Upcoming Course',
+              `Your course ${course.subject} - ${course.topic} starts in 5 minutes.`
+            )
+          }, msUntil5Min)
+        }
+      }
+    })
+
+    prevCoursesRef.current = courses
+    prevRequestsRef.current = requests
+  }, [courses, requests, isTutor])
 
   return (
     <CourseContext.Provider

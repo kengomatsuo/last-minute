@@ -44,21 +44,21 @@ const UpcomingSchedule = ({ courses }) => {
           {upcomingCourses.map(course => (
             <li
               key={course.id}
-              className='flex items-center gap-4 p-3 bg-[var(--color-background-secondary)] rounded-md'
+              className='flex items-center gap-4 p-3 bg-background-secondary/50 rounded-md'
             >
-              <div className='flex-shrink-0 text-center bg-[var(--color-card-outline)] p-2 rounded-md w-16'>
+              <div className='flex-shrink-0 text-center bg-card-outline p-2 rounded-md w-16'>
                 <p className='font-bold text-sm text-[var(--color-primary-text)]'>
                   {formatDate(course.bookingTime.toDate(), t)}
                 </p>
               </div>
               <div className='min-w-0'>
                 <p
-                  className='font-semibold text-base text-[var(--color-primary-text)] truncate max-w-xs'
+                  className='font-semibold text-base text-primary-text truncate max-w-xs'
                   title={course.topic}
                 >
                   {course.topic}
                 </p>
-                <p className='text-sm text-[var(--color-primary)]'>
+                <p className='text-sm text-primary-text'>
                   {course.bookingTime
                     .toDate()
                     .toLocaleTimeString('en-US', {
