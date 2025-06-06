@@ -40,7 +40,7 @@ const CustomInteractive = ({
       onClick={handleClick}
     >
       <div
-        className={`${loading ? 'opacity-0' :''} transition-transform justify-center flex w-full`}
+        className={`${loading || isLoading ? 'invisible' : ''} transition-transform justify-center flex w-full`}
       >
         {children}
       </div>

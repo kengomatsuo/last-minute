@@ -8,6 +8,7 @@ import {
   sendEmailVerification,
   reload,
   updateProfile,
+  sendPasswordResetEmail,
 } from 'firebase/auth'
 import { auth, db, functions } from '../../firebaseConfig'
 import { httpsCallable } from 'firebase/functions'
@@ -392,6 +393,59 @@ const UserContextProvider = ({ children }) => {
     return () => unsubscribe()
   }, [user])
 
+  /**
+   * Sends a password reset email to the specified address.
+   *
+   * @param {string} email - The email address to send the reset link to
+   * @returns {Promise<void>}
+   */
+  const resetPassword = async email => {
+    try {
+      await sendPasswordResetEmail(auth, email)
+      if (typeof addAlert === 'function') {
+        addAlert({
+          type: 'success',
+          title: 'Reset Email Sent',
+          message: `A password reset email has been sent to ${email}.`
+        })
+      }
+    } catch (error) {
+      if (typeof addAlert === 'function') {
+        addAlert({
+          type: 'error',
+          title: 'Reset Failed',
+          message: error.message || 'Failed to send reset email.'
+        })
+      }
+      console.error('Error sending password reset email:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Handles the forgot password action by validating the email and
+   * calling resetPassword from context.
+   *
+   * @param {string} email - The email address to reset password for
+   * @returns {Promise<void>}
+   */
+  const handleForgotPassword = async email => {
+    console.log
+    try {
+      await resetPassword(email)
+    } catch (error) {
+      if (typeof addAlert === 'function') {
+        addAlert({
+          type: 'error',
+          title: 'Reset Failed',
+          message: error.message || 'Failed to send reset email.'
+        })
+      }
+      console.error('Error in handleForgotPassword:', error)
+      throw error
+    }
+  }
+
   return (
     <UserContext.Provider
       value={{
@@ -409,6 +463,8 @@ const UserContextProvider = ({ children }) => {
         closeAuthModal,
         addBalanceDoc,
         updateBalance,
+        resetPassword,
+        handleForgotPassword,
       }}
     >
       <AnimatePresence>
