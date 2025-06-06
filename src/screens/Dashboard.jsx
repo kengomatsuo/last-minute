@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState, useRef } from 'react'
 import { CourseContext } from '../contexts/CourseContext'
 import { UserContext } from '../contexts/UserContext'
 import UpcomingSchedule from '../components/UpcomingSchedule'
@@ -9,6 +9,8 @@ import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import CustomCard from '../components/CustomCard'
 import { useTranslation } from 'react-i18next'
+import ChatComponent from '../components/ChatComponent'
+import { motion, AnimatePresence } from 'framer-motion'
 
 /**
  * Dashboard page for students and tutors.
@@ -20,26 +22,32 @@ const Dashboard = () => {
   const { user } = useContext(UserContext)
   const { courses } = useContext(CourseContext)
   const [notifications, setNotifications] = useState([])
+  const [chatCourse, setChatCourse] = useState(null)
+  const chatRef = useRef(null)
 
   const isTutor = user?.claims?.isTutor
 
   useEffect(() => {
     const checkReminders = () => {
-      if (!courses) return
+      if (!courses) {
+        return
+      }
       const now = new Date()
       const upcomingNotifications = []
 
       courses.forEach(course => {
-        if (!course.bookingTime?.toDate) return
+        if (!course.bookingTime?.toDate) {
+          return
+        }
         const courseTime = course.bookingTime.toDate()
         const timeDiff = courseTime - now
 
-        const oneDay = 24 * 60 * 60 * 1000
-        const thirtyMinutes = 30 * 60 * 1000
+        const ONE_DAY = 24 * 60 * 60 * 1000
+        const THIRTY_MINUTES = 30 * 60 * 1000
 
-        if (timeDiff > 0 && timeDiff <= thirtyMinutes) {
+        if (timeDiff > 0 && timeDiff <= THIRTY_MINUTES) {
           upcomingNotifications.push({ ...course, reminderType: 'minutes' })
-        } else if (timeDiff > 0 && timeDiff <= oneDay) {
+        } else if (timeDiff > 0 && timeDiff <= ONE_DAY) {
           upcomingNotifications.push({ ...course, reminderType: 'day' })
         }
       })
@@ -50,6 +58,30 @@ const Dashboard = () => {
     const intervalId = setInterval(checkReminders, 60000)
     return () => clearInterval(intervalId)
   }, [courses])
+
+  // Close chat when clicking outside
+  useEffect(() => {
+    if (!chatCourse) {
+      return
+    }
+    /**
+     * Handles click outside the chat component.
+     *
+     * @param {MouseEvent} event - The mouse event
+     */
+    const handleClickOutside = event => {
+      if (
+        chatRef.current &&
+        !chatRef.current.contains(event.target)
+      ) {
+        setChatCourse(null)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [chatCourse])
 
   /**
    * Notification bar for course reminders.
@@ -79,9 +111,7 @@ const Dashboard = () => {
     }
 
     return (
-      <div
-        className='bg-alert-background border border-card-outline rounded-md p-4 mb-8 shadow-sm'
-      >
+      <div className='bg-alert-background border border-card-outline rounded-md p-4 mb-8 shadow-sm'>
         <h3 className='font-semibold text-lg text-primary-text'>
           Reminder ⏰
         </h3>
@@ -140,7 +170,10 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <div className='flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:min-w-[160px]'>
-                    <CustomButton className='w-full sm:w-auto'>
+                    <CustomButton
+                      className='w-full sm:w-auto'
+                      onClick={() => setChatCourse(course)}
+                    >
                       Chat
                     </CustomButton>
                     <Link
@@ -186,14 +219,6 @@ const Dashboard = () => {
             Tutor Dashboard
           </h2>
           <div className='divide-y divide-card-outline'>
-            {/* <p className='mb-4 text-primary-text'>
-              {t('dashboard.welcomeTutor', 'Welcome, Tutor!')}{' '}
-              {t('dashboard.visitRequests', 'Please visit the')}{' '}
-              <Link to='/requests' className='underline font-semibold text-accent'>
-                {t('dashboard.requestsPage', 'Requests Page')}
-              </Link>{' '}
-              {t('dashboard.pendingSessions', 'to see pending sessions.')}
-            </p> */}
             <div className='divide-y divide-card-outline'>
               {courses && courses.length > 0 ? (
                 courses.map(course => (
@@ -219,7 +244,10 @@ const Dashboard = () => {
                       </div>
                     </div>
                     <div className='flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:min-w-[160px]'>
-                      <CustomButton className='w-full sm:w-auto'>
+                      <CustomButton
+                        className='w-full sm:w-auto'
+                        onClick={() => setChatCourse(course)}
+                      >
                         Chat
                       </CustomButton>
                       <Link
@@ -246,7 +274,7 @@ const Dashboard = () => {
         </CustomCard>
       </div>
       <div className='flex flex-col gap-0'>
-        <UpcomingSchedule courses={courses}/>
+        <UpcomingSchedule courses={courses} />
         <ProgressTracker courses={courses} />
       </div>
     </div>
@@ -263,6 +291,29 @@ const Dashboard = () => {
           />
         ))} */}
         {!isTutor ? <TutorDashboard /> : <StudentDashboard />}
+        <AnimatePresence>
+          {chatCourse && (
+            <motion.div
+              className='fixed flex bottom-4 right-4 w-fit z-50'
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 100 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            >
+              <div
+                className='flex flex-1 h-[75vh] w-fit'
+                ref={chatRef}
+              >
+                {chatCourse && (
+                  <ChatComponent
+                    courseId={chatCourse.id}
+                    courseData={chatCourse}
+                  />
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   )
