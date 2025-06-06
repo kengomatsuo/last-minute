@@ -13,6 +13,7 @@ import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
 import PropTypes from 'prop-types'
 import { useConsoleLog } from '../hooks'
 import { ScreenContext } from '../contexts/ScreenContext'
+import { useTranslation, Trans } from 'react-i18next'
 
 /**
  * Authentication component that handles sign in and registration
@@ -20,6 +21,7 @@ import { ScreenContext } from '../contexts/ScreenContext'
  * @returns {JSX.Element} The rendered authentication modal
  */
 const Auth = ({ initialAction }) => {
+  const { t } = useTranslation()
   const {
     user,
     signIn,
@@ -43,18 +45,10 @@ const Auth = ({ initialAction }) => {
   }, [])
 
   const passwordRequirements = [
-    { complete: false, text: 'At least 8 characters', regEx: '.{8,}' },
-    {
-      complete: false,
-      text: 'At least 1 uppercase letter',
-      regEx: '(?=.*[A-Z])',
-    },
-    {
-      complete: false,
-      text: 'At least 1 lowercase letter',
-      regEx: '(?=.*[a-z])',
-    },
-    { complete: false, text: 'At least 1 number', regEx: '(?=.*[0-9])' },
+    { complete: false, text: t('errors.password8'), regEx: '.{8,}' },
+    { complete: false, text: t('errors.passwordUpper'), regEx: '(?=.*[A-Z])' },
+    { complete: false, text: t('errors.passwordLower'), regEx: '(?=.*[a-z])' },
+    { complete: false, text: t('errors.passwordNumber'), regEx: '(?=.*[0-9])' },
   ]
   const [passwordRequirementsFiltered, setPasswordRequirementsFiltered] =
     useState([])
@@ -138,7 +132,7 @@ const Auth = ({ initialAction }) => {
           console.error('Error creating balance doc:', error)
         }
       }
-      
+
       createBalanceDoc()
     }
   }, [user, addBalanceDoc])
@@ -219,7 +213,7 @@ const Auth = ({ initialAction }) => {
         transition={MOVEMENT_TRANSITION}
         className={`flex z-30 ${
           isSmallScreen ? 'w-[min(48rem,100%)]' : 'w-[min(75rem,11/12*100%)]'
-        } bg-white ${
+        } bg-signin-background ${
           action === 'register' ? 'flex-row' : 'flex-row-reverse'
         } my-auto rounded-4xl max-w-[75rem] h-[45rem] overflow-clip justify-between`}
       >
@@ -232,7 +226,7 @@ const Auth = ({ initialAction }) => {
               className='p-[min(3rem,6%)] w-full flex flex-col h-full'
             >
               <CustomInteractive
-                className='!p-1 !pr-4 !size-min items-center flex'
+                className='!p-1 !pr-4 !size-min items-center flex text-primary-text'
                 loading={isAuthLoading}
                 onClick={() => signOut()}
               >
@@ -240,7 +234,7 @@ const Auth = ({ initialAction }) => {
                   <ArrowRightIcon
                     width={36}
                     height={36}
-                    className='rotate-180'
+                    className='rotate-180 text-primary'
                   />
                   Sign Out
                 </div>
@@ -249,14 +243,14 @@ const Auth = ({ initialAction }) => {
                 <div className='flex flex-col items-center justify-center gap-4 text-center max-w-md'>
                   <motion.div
                     animate={{
-                      rotate: [0, -7, 7, -7, 7, 0], // Wiggle pattern
+                      rotate: [0, -7, 7, -7, 7, 0],
                     }}
                     transition={{
                       duration: 2.5,
                       times: [0, 0.05, 0.1, 0.15, 0.2, 0.25],
                       ease: 'easeInOut',
                       repeat: Infinity,
-                      repeatDelay: 0.75, // 1 second pause between animations
+                      repeatDelay: 0.75,
                     }}
                   >
                     <EmailUpIcon
@@ -269,7 +263,9 @@ const Auth = ({ initialAction }) => {
                     <h2 className='text-primary font-semibold gap-4 flex w-full text-xl'>
                       A verification email has been sent to {user.email}.
                     </h2>
-                    <p>Please verify your email address to continue.</p>
+                    <p className='text-primary-text'>
+                      Please verify your email address to continue.
+                    </p>
                   </motion.div>
                 </div>
               </div>
@@ -285,26 +281,24 @@ const Auth = ({ initialAction }) => {
                 animate={{ x: 0 }}
                 exit={shouldAnimateChildren ? { x: '100%' } : false}
                 transition={MOVEMENT_TRANSITION}
-                className={
-                  'p-[min(3rem,6%)] justify-between min-w-fit flex flex-col flex-6'
-                }
+                className='p-[min(3rem,6%)] justify-between min-w-fit flex flex-col flex-6 text-primary-text'
               >
-                <div className={'flex items-center justify-between'}>
+                <div className='flex items-center justify-between'>
                   <CustomInteractive
-                    className='!p-1 !pr-4 !size-min items-center flex'
+                    className='!p-1 !pr-4 !size-min items-center flex text-primary-text'
                     onClick={() => closeAuthModal()}
                   >
                     <div className='flex items-center gap-2'>
                       <ArrowRightIcon
                         width={36}
                         height={36}
-                        className='rotate-180'
+                        className='rotate-180 text-primary'
                       />
                       Back
                     </div>
                   </CustomInteractive>
                   {!isSmallScreen && (
-                    <div className='inline-flex items-center'>
+                    <div className='inline-flex items-center text-primary-text'>
                       {'Already a member?'}
                       <CustomInteractive
                         onClick={() => setAction('signin')}
@@ -323,10 +317,14 @@ const Auth = ({ initialAction }) => {
                   >
                     <Logo width={80} height={80} />
                     <div>
-                      <h1 className='pb-1 text-primary-text'>Sign Up</h1>
-                      <h3 className='text-gray-400 text-nowrap'>
+                      <h1 className='pb-1 text-primary-text text-nowrap'>
+                        Sign Up
+                      </h1>
+                      <h3 className='text-card-outline text-nowrap'>
                         Secure your grades with{' '}
-                        <b className='italic'>Last Minute</b>
+                        <b className='italic text-primary'>
+                          Last Minute
+                        </b>
                       </h3>
                     </div>
                   </div>
@@ -340,11 +338,11 @@ const Auth = ({ initialAction }) => {
                       name='displayName'
                       inputClassName={inputClassName}
                       image={<UserIcon width={24} height={24} />}
-                      placeholder='Name'
+                      placeholder={t('placeholder.name')}
                       disabled={isAuthLoading}
                       validateFunction={e => {
                         if (e.length < 3)
-                          throw new Error('Name must be at least 3 characters')
+                          throw new Error(t('errors.nameLength'))
                       }}
                       required
                       ref={nameRef}
@@ -353,7 +351,7 @@ const Auth = ({ initialAction }) => {
                       name='email'
                       inputClassName={inputClassName}
                       image={<EmailIcon width={24} height={24} />}
-                      placeholder='Email'
+                      placeholder={t('placeholder.email')}
                       disabled={isAuthLoading}
                       validateFunction={e => validateEmail(e)}
                       required
@@ -363,7 +361,7 @@ const Auth = ({ initialAction }) => {
                       name='password'
                       inputClassName={inputClassName}
                       image={<PasswordIcon width={24} height={24} />}
-                      placeholder='Password'
+                      placeholder={t('placeholder.password')}
                       disabled={isAuthLoading}
                       validateFunction={e => validatePassword(e)}
                       type='password'
@@ -376,7 +374,7 @@ const Auth = ({ initialAction }) => {
                         name='retypePassword'
                         inputClassName={inputClassName}
                         image={<PasswordIcon width={24} height={24} />}
-                        placeholder='Re-Type Password'
+                        placeholder={t('placeholder.retypePassword')}
                         disabled={isAuthLoading}
                         validateFunction={e => validateRetypePassword(e)}
                         type='password'
@@ -391,7 +389,7 @@ const Auth = ({ initialAction }) => {
                         Already a member?
                         <CustomInteractive
                           onClick={() => setAction('signin')}
-                          className='font-semibold !p-1 ml-2 w-min !text-primary'
+                          className='font-semibold !p-1 ml-2 w-min !text-primary text-nowrap'
                         >
                           Sign In
                         </CustomInteractive>
@@ -404,7 +402,7 @@ const Auth = ({ initialAction }) => {
                       className='w-[14rem] mt-2'
                     >
                       <div className='flex items-center gap-4'>
-                        <p>Sign Up</p>
+                        <p>{t('button.signUp')}</p>
                         <div className='p-2 rounded-full'>
                           <ArrowRightIcon
                             style={{
@@ -427,7 +425,7 @@ const Auth = ({ initialAction }) => {
                   transition={MOVEMENT_TRANSITION}
                   className='flex-4'
                 >
-                  <SignInDecoration />
+                  <SignInDecoration className='fill-primary' />
                 </motion.div>
               )}
             </>
@@ -439,28 +437,28 @@ const Auth = ({ initialAction }) => {
                 animate={{ x: 0 }}
                 exit={shouldAnimateChildren ? { x: '-100%' } : false}
                 transition={MOVEMENT_TRANSITION}
-                className='w-full flex flex-col min-w-fit p-[min(3rem,6%)]'
+                className='w-full flex flex-col min-w-fit p-[min(3rem,6%)] text-primary-text'
               >
-                <div className={'flex items-center justify-between'}>
+                <div className='flex items-center justify-between'>
                   <CustomInteractive
-                    className='!p-1 !pr-4 !size-min items-center flex'
+                    className='!p-1 !pr-4 !size-min items-center flex text-primary-text'
                     onClick={() => closeAuthModal()}
                   >
                     <div className='flex items-center gap-2'>
                       <ArrowRightIcon
                         width={36}
                         height={36}
-                        className='rotate-180'
+                        className='rotate-180 text-primary'
                       />
                       Back
                     </div>
                   </CustomInteractive>
                   {!isSmallScreen && (
-                    <div className='inline-flex items-center text-nowrap'>
+                    <div className='inline-flex items-center text-primary-text'>
                       Don&apos;t have an account?
                       <CustomInteractive
                         onClick={() => setAction('register')}
-                        className='font-semibold !p-1 !size-min ml-2 w-min !text-primary'
+                        className='font-semibold !p-1 !size-min ml-2 w-min !text-primary text-nowrap'
                       >
                         Sign Up
                       </CustomInteractive>
@@ -475,10 +473,14 @@ const Auth = ({ initialAction }) => {
                   >
                     <Logo width={80} height={80} />
                     <div>
-                      <h1 className='pb-1 text-primary-text'>Sign In</h1>
-                      <h3 className='text-gray-400 text-nowrap'>
+                      <h1 className='pb-1 text-primary-text text-nowrap'>
+                        Sign In
+                      </h1>
+                      <h3 className='text-card-outline text-nowrap'>
                         Secure your grades with{' '}
-                        <b className='italic'>Last Minute</b>
+                        <b className='italic text-primary'>
+                          Last Minute
+                        </b>
                       </h3>
                     </div>
                   </div>
@@ -492,7 +494,7 @@ const Auth = ({ initialAction }) => {
                       name='email'
                       inputClassName={inputClassName}
                       image={<EmailIcon width={24} height={24} />}
-                      placeholder='Email'
+                      placeholder={t('placeholder.email')}
                       disabled={isAuthLoading}
                       validateFunction={e => validateEmail(e)}
                       required
@@ -502,7 +504,7 @@ const Auth = ({ initialAction }) => {
                       name='password'
                       inputClassName={inputClassName}
                       image={<PasswordIcon width={24} height={24} />}
-                      placeholder='Password'
+                      placeholder={t('placeholder.password')}
                       disabled={isAuthLoading}
                       type='password'
                       required
@@ -514,7 +516,7 @@ const Auth = ({ initialAction }) => {
                         Don&apos;t have an account?
                         <CustomInteractive
                           onClick={() => setAction('register')}
-                          className='font-semibold !p-1 ml-2 w-min !text-primary'
+                          className='font-semibold !p-1 ml-2 w-min !text-primary text-nowrap'
                         >
                           Sign Up
                         </CustomInteractive>
@@ -527,7 +529,7 @@ const Auth = ({ initialAction }) => {
                       className='w-[14rem] mt-2'
                     >
                       <div className='flex items-center gap-4'>
-                        <p>Sign In</p>
+                        <p>{t('button.signIn')}</p>
                         <div className='p-2 rounded-full'>
                           <ArrowRightIcon
                             style={{
@@ -550,7 +552,7 @@ const Auth = ({ initialAction }) => {
                   transition={MOVEMENT_TRANSITION}
                   className='flex-4'
                 >
-                  <SignInDecoration style={{ transform: 'scaleX(-1)' }} />
+                  <SignInDecoration className='fill-primary' style={{ transform: 'scaleX(-1)' }} />
                 </motion.div>
               )}
             </>

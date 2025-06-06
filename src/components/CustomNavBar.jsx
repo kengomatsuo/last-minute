@@ -14,6 +14,7 @@ import { UserContext } from '../contexts/UserContext'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
 import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
+import { useTranslation } from 'react-i18next'
 
 /**
  * Custom navigation bar component with responsive design and animations.
@@ -23,6 +24,7 @@ import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
  * @returns {JSX.Element} The rendered navigation bar
  */
 const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
+  const { t } = useTranslation()
   const { user, openAuthModal, balance } = use(UserContext)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
@@ -66,17 +68,16 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
 
   const navigationPaths = user
     ? [
-        { name: 'Dashboard', path: '/' },
+        { name: t('navbar.dashboard'), path: '/' },
         user.claims?.isAdmin
-          ? { name: 'Requests', path: '/requests' }
-          : { name: 'Booking', path: '/booking' },
-        { name: 'History', path: '/history' },
-        // { name: 'Settings', path: '/settings' },
+          ? { name: t('navbar.requests'), path: '/requests' }
+          : { name: t('navbar.booking'), path: '/booking' },
+        { name: t('navbar.history'), path: '/history' },
       ]
     : [
-        { name: 'Home', path: '/' },
-        { name: 'Contact', path: '/contact' },
-        { name: 'FAQ', path: '/faq' },
+        { name: t('navbar.home'), path: '/' },
+        { name: t('navbar.contact'), path: '/contact' },
+        { name: t('navbar.faq'), path: '/faq' },
       ]
 
   // Animation variants for nav items
@@ -145,7 +146,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
             to={'/'}
             className='font-semibold text-nowrap focus:ring-offset-2'
           >
-            Last Minute
+            {t('appName')}
           </NavLink>
         </motion.div>
 
@@ -226,11 +227,11 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                         user ? handleSignOut() : openAuthModal()
                       }}
                     >
-                      {user ? 'Sign out' : 'Sign in / Register'}
+                      {user ? t('navbar.signOut') : t('navbar.signInRegister')}
                     </CustomButton>
 
                     <p className='text-lg font-semibold mr-3 mt-6 mb-2'>
-                      Navigation
+                      {t('navbar.navigation')}
                     </p>
 
                     {navigationPaths.map(navPath => (
@@ -340,7 +341,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                             onClick={() => setShowUserPopUp(false)}
                           >
                             <SettingsIcon width={20} height={20} className="fill-primary-text"/>
-                            Settings
+                            {t('navbar.settings')}
                           </Link>
                           <Link
                             to={{ pathname: '/settings', hash: 'profile' }}
@@ -348,7 +349,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                             onClick={() => setShowUserPopUp(false)}
                           >
                             <UserIcon width={20} height={20} className="fill-primary-text"/>
-                            Profile
+                            {t('navbar.profile')}
                           </Link>
                           <Link
                             to={{ pathname: '/settings', hash: 'payment' }}
@@ -356,7 +357,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                             onClick={() => setShowUserPopUp(false)}
                           >
                             <CoinsIcon width={20} height={20} className="fill-primary-text"/>
-                            Balance
+                            {t('navbar.balance')}
                           </Link>
                           <div className='border-t border-card-outline/50' />
                           <button
@@ -366,7 +367,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                               await handleSignOut()
                             }}
                           >
-                            Log out
+                            {t('navbar.logOut')}
                           </button>
                         </div>
                       </div>
@@ -384,7 +385,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                 >
                   <motion.div variants={authButtonVariants}>
                     <CustomButton onClick={() => openAuthModal('register')}>
-                      Register
+                      {t('navbar.register')}
                     </CustomButton>
                   </motion.div>
                   <motion.div variants={authButtonVariants}>
@@ -392,7 +393,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                       onClick={() => openAuthModal('signin')}
                       filled
                     >
-                      Sign in
+                      {t('button.signIn')}
                     </CustomButton>
                   </motion.div>
                 </motion.div>

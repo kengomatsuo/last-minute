@@ -30,7 +30,7 @@ const PaymentManagement = () => {
         Payment Management
       </h2>
       {/* Balance Card */}
-      <div className='bg-card-background p-6 rounded-lg shadow-sm border-2 border-card-outline'>
+      {/* <div className='bg-card-background p-6 rounded-lg shadow-sm border-2 border-card-outline'> */}
         <div className='flex items-center justify-between mb-6'>
           <div className='flex items-center'>
             <div className='bg-primary p-3 rounded-full mr-4'>
@@ -57,7 +57,7 @@ const PaymentManagement = () => {
           <PlusIcon width={24} height={24} className='mr-2 fill-primary-text' />
           Top Up Balance
         </CustomButton>
-      </div>
+      {/* </div> */}
       {/* Top Up Modal */}
       {showTopUpModal && (
         <div className='fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50'>

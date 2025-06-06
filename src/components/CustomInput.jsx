@@ -62,7 +62,7 @@ const CustomInput = ({
   options = [],
   onOptionSelect = () => {},
   type,
-  value = '',
+  value, // remove = '' here
   forceSuggestions = false,
   requirements = [],
   autoSave = false,
@@ -86,9 +86,13 @@ const CustomInput = ({
   const [filteredOptions, setFilteredOptions] = useState(options)
 
   // Initialize input value from localStorage if autoSave is enabled,
-  // otherwise use prop value
+  // otherwise use prop value if provided, else default to ''
   const [inputValue, setInputValue] = useState(
-    autoSave && savedValue ? savedValue : value
+    autoSave && savedValue
+      ? savedValue
+      : value !== undefined
+      ? value
+      : ''
   )
 
   const [selectedFromOptions, setSelectedFromOptions] = useState(false)
@@ -193,15 +197,29 @@ const CustomInput = ({
 
   // Update input value when external value prop changes
   useEffect(() => {
-    // Don't override with empty values if we're using autoSave
-    if (value !== '' || !autoSave) {
-      setInputValue(value)
+    // Only update if value is defined (controlled)
+    if (value !== undefined) {
+      // For suggest type, always show label if possible
+      if (type === 'suggest') {
+        let label = value
+        const match = options.find(option =>
+          typeof option === 'string'
+            ? option === value
+            : option.value === value
+        )
+        if (match) {
+          label = typeof match === 'string' ? match : match.label
+        }
+        setInputValue(label)
+      } else {
+        setInputValue(value)
+      }
       // Reset selected from options when value is changed externally
       if (value === '') {
         setSelectedFromOptions(false)
       }
     }
-  }, [value, autoSave])
+  }, [value, autoSave, type, options])
 
   // Save the current value when the component unmounts
   useEffect(() => {
@@ -380,14 +398,14 @@ const CustomInput = ({
     const value = typeof option === 'string' ? option : option.value
     const label = typeof option === 'string' ? option : option.label
 
-    setInputValue(label)
+    setInputValue(label) // always set label in input
     setSelectedFromOptions(true)
 
     // Create a synthetic event to mimic the onChange event
     const syntheticEvent = {
       target: {
         name: props.name,
-        value,
+        value, // value is passed to onChange
       },
     }
 

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { convertRemToPixels } from '../utils/calculations'
 import { useConsoleLog, useDebounce } from '../hooks'
 import AlertDialog from '../components/AlertDialog'
+import useLocalStorage from '../hooks/useLocalStorage'
 
 /**
  * @typedef {Object} ScreenContextType
@@ -79,22 +80,19 @@ const ScreenContextProvider = ({ children }) => {
   /**
    * @type {['default' | 'dark', function]}
    */
-  const [selectedTheme, setSelectedTheme] = useState(() => {
-    try {
-      return localStorage.getItem('theme') || 'default'
-    } catch {
-      return 'default'
-    }
-  })
+  const [selectedTheme, setSelectedTheme] = useLocalStorage(
+    'theme',
+    'default'
+  )
 
   useEffect(() => {
     try {
+      console.log('Setting theme:', selectedTheme)
       if (selectedTheme === 'default') {
         document.documentElement.removeAttribute('data-theme')
       } else {
         document.documentElement.setAttribute('data-theme', selectedTheme)
       }
-      localStorage.setItem('theme', selectedTheme)
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('Failed to set theme:', err)
