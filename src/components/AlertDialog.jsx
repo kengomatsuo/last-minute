@@ -67,7 +67,7 @@ const AlertDialog = ({
       {(message || title) && (
         <div className='fixed top-0 left-0 w-screen h-screen flex items-center justify-center z-30'>
           <motion.div
-            className='absolute top-0 left-0 inset-0 bg-background-secondary/90 z-30'
+            className='absolute top-0 left-0 inset-0 bg-background-secondary/30 z-30'
             // onClick={handleClose}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -75,7 +75,7 @@ const AlertDialog = ({
             transition={MOVEMENT_TRANSITION}
           />
           <motion.div
-            className='bg-white/65 backdrop-blur-[4px] flex flex-col text-center rounded-lg z-40 min-w-3xs max-w-2xs min-h-32 overflow-clip'
+            className='bg-alert-background backdrop-blur-[4px] flex flex-col text-center rounded-lg z-40 min-w-3xs max-w-2xs min-h-32 overflow-clip'
             initial={{ opacity: 0, scale: 1.3 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.15 } }}
