@@ -179,14 +179,16 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
             <div>{t('appName')}</div>
             <div className='flex-1'>
               <DotLottieReact
-                speed={0.8}
+                speed={0.6}
                 dotLottieRefCallback={setDotLottie}
                 src={catTailAnimation}
-                height={120}
-                width={120}
+                // height={100}
+                // width={100}
                 style={{
                   left: '-3rem',
                   position: 'relative',
+                  height: '10rem',
+                  width: '10rem',
                 }}
                 autoplay
                 loop

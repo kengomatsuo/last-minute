@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import PropTypes from 'prop-types'
 import CustomCard from './CustomCard'
+import CustomButton from './CustomButton'
 
 /**
  * QuickRebook component
@@ -75,12 +76,9 @@ const QuickRebook = ({ courses }) => {
                 </p>
               </div>
             </div>
-            <button
-              onClick={() => handleRebook(course)}
-              className='py-2 px-4 rounded font-semibold bg-card-outline text-filled-button-text hover:bg-card-outline/80 transition text-sm flex-shrink-0'
-            >
+            <CustomButton filled onClick={() => handleRebook(course)}>
               {t('quickRebook.rebookButton')}
-            </button>
+            </CustomButton>
           </li>
         ))}
       </ul>
@@ -108,10 +106,10 @@ QuickRebook.propTypes = {
       topic: PropTypes.string.isRequired,
       details: PropTypes.string,
       bookingTime: PropTypes.shape({
-        toDate: PropTypes.func.isRequired
-      }).isRequired
+        toDate: PropTypes.func.isRequired,
+      }).isRequired,
     })
-  ).isRequired
+  ).isRequired,
 }
 
 export default QuickRebook

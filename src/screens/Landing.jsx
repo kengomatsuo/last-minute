@@ -27,7 +27,7 @@ const Landing = () => {
         className='mx-auto flex flex-col md:flex-row items-center py-16 px-4'
         id='home'
       >
-        <div className='flex-1 mb-8 md:mb-0'>
+        <div className='flex-1 mb-8 md:mb-0 px-24'>
           <h1 className='text-4xl md:text-5xl font-bold text-gray-900 mb-6'>
             Need a little help in your studies?
           </h1>
