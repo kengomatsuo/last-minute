@@ -47,7 +47,8 @@
     "topic": "Topics, keywords, etc.",
     "timezone": "Select timezone",
     "language": "Select language",
-    "amount": "Enter amount"
+    "amount": "Enter amount",
+    "retypePassword": "Re-type Password"
   },
   "auth": {
     "alreadyMember": "Already a member?",
@@ -57,6 +58,13 @@
     "verifyEmailInstruction": "Please verify your email address to continue.",
     "errorSigningUp": "Error signing up",
     "errorSigningIn": "Error signing in"
+  },
+  "dashboard": {
+    "myCourses": "My Courses",
+    "welcomeTutor": "Welcome, Tutor!",
+    "visitRequests": "Please visit the",
+    "requestsPage": "Requests Page",
+    "pendingSessions": "to see pending sessions."
   },
   "settings": {
     "general": "General",
@@ -101,6 +109,7 @@
   "requests": {
     "header": "Requests",
     "noDescription": "No description",
+    "noRequests": "No requests available.",
     "orderedAt": "Ordered at: {{date}}"
   },
   "errors": {
@@ -110,6 +119,10 @@
     "passwordLower": "At least 1 lowercase letter",
     "passwordNumber": "At least 1 number",
     "passwordSpecial": "At least 1 special character"
+  },
+  "history": {
+    "completedAt": "Completed at: {{date}}",
+    "noHistory": "No session history."
   },
   "navbar": {
     "dashboard": "Dashboard",
@@ -125,8 +138,7 @@
     "settings": "Settings",
     "profile": "Profile",
     "balance": "Balance",
-    "logOut": "Log out",
-    "register": "Register"
+    "signUp": "Sign Up"
   },
   "subject": {
     "math": "Mathematics",
@@ -138,5 +150,20 @@
     "music": "Music",
     "physicalEducation": "Physical Education",
     "other": "Other"
+  },
+  "progressTracker": {
+    "weeklyGoal": "Weekly Goal",
+    "completed": "You've completed {{completed}} of {{goal}} sessions this week.",
+    "setGoal": "Set Goal:"
+  },
+  "quickRebook": {
+    "header": "Re-book a Recent Topic",
+    "rebookButton": "Re-book"
+  },
+  "upcomingSchedule": {
+    "header": "Upcoming Sessions",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "noSessions": "No sessions scheduled."
   }
 }

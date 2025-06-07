@@ -48,7 +48,8 @@
     "topic": "Topik, kata kunci, dll.",
     "timezone": "Pilih zona waktu",
     "language": "Pilih bahasa",
-    "amount": "Masukkan jumlah"
+    "amount": "Masukkan jumlah",
+    "retypePassword": "Ketik ulang kata sandi"
   },
   "auth": {
     "alreadyMember": "Sudah punya akun?",
@@ -58,6 +59,13 @@
     "verifyEmailInstruction": "Silakan verifikasi email Anda untuk melanjutkan.",
     "errorSigningUp": "Gagal mendaftar",
     "errorSigningIn": "Gagal masuk"
+  },
+  "dashboard": {
+    "myCourses": "Kursus Saya",
+    "welcomeTutor": "Selamat datang, Tutor!",
+    "visitRequests": "Silakan kunjungi",
+    "requestsPage": "Halaman Permintaan",
+    "pendingSessions": "untuk melihat sesi yang menunggu."
   },
   "settings": {
     "general": "Umum",
@@ -102,6 +110,7 @@
   "requests": {
     "header": "Permintaan",
     "noDescription": "Tidak ada deskripsi",
+    "noRequests": "Tidak ada permintaan saat ini.",
     "orderedAt": "Dipesan pada: {{date}}"
   },
   "errors": {
@@ -111,6 +120,10 @@
     "passwordLower": "Minimal 1 huruf kecil",
     "passwordNumber": "Minimal 1 angka",
     "passwordSpecial": "Minimal 1 karakter khusus"
+  },
+  "history": {
+    "completedAt": "Selesai pada: {{date}}",
+    "noHistory": "Tidak ada riwayat sesi."
   },
   "navbar": {
     "dashboard": "Dasbor",
@@ -126,8 +139,7 @@
     "settings": "Pengaturan",
     "profile": "Profil",
     "balance": "Saldo",
-    "logOut": "Keluar",
-    "register": "Daftar"
+    "signUp": "Daftar"
   },
   "subject": {
     "math": "Matematika",
@@ -139,5 +151,20 @@
     "music": "Musik",
     "physicalEducation": "Pendidikan Jasmani",
     "other": "Lainnya"
+  },
+  "progressTracker": {
+    "weeklyGoal": "Target Mingguan",
+    "completed": "Anda telah menyelesaikan {{completed}} dari {{goal}} sesi minggu ini.",
+    "setGoal": "Atur Target:"
+  },
+  "quickRebook": {
+    "header": "Pesan Ulang Topik Terbaru",
+    "rebookButton": "Pesan Ulang"
+  },
+  "upcomingSchedule": {
+    "header": "Sesi Mendatang",
+    "today": "Hari Ini",
+    "tomorrow": "Besok",
+    "noSessions": "Tidak ada sesi terjadwal."
   }
 }

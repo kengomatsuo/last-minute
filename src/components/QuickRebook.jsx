@@ -1,8 +1,23 @@
 import React, { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-// import { BookOpenIcon } from '@heroicons/react/24/outline'
+import { useTranslation } from 'react-i18next'
+import PropTypes from 'prop-types'
+import CustomCard from './CustomCard'
+import CustomButton from './CustomButton'
 
+/**
+ * QuickRebook component
+ *
+ * Displays a card with a list of recently booked topics for quick rebooking.
+ * 
+ * Note: Stores booking draft values as JSON strings in localStorage.
+ *
+ * @param {Object} props - Component props
+ * @param {Array<Object>} props.courses - List of course objects
+ * @returns {JSX.Element|null} The rendered component or null if no recent topics
+ */
 const QuickRebook = ({ courses }) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   const recentTopics = useMemo(() => {
@@ -24,54 +39,97 @@ const QuickRebook = ({ courses }) => {
   }, [courses])
 
   const handleRebook = course => {
-    localStorage.setItem('BookingDraft_Subject', course.subject)
-    localStorage.setItem('BookingDraft_Topic', course.topic)
-    localStorage.setItem('BookingDraft_Details', '')
-    localStorage.setItem('BookingDraft_Instant', 'true')
-    navigate('/booking')
+    try {
+      console.log('Rebooking course:', course)
+      localStorage.setItem(
+        'BookingDraft_Subject',
+        JSON.stringify(course.subject)
+      )
+      localStorage.setItem(
+        'BookingDraft_Topic',
+        JSON.stringify(course.topic)
+      )
+      localStorage.setItem(
+        'BookingDraft_Details',
+        JSON.stringify(course.details || '')
+      )
+      localStorage.setItem('BookingDraft_Instant', JSON.stringify(true))
+      navigate('/booking')
+    } catch (error) {
+      // Log error with meaningful message
+      console.error(
+        'Failed to save booking draft to localStorage:',
+        error
+      )
+    }
   }
 
   if (!recentTopics || recentTopics.length === 0) {
     return null
   }
-
   return (
-    <div className='w-full bg-white border border-[#bdb9a7] rounded-lg px-6 py-6 shadow-sm'>
-      <h3 className='text-xl font-bold mb-4'>Re-book a Recent Topic</h3>
+    <CustomCard
+      className='w-full px-6 py-6 shadow-sm'
+      header={t('quickRebook.header')}
+      footer={null}
+      scrolling={false}
+    >
       <ul className='space-y-3'>
         {recentTopics.map(course => (
           <li
             key={`rebook-${course.id}`}
-            className='flex items-center justify-between gap-4 p-3 bg-[#f9f8f2] rounded-md'
+            className='flex items-center justify-between gap-4 p-3 bg-background-secondary/50 rounded-md'
           >
             <div className='flex items-center gap-4 min-w-0'>
-              <BookOpenIcon className='h-6 w-6 text-[#7d7865] flex-shrink-0' />
               <div className='min-w-0'>
                 <p
-                  className='font-semibold text-base text-[#3e3c36] truncate'
+                  className='font-semibold text-base text-primary-text truncate'
                   title={course.topic}
                 >
                   {course.topic}
                 </p>
                 <p
-                  className='text-sm text-[#7d7865] truncate'
+                  className='text-sm text-primary-text truncate'
                   title={course.subject}
                 >
                   {course.subject}
                 </p>
               </div>
             </div>
-            <button
-              onClick={() => handleRebook(course)}
-              className='py-2 px-4 rounded font-semibold bg-[#bdb9a7] text-white hover:bg-[#a7a083] transition text-sm flex-shrink-0'
-            >
-              Re-book
-            </button>
+            <CustomButton filled onClick={() => handleRebook(course)}>
+              {t('quickRebook.rebookButton')}
+            </CustomButton>
           </li>
         ))}
       </ul>
-    </div>
+    </CustomCard>
   )
+}
+
+QuickRebook.propTypes = {
+  /**
+   * List of course objects to display for quick rebooking.
+   * Each course should have the following shape:
+   * {
+   *   id: string | number,
+   *   subject: string,
+   *   topic: string,
+   *   details?: string,
+   *   bookingTime: { toDate: function }
+   * }
+   * @type {Array<Object>}
+   */
+  courses: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      subject: PropTypes.string.isRequired,
+      topic: PropTypes.string.isRequired,
+      details: PropTypes.string,
+      bookingTime: PropTypes.shape({
+        toDate: PropTypes.func.isRequired,
+      }).isRequired,
+    })
+  ).isRequired,
 }
 
 export default QuickRebook

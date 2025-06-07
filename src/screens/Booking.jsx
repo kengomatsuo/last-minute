@@ -12,6 +12,12 @@ import ArrowRightIcon from '../assets/icons/arrow-small-right.svg?react'
 import { useConsoleLog, useLocalStorage } from '../hooks'
 import { useTranslation } from 'react-i18next'
 
+/**
+ * Booking screen for instant and scheduled course requests.
+ * Instant booking price: 2. Scheduled booking price: 1.
+ *
+ * @returns {JSX.Element} The rendered booking screen
+ */
 const Booking = () => {
   const { t } = useTranslation()
   const { isSmallScreen } = use(ScreenContext)
@@ -30,7 +36,9 @@ const Booking = () => {
   const subjectOptions = [
     {
       label:
-        t('label.subject') + ' - ' + t('subject.math', { defaultValue: 'Math' }),
+        t('label.subject') +
+        ' - ' +
+        t('subject.math', { defaultValue: 'Math' }),
       value: 'math',
     },
     {
@@ -115,7 +123,7 @@ const Booking = () => {
       dateTimeRef.current?.reset()
       setIsInstantBooking(true)
     } catch (error) {
-      alert(`Error requesting course: ${error.message}`)
+      console.error('Booking request failed:', error)
     }
   }
 
@@ -143,10 +151,15 @@ const Booking = () => {
                 className='!p-1 !size-min items-center justify-center flex aspect-square'
                 onClick={() => setIsInstantBooking(true)}
               >
-                <ArrowRightIcon width={32} height={32} className='rotate-180 fill-primary-text' />
+                <ArrowRightIcon
+                  width={32}
+                  height={32}
+                  className='rotate-180 fill-primary-text'
+                />
               </CustomInteractive>
               {t('booking.scheduleBooking', {
-                defaultValue: 'Schedule Booking',})}
+                defaultValue: 'Schedule Booking',
+              })}
             </div>
           )
         }

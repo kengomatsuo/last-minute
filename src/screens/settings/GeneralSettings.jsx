@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { useEffect, useState } from 'react'
+import { useEffect, useContext, useState } from 'react'
+import { ScreenContext } from '../../contexts/ScreenContext'
 import Theme from './Theme'
 import CustomInput from '../../components/CustomInput'
 
@@ -9,33 +10,14 @@ import CustomInput from '../../components/CustomInput'
  * @returns {JSX.Element} The rendered general settings component
  */
 const GeneralSettings = () => {
-  const { t, i18n } = useTranslation()
-  const [language, setLanguage] = useState(i18n.language || 'en')
+  const { t } = useTranslation()
+  const { language, setLanguage } = useContext(ScreenContext)
   const [notificationsEnabled, setNotificationsEnabled] = useState(true)
-  const [timezone, setTimezone] = useState('UTC')
 
   const languageOptions = [
     { label: t('thisLanguage', { lng: 'en' }), value: 'en' },
     { label: t('thisLanguage', { lng: 'id' }), value: 'id' }
   ]
-
-  // const timezoneOptions = [
-  //   { label: 'UTC', value: 'UTC' },
-  //   { label: 'Asia/Jakarta', value: 'Asia/Jakarta' },
-  //   { label: 'America/New_York', value: 'America/New_York' }
-  // ]
-
-  useEffect(() => {
-    i18n.changeLanguage(language)
-  }, [language, i18n])
-
-  const handleLanguageChange = e => {
-    setLanguage(e.target.value)
-  }
-
-  // const handleTimezoneChange = e => {
-  //   setTimezone(e.target.value)
-  // }
 
   const handleNotificationToggle = () => {
     setNotificationsEnabled(v => !v)
@@ -70,7 +52,7 @@ const GeneralSettings = () => {
           value={timezone}
         />
       </div> */}
-      <div className='flex items-center'>
+      {/* <div className='flex items-center'>
         <input
           id='notifications'
           type='checkbox'
@@ -81,7 +63,7 @@ const GeneralSettings = () => {
         <label htmlFor='notifications' className='font-medium'>
           {t('Enable notifications')}
         </label>
-      </div>
+      </div> */}
       <div>
         <label className='block font-medium mb-1'>{t('label.theme')}</label>
         <Theme />

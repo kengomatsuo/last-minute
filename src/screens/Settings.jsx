@@ -3,7 +3,7 @@
 // Change button leads to nothing
 // Re-check buttonnya SEMUA
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { NAVBAR_HEIGHT } from '../constants/visualConstants'
 // import { UserContext } from '../contexts/UserContext'
 // import { useConsoleLog } from '../hooks'
@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
  */
 const Settings = () => {
   const { t } = useTranslation()
+  const {isSmallScreen} = useContext(ScreenContext)
   // const { user, addTutor, addAdmin } = useContext(UserContext)
   // const { addAlert } = useContext(ScreenContext)
   // const [textInput, setTextInput] = useState('')
@@ -113,7 +114,7 @@ const Settings = () => {
       </div>
 
       {/* Main content */}
-      <div className='p-6 flex-1 overflow-y-scroll bg-background text-primary-text'>
+      <div className='p-6 flex-1 min-w-lg overflow-y-scroll bg-background text-primary-text'>
         {activeTab?.component}
       </div>
     </div>

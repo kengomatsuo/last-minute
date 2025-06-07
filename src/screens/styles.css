@@ -1,0 +1,436 @@
+@import 'tailwindcss';
+
+/* ========================================= */
+/*             Global CSS Variables          */
+/* ========================================= */
+:root {
+    --cream-bg: #FDFAF4;
+    --text-color: #333333;
+    --accent-color: #b5a58d;
+    --footer-bg: #C2B49A;
+    --font-main: 'Open Sans', sans-serif;
+    --max-width: 100vw;
+}
+
+/* ========================================= */
+/*           Global Reset & Base Rules       */
+/* ========================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--cream-bg);
+    color: var(--text-color);
+    line-height: 1.5;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+a {
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+h1 {
+    font-size: 3rem;
+}
+
+h3 {
+    font-size: 2rem;
+}
+
+p {
+    margin-bottom: 1rem;
+}
+
+section {
+    margin-top: 5dvh;
+    margin-bottom: 5dvh;
+}
+
+/* ========================================= */
+/*              Container Utility            */
+/* ========================================= */
+.container {
+    max-width: var(--max-width);
+    margin: 0;
+    padding: 0 10vw;
+}
+
+/* ========================================= */
+/*                Header / Nav               */
+/* ========================================= */
+header {
+    background-color: rgba(252, 250, 242, 100);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    overflow: hidden;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-left {
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+}
+
+nav li {
+    font-size: 1rem;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn {
+    padding: 0.6rem 1.2rem;
+    border: 2px solid var(--accent-color);
+    background-color: transparent;
+    color: var(--accent-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    border-radius: 14px;
+}
+
+.btn:hover {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+.btn-primary {
+    background-color: var(--accent-color);
+    color: #fff;
+    border-radius: 14px;
+}
+
+.btn-primary:hover {
+    background-color: transparent;
+    color: var(--accent-color);
+}
+
+/* ========================================= */
+/*          Hero Section (Full-Width)        */
+/* ========================================= */
+
+section.hero {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.hero.container {
+    padding-left: 10vh;
+    padding-right: 10vh;
+}
+
+.hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 15rem;
+    padding: 2rem 0;
+    height: 100vh;
+}
+
+.hero-text {
+    flex: 1 1 400px;
+    max-width: 400px;
+}
+
+.hero-image {
+    flex: 1 1 0;
+    max-width: none;
+}
+
+.hero-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 15px;
+    object-fit: cover;
+}
+
+/* ========================================= */
+/*             Trusted Section               */
+/* ========================================= */
+.trusted {
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: #C2B49A;
+    padding: 3rem;
+}
+
+.trusted-content {
+    text-align: center;
+}
+
+.trusted-content h3 {
+    color: #000;
+    margin-bottom: 2.5rem;
+    font-weight: 600;
+}
+
+.trusted-logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4rem;
+    flex-wrap: wrap;
+}
+
+.trusted-logos img {
+    height: 100px;
+    width: 100px;
+    object-fit: contain;
+}
+
+/* ========================================= */
+/*          How It Works Section             */
+/* ========================================= */
+.how-it-works {
+    padding: 2rem 0;
+    text-align: center;
+}
+
+.how-it-works h2 {
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+}
+
+.steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+}
+
+.step {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.step img {
+    margin-bottom: 1rem;
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    background-color: #ddd;
+    border-radius: 8px;
+}
+
+.step h2 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.step p {
+    color: #555;
+}
+
+/* ========================================= */
+/*           Invest Section                  */
+/* ========================================= */
+.invest-section {
+    text-align: center;
+    padding: 20dvh 0;
+}
+
+.invest-section h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+}
+
+.invest-section p {
+    max-width: 600px;
+    margin: 0.5rem auto 1.5rem auto;
+}
+
+/* ========================================= */
+/*       Images and Features Section         */
+/* ========================================= */
+.images-and-features {
+    display: flex;
+    gap: 0rem;
+    padding: 4.2% 0 6% 0;
+}
+
+.left-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding-left: 20vh;
+    padding-right: 20vh;
+}
+
+.image-placeholder-outside {
+    background-color: #eaeaea;
+    margin: 2.7%;
+    width: 95%;
+    height: 45vmax;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+}
+
+.image-placeholder {
+    background-color: #eaeaea;
+    padding: 20%;
+    width: 115%;
+    height: 290px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 1rem;
+    position: relative;
+    left: -19.5%;
+    border-radius: 20px;
+}
+
+.right-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    justify-content: flex-start;
+    padding-top: 1rem;
+    padding-right: 5vh;
+
+}
+
+.right-col h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.right-col p {
+    margin-bottom: 0.5rem;
+}
+
+.right-col a {
+    color: var(--accent-color);
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+/* ========================================= */
+/*                  Footer                   */
+/* ========================================= */
+footer {
+    background-color: var(--footer-bg);
+    color: #000;
+    padding: 2rem 1rem;
+}
+
+.footer-container {
+    padding-left: 10vh;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: space-between;
+}
+
+.footer-col {
+    flex: 1 1 200px;
+    min-width: 150px;
+}
+
+.footer-col h4 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.footer-col ul {
+    list-style: none;
+    line-height: 1.8;
+}
+
+.footer-col ul li a {
+    color: #000;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+/* ========================================= */
+/*               Responsive Breakpoints      */
+/* ========================================= */
+@media (max-width: 992px) {
+    .hero {
+        flex-direction: column;
+    }
+
+    .images-and-features {
+        flex-direction: column;
+    }
+
+    .left-col,
+    .right-col {
+        flex: 1 1 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    nav ul {
+        gap: 1rem;
+    }
+
+    .btn {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .how-it-works h2 {
+        font-size: 1.5rem;
+    }
+
+    .footer-container {
+        flex-direction: column;
+    }
+}

@@ -127,7 +127,7 @@ html::-webkit-scrollbar {
 
 @layer theme {
   [data-theme='dark'] {
-    --color-primary: rgba(120, 117, 100);
+    --color-primary: rgb(120, 117, 100);
     --color-background: rgba(30, 30, 28);
     --color-background-secondary: rgba(60, 58, 50);
     --color-signin-background: rgb(32, 32, 29);
@@ -151,6 +151,136 @@ html::-webkit-scrollbar {
     --color-input-background: rgba(60, 58, 50);
     --color-error: rgba(255, 80, 80);
     --color-success: rgba(80, 255, 80);
+  }
+  [data-theme='blue'] {
+    --color-primary: #2563eb;
+    --color-background: #e0e7ff;
+    --color-background-secondary: #93c5fd;
+    --color-signin-background: #dbeafe;
+    --color-alert-background: #dbeafe;
+    --color-accent: #60a5fa;
+    --color-primary-text: #1e3a8a;
+    --color-secondary-text: #e0e7ff;
+    --color-chat-own-message: #2563eb;
+    --color-chat-other-message: #dbeafe;
+    --color-interactive-hover: #93c5fd99;
+    --color-interactive-active: #93c5fdcc;
+    --color-hollow-button-text: #2563eb;
+    --color-filled-button-hover: #60a5fa;
+    --color-filled-button-active: #3b82f6;
+    --color-filled-button-text: #fff;
+    --color-card-background: #e0e7ff;
+    --color-card-outline: #2563eb;
+    --color-card-outline-hover: #2563ebcc;
+    --color-card-outline-active: #2563eb99;
+    --color-input-icon: #60a5fa;
+    --color-input-background: #dbeafe;
+    --color-error: #ef4444;
+    --color-success: #22d3ee;
+  }
+  [data-theme='green'] {
+    --color-primary: #22c55e;
+    --color-background: #dcfce7;
+    --color-background-secondary: #bbf7d0;
+    --color-signin-background: #f0fdf4;
+    --color-alert-background: #f0fdf4;
+    --color-accent: #4ade80;
+    --color-primary-text: #166534;
+    --color-secondary-text: #dcfce7;
+    --color-chat-own-message: #22c55e;
+    --color-chat-other-message: #bbf7d0;
+    --color-interactive-hover: #bbf7d099;
+    --color-interactive-active: #bbf7d0cc;
+    --color-hollow-button-text: #22c55e;
+    --color-filled-button-hover: #4ade80;
+    --color-filled-button-active: #22c55e;
+    --color-filled-button-text: #fff;
+    --color-card-background: #dcfce7;
+    --color-card-outline: #22c55e;
+    --color-card-outline-hover: #22c55ecc;
+    --color-card-outline-active: #22c55e99;
+    --color-input-icon: #4ade80;
+    --color-input-background: #f0fdf4;
+    --color-error: #ef4444;
+    --color-success: #22d3ee;
+  }
+  [data-theme='pink'] {
+    --color-primary: #ec4899;
+    --color-background: #fce7f3;
+    --color-background-secondary: #f9a8d4;
+    --color-signin-background: #fdf2f8;
+    --color-alert-background: #fdf2f8;
+    --color-accent: #f472b6;
+    --color-primary-text: #831843;
+    --color-secondary-text: #fce7f3;
+    --color-chat-own-message: #ec4899;
+    --color-chat-other-message: #f9a8d4;
+    --color-interactive-hover: #f9a8d499;
+    --color-interactive-active: #f9a8d4cc;
+    --color-hollow-button-text: #ec4899;
+    --color-filled-button-hover: #f472b6;
+    --color-filled-button-active: #ec4899;
+    --color-filled-button-text: #fff;
+    --color-card-background: #fce7f3;
+    --color-card-outline: #ec4899;
+    --color-card-outline-hover: #ec4899cc;
+    --color-card-outline-active: #ec489999;
+    --color-input-icon: #f472b6;
+    --color-input-background: #fdf2f8;
+    --color-error: #ef4444;
+    --color-success: #22d3ee;
+  }
+  [data-theme='purple'] {
+    --color-primary: #a78bfa;
+    --color-background: #ede9fe;
+    --color-background-secondary: #c4b5fd;
+    --color-signin-background: #f5f3ff;
+    --color-alert-background: #f5f3ff;
+    --color-accent: #c084fc;
+    --color-primary-text: #4c1d95;
+    --color-secondary-text: #ede9fe;
+    --color-chat-own-message: #a78bfa;
+    --color-chat-other-message: #c4b5fd;
+    --color-interactive-hover: #c4b5fd99;
+    --color-interactive-active: #c4b5fdcc;
+    --color-hollow-button-text: #a78bfa;
+    --color-filled-button-hover: #c084fc;
+    --color-filled-button-active: #a78bfa;
+    --color-filled-button-text: #fff;
+    --color-card-background: #ede9fe;
+    --color-card-outline: #a78bfa;
+    --color-card-outline-hover: #a78bfacc;
+    --color-card-outline-active: #a78bfa99;
+    --color-input-icon: #c084fc;
+    --color-input-background: #f5f3ff;
+    --color-error: #ef4444;
+    --color-success: #22d3ee;
+  }
+  [data-theme='orange'] {
+    --color-primary: #fb923c;
+    --color-background: #fff7ed;
+    --color-background-secondary: #fdba74;
+    --color-signin-background: #ffedd5;
+    --color-alert-background: #ffedd5;
+    --color-accent: #fdba74;
+    --color-primary-text: #7c2d12;
+    --color-secondary-text: #fff7ed;
+    --color-chat-own-message: #fb923c;
+    --color-chat-other-message: #fdba74;
+    --color-interactive-hover: #fdba7499;
+    --color-interactive-active: #fdba74cc;
+    --color-hollow-button-text: #fb923c;
+    --color-filled-button-hover: #fdba74;
+    --color-filled-button-active: #fb923c;
+    --color-filled-button-text: #fff;
+    --color-card-background: #fff7ed;
+    --color-card-outline: #fb923c;
+    --color-card-outline-hover: #fb923ccc;
+    --color-card-outline-active: #fb923c99;
+    --color-input-icon: #fdba74;
+    --color-input-background: #ffedd5;
+    --color-error: #ef4444;
+    --color-success: #22d3ee;
   }
 }
 
