@@ -35,6 +35,7 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [showUserPopUp, setShowUserPopUp] = useState(false)
+  const [dotLottie, setDotLottie] = useState(null)
   const { isSmallScreen } = use(ScreenContext)
   const navigate = useNavigate()
 
@@ -71,6 +72,29 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
       }
     }
   }, [scrollContainerRef])
+
+  // useEffect(() => {
+  //   if (!dotLottie) {
+  //     return
+  //   }
+  //   const minDelay = 1000 // 1 second
+  //   const maxDelay = 3000 // 3 seconds
+  //   const randomDelay = Math.floor(
+  //     Math.random() * (maxDelay - minDelay + 1)
+  //   ) + minDelay
+  //   const timeoutId = setTimeout(() => {
+  //     try {
+  //       if (dotLottie && typeof dotLottie.play === 'function') {
+  //         dotLottie.play()
+  //       }
+  //     } catch (error) {
+  //       console.error('Error triggering dotLottie.play():', error)
+  //     }
+  //   }, randomDelay)
+  //   return () => {
+  //     clearTimeout(timeoutId)
+  //   }
+  // }, [dotLottie])
 
   const navigationPaths = user
     ? [
@@ -155,6 +179,8 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
             <div>{t('appName')}</div>
             <div className='flex-1'>
               <DotLottieReact
+                speed={0.8}
+                dotLottieRefCallback={setDotLottie}
                 src={catTailAnimation}
                 height={120}
                 width={120}
@@ -162,8 +188,8 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                   left: '-3rem',
                   position: 'relative',
                 }}
-                loop
                 autoplay
+                loop
               />
             </div>
           </NavLink>
