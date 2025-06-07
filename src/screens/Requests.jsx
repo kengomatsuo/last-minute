@@ -32,6 +32,11 @@ const Requests = () => {
         className='w-[min(48rem,11/12*100%)] flex max-h-2/3 p-[min(3rem,4%)]'
       >
           <div className='divide-y flex-1 flex-col divide-primary'>
+            {requests.length === 0 && (
+              <div className='py-8 text-center text-lg opacity-70'>
+                {t('requests.noRequests', { defaultValue: 'No requests yet.' })}
+              </div>
+            )}
             {requests.map(course => (
               <div
                 key={course.id}

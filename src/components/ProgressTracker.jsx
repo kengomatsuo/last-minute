@@ -48,7 +48,7 @@ const ProgressTracker = ({ courses }) => {
   const decrementGoal = () => setGoal(g => Math.max(1, g - 1))
 
   return (
-    <CustomCard className='w-full px-6 py-6 mt-8'>
+    <CustomCard className='w-full px-6 py-6'>
       <h3 className='text-xl font-bold mb-1 text-primary-text'>
         {t('progressTracker.weeklyGoal')}
       </h3>

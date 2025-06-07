@@ -47,7 +47,7 @@ const UpcomingSchedule = ({ courses }) => {
               className='flex items-center gap-4 p-3 bg-background-secondary/50 rounded-md'
             >
               <div className='flex-shrink-0 text-center bg-card-outline p-2 rounded-md w-16'>
-                <p className='font-bold text-sm text-primary-text'>
+                <p className='font-bold text-sm text-filled-button-text'>
                   {formatDate(course.bookingTime.toDate(), t)}
                 </p>
               </div>

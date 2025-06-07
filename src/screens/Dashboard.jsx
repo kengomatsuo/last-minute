@@ -198,7 +198,7 @@ const Dashboard = () => {
           </div>
         </CustomCard>
       </div>
-      <div className='flex flex-col'>
+      <div className='flex flex-col gap-8'>
         <UpcomingSchedule courses={courses} />
         <ProgressTracker courses={courses} />
         <QuickRebook courses={courses} />
@@ -237,7 +237,7 @@ const Dashboard = () => {
                         {course.topic}
                       </div>
                       <div
-                        className='mt-1 text-primary course-description truncate max-w-full'
+                        className='mt-1 text-primary-text course-description truncate max-w-full'
                         title={course.details}
                       >
                         {course.details || 'No description'}
@@ -290,7 +290,7 @@ const Dashboard = () => {
             reminderType={notification.reminderType}
           />
         ))} */}
-        {!isTutor ? <TutorDashboard /> : <StudentDashboard />}
+        {isTutor ? <TutorDashboard /> : <StudentDashboard />}
         <AnimatePresence>
           {chatCourse && (
             <motion.div

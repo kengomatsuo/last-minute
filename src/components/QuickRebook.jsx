@@ -1,7 +1,18 @@
 import React, { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import PropTypes from 'prop-types'
+import CustomCard from './CustomCard'
 
+/**
+ * QuickRebook component
+ *
+ * Displays a card with a list of recently booked topics for quick rebooking.
+ *
+ * @param {Object} props - Component props
+ * @param {Array<Object>} props.courses - List of course objects
+ * @returns {JSX.Element|null} The rendered component or null if no recent topics
+ */
 const QuickRebook = ({ courses }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -36,8 +47,12 @@ const QuickRebook = ({ courses }) => {
     return null
   }
   return (
-    <div className='w-full bg-white border border-card-outline rounded-lg px-6 py-6 shadow-sm'>
-      <h3 className='text-xl font-bold mb-4'>{t('quickRebook.header')}</h3>
+    <CustomCard
+      className='w-full px-6 py-6 shadow-sm'
+      header={t('quickRebook.header')}
+      footer={null}
+      scrolling={false}
+    >
       <ul className='space-y-3'>
         {recentTopics.map(course => (
           <li
@@ -53,7 +68,7 @@ const QuickRebook = ({ courses }) => {
                   {course.topic}
                 </p>
                 <p
-                  className='text-sm text-secondary-text truncate'
+                  className='text-sm text-primary-text truncate'
                   title={course.subject}
                 >
                   {course.subject}
@@ -62,15 +77,41 @@ const QuickRebook = ({ courses }) => {
             </div>
             <button
               onClick={() => handleRebook(course)}
-              className='py-2 px-4 rounded font-semibold bg-card-outline text-white hover:bg-card-outline/80 transition text-sm flex-shrink-0'
+              className='py-2 px-4 rounded font-semibold bg-card-outline text-filled-button-text hover:bg-card-outline/80 transition text-sm flex-shrink-0'
             >
               {t('quickRebook.rebookButton')}
             </button>
           </li>
         ))}
       </ul>
-    </div>
+    </CustomCard>
   )
+}
+
+QuickRebook.propTypes = {
+  /**
+   * List of course objects to display for quick rebooking.
+   * Each course should have the following shape:
+   * {
+   *   id: string | number,
+   *   subject: string,
+   *   topic: string,
+   *   details?: string,
+   *   bookingTime: { toDate: function }
+   * }
+   * @type {Array<Object>}
+   */
+  courses: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      subject: PropTypes.string.isRequired,
+      topic: PropTypes.string.isRequired,
+      details: PropTypes.string,
+      bookingTime: PropTypes.shape({
+        toDate: PropTypes.func.isRequired
+      }).isRequired
+    })
+  ).isRequired
 }
 
 export default QuickRebook
