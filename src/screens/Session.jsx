@@ -39,7 +39,7 @@ const Session = () => {
       style={{ marginTop: NAVBAR_HEIGHT }}
       className='w-full flex flex-row flex-wrap justify-center'
     >
-      <div className='flex-1 flex justify-center p-4 top-30 items-center bg-black min-w-96 w-full min-h-full'>
+      <div className='flex-1 flex justify-center p-4 top-30 items-center bg-black rounded-xl min-w-96 w-full min-h-full'>
         <VideoCall courseId={courseId} />
       </div>
       <div className=' min-h-11/12 flex'>

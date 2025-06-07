@@ -13,9 +13,14 @@ import SettingsIcon from '../assets/icons/settings.svg?react'
 import { UserContext } from '../contexts/UserContext'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
-import { MOVEMENT_TRANSITION } from '../constants/visualConstants'
+import {
+  MOVEMENT_TRANSITION,
+  NAVBAR_HEIGHT,
+} from '../constants/visualConstants'
 import { useTranslation } from 'react-i18next'
 import placeholder from '../assets/placeholders/image.png'
+import { DotLottieReact } from '@lottiefiles/dotlottie-react'
+import catTailAnimation from '../assets/animations/catTail.lottie'
 
 /**
  * Custom navigation bar component with responsive design and animations.
@@ -145,9 +150,22 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
         >
           <NavLink
             to={'/'}
-            className='font-semibold text-nowrap focus:ring-offset-2'
+            className='font-semibold text-nowrap focus:ring-offset-2 flex flex-row items-center'
           >
-            {t('appName')}
+            <div>{t('appName')}</div>
+            <div className='flex-1'>
+              <DotLottieReact
+                src={catTailAnimation}
+                height={120}
+                width={120}
+                style={{
+                  left: '-3rem',
+                  position: 'relative',
+                }}
+                loop
+                autoplay
+              />
+            </div>
           </NavLink>
         </motion.div>
 
@@ -245,7 +263,10 @@ const CustomNavBar = ({ scrollContainerRef = { current: null } }) => {
                       </motion.div>
                       <motion.div className='flex items-center justify-center'>
                         <Link to={'/settings'}>
-                          <CustomInteractive className='flex aspect-square w-min p-1 items-center justify-center' onClick={() => setIsMenuOpen(false)}>
+                          <CustomInteractive
+                            className='flex aspect-square w-min p-1 items-center justify-center'
+                            onClick={() => setIsMenuOpen(false)}
+                          >
                             <SettingsIcon
                               width={24}
                               height={24}
