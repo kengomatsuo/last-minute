@@ -32,6 +32,7 @@ const ProgressTracker = ({ courses }) => {
 
     return courses.filter(course => {
       if (!course.bookingTime?.toDate) return false
+      if (!course.done) return false
       const courseDate = course.bookingTime.toDate()
       return (
         courseDate >= startOfWeek &&
@@ -56,9 +57,9 @@ const ProgressTracker = ({ courses }) => {
         {t('progressTracker.completed', { completed: completedThisWeek, goal })}
       </p>
 
-      <div className='w-full bg-background-secondary rounded-full h-3 mb-4'>
+      <div className='w-full bg-background-secondary/30 rounded-full h-3 mb-4'>
         <div
-          className='bg-success h-3 rounded-full transition-all duration-500'
+          className='bg-primary h-3 rounded-full transition-all duration-500'
           style={{ width: `${progressPercentage}%` }}
         ></div>
       </div>
@@ -67,7 +68,7 @@ const ProgressTracker = ({ courses }) => {
         <p className='text-sm font-semibold text-primary-text'>
           {t('progressTracker.setGoal')}
         </p>
-        <div className='flex items-center gap-2 border border-card-outline rounded-md p-1'>
+        <div className='flex items-center gap-2 border border-card-outline rounded-md p-1 bg-input-background'>
           <button
             onClick={decrementGoal}
             className='p-1 rounded hover:bg-interactive-hover'

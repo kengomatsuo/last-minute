@@ -273,7 +273,7 @@ const Dashboard = () => {
           </div>
         </CustomCard>
       </div>
-      <div className='flex flex-col gap-0'>
+      <div className='flex flex-col gap-8'>
         <UpcomingSchedule courses={courses} />
         <ProgressTracker courses={courses} />
       </div>

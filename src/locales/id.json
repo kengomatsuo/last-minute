@@ -110,6 +110,7 @@
   "requests": {
     "header": "Permintaan",
     "noDescription": "Tidak ada deskripsi",
+    "noRequests": "Tidak ada permintaan saat ini.",
     "orderedAt": "Dipesan pada: {{date}}"
   },
   "errors": {
@@ -119,6 +120,10 @@
     "passwordLower": "Minimal 1 huruf kecil",
     "passwordNumber": "Minimal 1 angka",
     "passwordSpecial": "Minimal 1 karakter khusus"
+  },
+  "history": {
+    "completedAt": "Selesai pada: {{date}}",
+    "noHistory": "Tidak ada riwayat sesi."
   },
   "navbar": {
     "dashboard": "Dasbor",

@@ -109,6 +109,7 @@
   "requests": {
     "header": "Requests",
     "noDescription": "No description",
+    "noRequests": "No requests available.",
     "orderedAt": "Ordered at: {{date}}"
   },
   "errors": {
@@ -118,6 +119,10 @@
     "passwordLower": "At least 1 lowercase letter",
     "passwordNumber": "At least 1 number",
     "passwordSpecial": "At least 1 special character"
+  },
+  "history": {
+    "completedAt": "Completed at: {{date}}",
+    "noHistory": "No session history."
   },
   "navbar": {
     "dashboard": "Dashboard",

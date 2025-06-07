@@ -62,6 +62,8 @@ const AlertDialog = ({
 		okayButton = true
 	}
 
+  console.log(onOkay, onCancel, onClose, okayButton, cancelButton, closeButton, detailsButton)
+
   return (
     <AnimatePresence>
       {(message || title) && (
@@ -117,7 +119,7 @@ const AlertDialog = ({
               {okayButton && (
                 <div
                   className={`$${primary === 'okay' ? 'font-bold' : ''} px-4 py-2 text-blue-500 flex-1 cursor-pointer active:bg-neutral-400/10 transition-all`}
-                  onClick={handleClose}
+                  onClick={handleOkay}
                 >
                   {t('alert.okay')}
                 </div>

@@ -23,7 +23,7 @@ import { useConsoleLog } from '../hooks'
  * @param {string} props.courseId - The ID of the course
  * @returns {JSX.Element} The rendered video call component
  */
-const VideoCall = ({ courseId }) => {
+const VideoCall = ({ courseId, onEndCall }) => {
   // TODO!!: clean up the code
 
   const { courses } = useContext(CourseContext)
@@ -937,6 +937,7 @@ const VideoCall = ({ courseId }) => {
   }
 
   const endCall = async () => {
+    await onEndCall()
     if (peerConnection.current) {
       peerConnection.current.close()
       peerConnection.current = null
@@ -1057,6 +1058,13 @@ const VideoCall = ({ courseId }) => {
 }
 VideoCall.propTypes = {
   courseId: PropTypes.string.isRequired,
+  /**
+   * Callback function to handle ending the call
+   *
+   * @param {void} - No parameters
+   * @returns {Promise<void>} Should return a promise
+   */
+  onEndCall: PropTypes.func.isRequired,
 }
 
 export default VideoCall
