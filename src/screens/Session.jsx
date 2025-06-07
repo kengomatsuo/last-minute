@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
 import { useLocation } from 'react-router-dom'
 import { NAVBAR_HEIGHT } from '../constants/visualConstants'
-import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import { doc, getDoc, increment, updateDoc } from 'firebase/firestore'
 import { db } from '../../firebaseConfig'
 import { UserContext } from '../contexts/UserContext'
 import { ScreenContext } from '../contexts/ScreenContext'
@@ -58,6 +58,22 @@ const Session = () => {
             console.log('Ending session for course:', courseId)
             const courseRef = doc(db, 'courses', courseId)
             await updateDoc(courseRef, { done: true })
+            // Transfer course price to tutor's balance
+            // Get course data to find price and tuteeId
+            const courseSnap = await getDoc(courseRef)
+            if (courseSnap.exists()) {
+              const course = courseSnap.data()
+              const price = course.price || 0
+              const tutorId = course.tutorId
+              if (tutorId && price > 0) {
+                const tutorBalanceRef = doc(db, 'balance', tutorId)
+                await updateDoc(tutorBalanceRef, {
+                  money: window.firebase?.firestore?.FieldValue
+                    ? window.firebase.firestore.FieldValue.increment(price)
+                    : increment(price)
+                })
+              }
+            }
           } catch (error) {
             console.error('Failed to end session:', error)
             addAlert({

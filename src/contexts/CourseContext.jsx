@@ -22,6 +22,10 @@ import { stringToFirestamp } from '../utils/conversions'
 import { useConsoleLog } from '../hooks'
 import { ScreenContext } from './ScreenContext'
 
+// Add booking price constants
+const INSTANT_BOOKING_PRICE = 2
+const SCHEDULE_BOOKING_PRICE = 1
+
 /**
  * @typedef {Object} CourseContextType
  * @property {Array<Object>} courses - The user's active courses
@@ -60,7 +64,7 @@ const CourseContext = createContext(defaultContext)
  */
 const CourseContextProvider = ({ children }) => {
   const { addAlert } = useContext(ScreenContext)
-  const { user } = useContext(UserContext)
+  const { user, balance, updateBalance } = useContext(UserContext)
 
   const [courses, setCourses] = useState([])
   const [requests, setRequests] = useState([])
@@ -271,12 +275,28 @@ const CourseContextProvider = ({ children }) => {
           `Course already requested with subject: ${courseForm.subject} and topic: ${courseForm.topic}`
         )
 
+      // Determine booking type and price
+      const isInstant = !courseForm.bookingTime
+      const bookingPrice = isInstant ? INSTANT_BOOKING_PRICE : SCHEDULE_BOOKING_PRICE
+
+      // Check balance before proceeding
+      if (typeof balance !== 'number' || balance < bookingPrice) {
+        throw new Error(
+          `Insufficient balance. You need at least ${bookingPrice} credits to book.`
+        )
+      }
+
       setIsRequestPending(true)
       await addDoc(collection(db, 'requests'), {
         tuteeId: auth.currentUser.uid,
         createdAt: serverTimestamp(),
         ...courseForm,
+        price: bookingPrice, // Add price to the course request
       })
+
+      // Deduct balance after successful booking
+      await updateBalance(-bookingPrice)
+
       addAlert({
         type: 'success',
         title: 'Success',
