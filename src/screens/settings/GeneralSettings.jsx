@@ -52,7 +52,7 @@ const GeneralSettings = () => {
           value={timezone}
         />
       </div> */}
-      <div className='flex items-center'>
+      {/* <div className='flex items-center'>
         <input
           id='notifications'
           type='checkbox'
@@ -63,7 +63,7 @@ const GeneralSettings = () => {
         <label htmlFor='notifications' className='font-medium'>
           {t('Enable notifications')}
         </label>
-      </div>
+      </div> */}
       <div>
         <label className='block font-medium mb-1'>{t('label.theme')}</label>
         <Theme />
