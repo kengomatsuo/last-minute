@@ -957,22 +957,22 @@ const VideoCall = ({ courseId }) => {
   }
 
   return (
-    <div className=' flex-1 h-full w-full relative flex flex-col justify-center items-center'>
-      <div className='flex flex-1 flex-wrap gap-4 absolute justify-center items-center w-full p-8'>
+    <div className=' flex-1 h-full w-full relative flex flex-col justify-center items-center min-w-fit'>
+      <div className='flex flex-1 flex-wrap gap-4 absolute justify-center items-center w-full p-8 min-w-fit'>
         <video
           ref={localVideoRef}
           id='localVideo'
           autoPlay
           playsInline
           muted
-          className='flex rounded-lg w-135 xl:w-[45%] aspect-video h-auto'
+          className='flex rounded-lg min-w-96 w-135 xl:w-[45%] aspect-video h-auto'
         />
         <video
           ref={remoteVideoRef}
           id='remoteVideo'
           autoPlay
           playsInline
-          className='flex rounded-lg w-135 xl:w-[45%] aspect-video h-auto'
+          className='flex rounded-lg min-w-96 w-135 xl:w-[45%] aspect-video h-auto'
         />
       </div>
       <div className='absolute bottom-0 flex gap-1 bg-[#faf9f5] p-2 rounded-lg min-w-fit max-w-11/12'>

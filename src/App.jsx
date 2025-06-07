@@ -45,7 +45,7 @@ function App() {
       {user === undefined ? (
         <motion.div
           key='loading'
-          className='w-screen h-screen flex justify-center items-center text-primary-text'
+          className='w-screen h-[100svh] flex justify-center items-center text-primary-text'
           initial={{ opacity: 0, scale: 1.2, transition: { duration: 0.10 } }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.15 } }}
