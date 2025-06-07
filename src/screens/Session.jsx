@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react'
 import { useLocation } from 'react-router-dom'
 import { NAVBAR_HEIGHT } from '../constants/visualConstants'
-import { doc, getDoc, increment, updateDoc } from 'firebase/firestore'
+import { doc, getDoc, increment, serverTimestamp, updateDoc } from 'firebase/firestore'
 import { db } from '../../firebaseConfig'
 import { UserContext } from '../contexts/UserContext'
 import { ScreenContext } from '../contexts/ScreenContext'
@@ -57,7 +57,7 @@ const Session = () => {
           try {
             console.log('Ending session for course:', courseId)
             const courseRef = doc(db, 'courses', courseId)
-            await updateDoc(courseRef, { done: true })
+            await updateDoc(courseRef, { done: true, doneAt: serverTimestamp() })
             // Transfer course price to tutor's balance
             // Get course data to find price and tuteeId
             const courseSnap = await getDoc(courseRef)

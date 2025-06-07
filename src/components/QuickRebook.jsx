@@ -9,6 +9,8 @@ import CustomButton from './CustomButton'
  * QuickRebook component
  *
  * Displays a card with a list of recently booked topics for quick rebooking.
+ * 
+ * Note: Stores booking draft values as JSON strings in localStorage.
  *
  * @param {Object} props - Component props
  * @param {Array<Object>} props.courses - List of course objects
@@ -37,11 +39,29 @@ const QuickRebook = ({ courses }) => {
   }, [courses])
 
   const handleRebook = course => {
-    localStorage.setItem('BookingDraft_Subject', course.subject)
-    localStorage.setItem('BookingDraft_Topic', course.topic)
-    localStorage.setItem('BookingDraft_Details', course.details || '')
-    localStorage.setItem('BookingDraft_Instant', 'true')
-    navigate('/booking')
+    try {
+      console.log('Rebooking course:', course)
+      localStorage.setItem(
+        'BookingDraft_Subject',
+        JSON.stringify(course.subject)
+      )
+      localStorage.setItem(
+        'BookingDraft_Topic',
+        JSON.stringify(course.topic)
+      )
+      localStorage.setItem(
+        'BookingDraft_Details',
+        JSON.stringify(course.details || '')
+      )
+      localStorage.setItem('BookingDraft_Instant', JSON.stringify(true))
+      navigate('/booking')
+    } catch (error) {
+      // Log error with meaningful message
+      console.error(
+        'Failed to save booking draft to localStorage:',
+        error
+      )
+    }
   }
 
   if (!recentTopics || recentTopics.length === 0) {

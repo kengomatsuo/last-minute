@@ -61,7 +61,7 @@ const History = () => {
                 <p>
                   {course.bookingTime
                     ? firestampToString(course.bookingTime)
-                    : t('history.completedAt', { date: firestampToString(course.createdAt) })}
+                    : t('history.completedAt', { date: firestampToString(course.doneAt) })}
                 </p>
               </div>
             </div>

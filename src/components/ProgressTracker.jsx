@@ -31,9 +31,8 @@ const ProgressTracker = ({ courses }) => {
     if (!courses) return 0
 
     return courses.filter(course => {
-      if (!course.bookingTime?.toDate) return false
       if (!course.done) return false
-      const courseDate = course.bookingTime.toDate()
+      const courseDate = course.createdAt.toDate()
       return (
         courseDate >= startOfWeek &&
         courseDate <= endOfWeek &&
